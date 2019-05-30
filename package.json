@@ -16,6 +16,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "concurrently": "^4.0.1",
+    "cuid": "^2.1.6",
     "express": "^4.16.4",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.3.0",
@@ -29,6 +30,7 @@
     "react-scripts": "^3.0.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "uniqid": "^5.0.3",
     "validator": "^10.9.0"
   }
 }
