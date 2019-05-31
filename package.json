@@ -18,6 +18,7 @@
     "concurrently": "^4.0.1",
     "cuid": "^2.1.6",
     "express": "^4.16.4",
+    "hashmap": "^2.3.0",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.3.11",
