@@ -3,6 +3,236 @@ import TreeMenu from "react-simple-tree-menu";
 
 const treeData = [
   {
+      "key": "Video Games",
+      "label": "Video Games",
+      "index": 0,
+      "nodes": [
+          {
+              "key": "Fighting Games",
+              "label": "Fighting Games",
+              "index": 0,
+              "nodes": [
+                  {
+                      "key": "Super Smash Bros.",
+                      "label": "Super Smash Bros.",
+                      "index": 0,
+                      "nodes": [
+                          {
+                              "key": "SSB Brawl",
+                              "label": "SSB Brawl",
+                              "index": 0,
+                              "nodes": []
+                          },
+                          {
+                              "key": "SSB Ultimate",
+                              "label": "SSB Ultimate",
+                              "index": 0,
+                              "nodes": []
+                          },
+                          {
+                              "key": "SSB Melee",
+                              "label": "SSB Melee",
+                              "index": 0,
+                              "nodes": []
+                          },
+                          {
+                              "key": "SSB Four",
+                              "label": "SSB Four",
+                              "index": 0,
+                              "nodes": []
+                          }
+                      ]
+                  },
+                  {
+                      "key": "Street Fighter",
+                      "label": "Street Fighter",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Injustice",
+                      "label": "Injustice",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Mortal Kombat",
+                      "label": "Mortal Kombat",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "SoulCalibur",
+                      "label": "SoulCalibur",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Marvel vs Capcom",
+                      "label": "Marvel vs Capcom",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Tekken",
+                      "label": "Tekken",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Dragonball FighterZ",
+                      "label": "Dragonball FighterZ",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Under Night In Birth",
+                      "label": "Under Night In Birth",
+                      "index": 0,
+                      "nodes": []
+                  }
+              ]
+          },
+          {
+              "key": "MOBAs",
+              "label": "MOBAs",
+              "index": 0,
+              "nodes": [
+                  {
+                      "key": "League of Legends",
+                      "label": "League of Legends",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "DOTA",
+                      "label": "DOTA",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Smite",
+                      "label": "Smite",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Vainglory",
+                      "label": "Vainglory",
+                      "index": 0,
+                      "nodes": []
+                  },
+                  {
+                      "key": "Heroes of the Storm",
+                      "label": "Heroes of the Storm",
+                      "index": 0,
+                      "nodes": []
+                  }
+              ]
+          },
+          {
+              "key": "TPS Games",
+              "label": "TPS Games",
+              "index": 0,
+              "nodes": []
+          },
+          {
+              "key": "FPS Games",
+              "label": "FPS Games",
+              "index": 0,
+              "nodes": []
+          },
+          {
+              "key": "Strategy Games",
+              "label": "Strategy Games",
+              "index": 0,
+              "nodes": []
+          },
+          {
+              "key": "Singleplayer Games",
+              "label": "Singleplayer Games",
+              "index": 0,
+              "nodes": []
+          },
+          {
+              "key": "MMORPGs",
+              "label": "MMORPGs",
+              "index": 0,
+              "nodes": []
+          }
+      ]
+  },
+  {
+      "key": "Sports",
+      "label": "Sports",
+      "index": 1,
+      "nodes": [
+          {
+              "key": "Basketball",
+              "label": "Basketball",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Combat Sports",
+              "label": "Combat Sports",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Soccer",
+              "label": "Soccer",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Tennis",
+              "label": "Tennis",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Track",
+              "label": "Track",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Volleyball",
+              "label": "Volleyball",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Football",
+              "label": "Football",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Hockey",
+              "label": "Hockey",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Golf",
+              "label": "Golf",
+              "index": 1,
+              "nodes": []
+          },
+          {
+              "key": "Rugby",
+              "label": "Rugby",
+              "index": 1,
+              "nodes": []
+          }
+      ]
+  }
+]
+/*
+const treeData = [
+  {
     key: "first-level-node-1",
     label: "Video Games",
     nodes: [
@@ -100,24 +330,35 @@ const treeData = [
     ]
   }
 ];
+*/
 class HobbyTree extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    
+    super(props);
+
     this.state = {
-      category: ""
-    };
+      category: "",
+      treeData: "meme"
+  };
+  }
+  componentDidMount() {
+    
+    fetch('http://localhost:5000/api/tree/tree')
+    .then(results => results.json())
+    .then(treeData => this.setState({ treeData }));
+    
   }
 
   render() {
     return (
       <TreeMenu
-        data={treeData}
-        onClickItem={({ key, label }) => {
-          this.setState({
-            category: label
-          });
-        }}
-      />
+      data={treeData}
+      onClickItem={({ key, label }) => {
+        this.setState({
+          category: label
+        });
+      }}
+    />
     );
   }
 }

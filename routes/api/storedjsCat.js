@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const Category = require("../../models/Category");
 const db = "mongodb://feels:badman1@ds121603.mlab.com:21603/usertests";
-//const hash = require("hashmap");
-//const isEmpty = require("is-empty");
+const hash = require("hashmap");
+const isEmpty = require("is-empty");
 
 mongoose
   .connect(
@@ -20,42 +20,39 @@ Category.find({ level: 0 }).then( categories => {
       key: category.label,
       label: category.label,
       index: treeData.length,
-      nodes: []
+      nodes: recursiveCat(category.label, category.children, treeData.length)
     }
     treeData.push(node);
-    recursiveCat(node.nodes, category.label, category.children, treeData.length)
 
   })
 })
 
-function recursiveCat(nodes, parLabel, children, indexC){
+function recursiveCat(parLabel, children, indexC){
+  var nodes = [];
   Category.find({ parent: parLabel }).then( categories => {
     categories.forEach((category) => {
-      //console.log(category.children.length)
+      console.log(category.children.length)
       var node = {
         key: category.label,
         label: category.label,
         index: indexC,
-        nodes: []
+        nodes: ((children.length == 0) ? recursiveCat(category.label, category.children, indexC) : [])
       }
-      nodes.push(node);
-      recursiveCat(node.nodes, category.label, category.children, indexC);
+      if (nodes[0]=""){
+        nodes[0]=node;
+      }
+      else{
+        nodes.push(node);
+        //return node;
+        console.log(nodes)
+      }
     })
   })
 }
 
-const meme = setInterval(print, 3000);
+const meme = setInterval(print, 5000);
 function print(){
-  for(var i=0; i < treeData.length; i++){
-    recursivePrint(treeData[i]) 
-  }
-}
-
-function recursivePrint(node){
-  console.log(node)
-  for(var i=0; i < node.nodes.length; i++){
-    recursivePrint(node.nodes[i])
-  }
+  console.log(treeData)
 }
     /*
     if (treeData[0]==""){

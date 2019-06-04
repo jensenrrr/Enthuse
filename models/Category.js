@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const hash = require("hashmap")
+
 
 // Create Schema
 const categorySchema = new Schema({

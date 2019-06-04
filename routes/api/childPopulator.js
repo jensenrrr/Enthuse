@@ -15,7 +15,7 @@ mongoose
 
 
 //takes in label and creates nonexisting children
-var labelPar = "Sports";
+var labelPar = "Combat Sports";
 Category.findOne({ label: labelPar }).then( function(category) {
     if(!category)
        throw new Error('Parent not found.');
