@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { registerUser } from "../../actions/authActions";
+import { registerUser, callTree } from "../../actions/authActions";
 import classnames from "classnames";
+import TreeMenu from "react-simple-tree-menu";
+
 
 class Register extends Component {
   constructor() {
@@ -15,22 +17,189 @@ class Register extends Component {
       email: "",
       password: "",
       password2: "",
-      errors: {}
+      errors: {},
+      treeData: [{
+        "key": "Video Games",
+        "label": "Video Games",
+        "index": 0,
+        "nodes": [
+            {
+                "key": "Fighting Games",
+                "label": "Fighting Games",
+                "index": 0,
+                "nodes": [
+                    {
+                        "key": "Super Smash Bros.",
+                        "label": "Super Smash Bros.",
+                        "index": 0,
+                        "nodes": [
+                            {
+                                "key": "SSB Brawl",
+                                "label": "SSB Brawl",
+                                "index": 0,
+                                "nodes": []
+                            },
+                            {
+                                "key": "SSB Ultimate",
+                                "label": "SSB Ultimate",
+                                "index": 0,
+                                "nodes": []
+                            },
+                            {
+                                "key": "SSB Melee",
+                                "label": "SSB Melee",
+                                "index": 0,
+                                "nodes": []
+                            },
+                            {
+                                "key": "SSB Four",
+                                "label": "SSB Four",
+                                "index": 0,
+                                "nodes": []
+                            }
+                        ]
+                    },
+                    {
+                        "key": "Street Fighter",
+                        "label": "Street Fighter",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Injustice",
+                        "label": "Injustice",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Mortal Kombat",
+                        "label": "Mortal Kombat",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "SoulCalibur",
+                        "label": "SoulCalibur",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Marvel vs Capcom",
+                        "label": "Marvel vs Capcom",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Tekken",
+                        "label": "Tekken",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Dragonball FighterZ",
+                        "label": "Dragonball FighterZ",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Under Night In Birth",
+                        "label": "Under Night In Birth",
+                        "index": 0,
+                        "nodes": []
+                    }
+                ]
+            },
+            {
+                "key": "MOBAs",
+                "label": "MOBAs",
+                "index": 0,
+                "nodes": [
+                    {
+                        "key": "League of Legends",
+                        "label": "League of Legends",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "DOTA",
+                        "label": "DOTA",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Smite",
+                        "label": "Smite",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Vainglory",
+                        "label": "Vainglory",
+                        "index": 0,
+                        "nodes": []
+                    },
+                    {
+                        "key": "Heroes of the Storm",
+                        "label": "Heroes of the Storm",
+                        "index": 0,
+                        "nodes": []
+                    }
+                ]
+            },
+            {
+                "key": "TPS Games",
+                "label": "TPS Games",
+                "index": 0,
+                "nodes": []
+            },
+            {
+                "key": "FPS Games",
+                "label": "FPS Games",
+                "index": 0,
+                "nodes": []
+            },
+            {
+                "key": "Strategy Games",
+                "label": "Strategy Games",
+                "index": 0,
+                "nodes": []
+            },
+            {
+                "key": "Singleplayer Games",
+                "label": "Singleplayer Games",
+                "index": 0,
+                "nodes": []
+            },
+            {
+                "key": "MMORPGs",
+                "label": "MMORPGs",
+                "index": 0,
+                "nodes": []
+            }
+        ]
+    }]
     };
   }
 
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to dashboard
+    this.props.callTree();
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps)
     if (nextProps.errors) {
       this.setState({
         errors: nextProps.errors
       });
+    }
+    if(nextProps.auth.tree){
+      this.setState({
+        treeData: nextProps.auth.tree
+      })
     }
   }
 
@@ -176,6 +345,14 @@ class Register extends Component {
             </form>
           </div>
         </div>
+        <TreeMenu
+          data={this.state.treeData}
+           onClickItem={({ key, label }) => {
+            this.setState({
+          category: label
+          });
+        }}
+        />
       </div>
     );
   }
@@ -183,16 +360,18 @@ class Register extends Component {
 
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
+  callTree: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  errors: state.errors
+  errors: state.errors,
+  tree: state.treeData
 });
 
 export default connect(
   mapStateToProps,
-  { registerUser }
+  { registerUser, callTree }
 )(withRouter(Register));
