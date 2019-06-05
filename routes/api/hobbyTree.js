@@ -8,7 +8,7 @@ const Category = require("../../models/Category");
 
 router.get("/tree", (req, res) => {
   
-  console.log("called")
+  console.log("tree requested")
   
   createTreeJson().then((ray) => res.json(ray));
   function createTreeJson(){
