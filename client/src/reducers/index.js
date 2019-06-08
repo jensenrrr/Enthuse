@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import authReducer from "./authReducer";
-import treeReducer from "./treeReducer";
+import treeReducer from "./setReducer";
 import errorReducer from "./errorReducer";
 
 export default combineReducers({

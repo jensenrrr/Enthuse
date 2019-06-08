@@ -6,7 +6,6 @@ import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 import SetModal from "../set/SetModal";
 
-
 class Register extends Component {
   constructor() {
     super();
@@ -17,7 +16,8 @@ class Register extends Component {
       email: "",
       password: "",
       password2: "",
-      errors: {}
+      errors: {},
+      sets: []
     };
   }
 
@@ -29,11 +29,17 @@ class Register extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
+    //console.log(nextProps);
     if (nextProps.errors) {
       this.setState({
         errors: nextProps.errors
       });
+    }
+    if (nextProps.tree) {
+      if (nextProps.tree.favoriteSets) {
+        this.setState({ sets: nextProps.tree.favoriteSets });
+      }
+      //console.log(this.state.sets);
     }
   }
 
@@ -43,14 +49,15 @@ class Register extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-
+    console.log(this.state.sets);
     const newUser = {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       username: this.state.username,
       email: this.state.email,
       password: this.state.password,
-      password2: this.state.password2
+      password2: this.state.password2,
+      sets: this.state.sets
     };
 
     this.props.registerUser(newUser, this.props.history);
@@ -162,10 +169,24 @@ class Register extends Component {
                 <label htmlFor="password2">Confirm Password</label>
                 <span className="red-text">{errors.password2}</span>
               </div>
-                    <div className="col s12  center-align" style={{ paddingLeft: "11.250px" }}>
-                   <SetModal/>
-                   </div>
-              <div className="col s12  center-align" style={{ paddingLeft: "11.250px" }}>
+              <div
+                className="col s12  center-align"
+                style={{ paddingLeft: "11.250px" }}
+              >
+                <SetModal />
+              </div>
+              <ul className="main-nav__list">
+                {this.state.sets.map(item => (
+                  <span key={item.location.county + item.category}>
+                    Category: {item.category} Location: {item.location.county}{" "}
+                    <br />
+                  </span>
+                ))}
+              </ul>
+              <div
+                className="col s12  center-align"
+                style={{ paddingLeft: "11.250px" }}
+              >
                 <button
                   style={{
                     width: "150px",

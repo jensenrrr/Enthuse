@@ -2,11 +2,43 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import { createPost } from "../../actions/postActions";
 
 class Dashboard extends Component {
+  constructor() {
+    super();
+    this.state = {
+      content: "",
+      category: "",
+      location: {
+        country: "US",
+        state: "Florida",
+        county: "Alachua"
+      }
+    };
+  }
+
   onLogoutClick = e => {
     e.preventDefault();
     this.props.logoutUser();
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
+
+    const newPost = {
+      content: this.state.content,
+      category: this.state.category,
+      location: this.state.location,
+      _userid: this.props.auth.user.id
+    };
+    console.log(newPost);
+    this.props.createPost(newPost, this.props.history);
+  };
+
+  onChange = e => {
+    this.setState({ [e.target.id]: e.target.value });
+    console.log(this.props.auth.user.id);
   };
 
   render() {
@@ -23,6 +55,47 @@ class Dashboard extends Component {
                 <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
               </p>
             </h4>
+
+            <form noValidate onSubmit={this.onSubmit}>
+              <div className="input-field col s12">
+                <input
+                  onChange={this.onChange}
+                  value={this.state.content}
+                  id="content"
+                  type="text"
+                />
+                <label htmlFor="Thoughts">Thoughts</label>
+              </div>
+
+              <div className="input-field col s12">
+                <input
+                  onChange={this.onChange}
+                  value={this.state.category}
+                  id="category"
+                  type="text"
+                />
+                <label htmlFor="Category">Category</label>
+              </div>
+
+              <div
+                className="col s12  center-align"
+                style={{ paddingLeft: "11.250px" }}
+              >
+                <button
+                  style={{
+                    width: "150px",
+                    borderRadius: "3px",
+                    letterSpacing: "1.5px",
+                    marginTop: "1rem"
+                  }}
+                  type="submit"
+                  className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                >
+                  Post
+                </button>
+              </div>
+            </form>
+
             <button
               style={{
                 width: "150px",
@@ -44,6 +117,7 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   logoutUser: PropTypes.func.isRequired,
+  createPost: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 
@@ -53,5 +127,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, createPost }
 )(Dashboard);
