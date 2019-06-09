@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { createPost, getPosts } from "../../actions/postActions";
 import Post from "./Post";
+import PostCreate from "./PostCreate";
 
 class Dashboard extends Component {
   constructor() {
@@ -77,46 +78,8 @@ class Dashboard extends Component {
               </p>
             </h4>
 
-            <form noValidate onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.content}
-                  id="content"
-                  type="text"
-                />
-                <label htmlFor="Thoughts">Thoughts</label>
-              </div>
-
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.category}
-                  id="category"
-                  type="text"
-                />
-                <label htmlFor="Category">Category</label>
-              </div>
-
-              <div
-                className="col s12  center-align"
-                style={{ paddingLeft: "11.250px" }}
-              >
-                <button
-                  style={{
-                    width: "150px",
-                    borderRadius: "3px",
-                    letterSpacing: "1.5px",
-                    marginTop: "1rem"
-                  }}
-                  type="submit"
-                  className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-                >
-                  Post
-                </button>
-              </div>
-            </form>
-
+            <PostCreate />
+            <br />
             <button
               style={{
                 width: "150px",

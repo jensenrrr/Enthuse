@@ -40,8 +40,6 @@ router.post("/getposts", (req, res) => {
           category: post.category,
           location: post.location
         };
-        console.log(returnPost);
-        console.log(returnPosts);
         returnPosts.push(returnPost);
       });
     });
