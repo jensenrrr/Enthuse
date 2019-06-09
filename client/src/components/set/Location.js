@@ -8,7 +8,7 @@ import { withRouter } from "react-router-dom";
 
 class Location extends Component {
   meme(q) {
-    //console.log(q);
+    console.log(q);
   }
   clickHandler(i) {
     /*
