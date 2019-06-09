@@ -1,6 +1,13 @@
-import { POST_CREATE, POST_ERRORS } from "../actions/types";
+import {
+  POST_CREATE,
+  POST_GET,
+  POST_COMMENT,
+  POST_UPVOTE
+} from "../actions/types";
 
-const initialState = {};
+const initialState = {
+  posts: []
+};
 
 export default function(state = initialState, action) {
   switch (action.type) {
@@ -8,7 +15,16 @@ export default function(state = initialState, action) {
       return {
         ...state
       };
-    case POST_ERRORS:
+    case POST_GET:
+      return {
+        ...state,
+        posts: action.payload
+      };
+    case POST_COMMENT:
+      return {
+        ...state
+      };
+    case POST_UPVOTE:
       return {
         ...state
       };

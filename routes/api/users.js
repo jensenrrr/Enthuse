@@ -33,7 +33,6 @@ router.post("/register", (req, res) => {
       if (user) {
         return res.status(400).json({ email: "Email already exists" });
       } else {
-        console.log(req.body.sets);
         const newUser = new User({
           name: {
             first: req.body.firstName,
@@ -92,7 +91,8 @@ router.post("/login", (req, res) => {
         // Create JWT Payload
         const payload = {
           id: user.id,
-          username: user.username
+          username: user.username,
+          sets: user.homePage
         };
 
         // Sign token

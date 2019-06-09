@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import { createPost } from "../../actions/postActions";
+import { createPost, getPosts } from "../../actions/postActions";
+import Post from "./Post";
 
 class Dashboard extends Component {
   constructor() {
@@ -14,8 +15,29 @@ class Dashboard extends Component {
         country: "US",
         state: "Florida",
         county: "Alachua"
-      }
+      },
+      currentSets: [],
+      posts: []
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      currentSets: this.props.auth.user.sets
+    });
+    console.log(this.props.auth.user.sets);
+    this.props.getPosts(this.props.auth.user.sets);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.post) {
+      if (nextProps.post.posts) {
+        this.setState({
+          posts: nextProps.post.posts
+        });
+        console.log(nextProps.post.posts);
+      }
+    }
   }
 
   onLogoutClick = e => {
@@ -38,7 +60,6 @@ class Dashboard extends Component {
 
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
-    console.log(this.props.auth.user.id);
   };
 
   render() {
@@ -108,6 +129,14 @@ class Dashboard extends Component {
             >
               Logout
             </button>
+            <div className="col s12  center-align">
+              {this.state.posts.map(post => (
+                <Post key={post.postID}>
+                  {post.content}
+                  <br />
+                </Post>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -117,15 +146,17 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   logoutUser: PropTypes.func.isRequired,
+  getPosts: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  post: state.post
 });
 
 export default connect(
   mapStateToProps,
-  { logoutUser, createPost }
+  { logoutUser, createPost, getPosts }
 )(Dashboard);

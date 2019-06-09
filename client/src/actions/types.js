@@ -7,3 +7,6 @@ export const SET_CAT = "SET_CAT";
 export const PUSH_CAT = "PUSH_CAT";
 export const POST_CREATE = "POST_CREATE";
 export const POST_ERRORS = "POST_ERRORS";
+export const POST_UPVOTE = "POST_UPVOTE";
+export const POST_COMMENT = "POST_COMMENT";
+export const POST_GET = "POST_GET";
