@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import HobbyTree from "./HobbyTree";
 import Location from "./Location";
 
-import { pushCat } from "../../actions/setActions";
+import { pushSet } from "../../actions/setActions";
 import { Modal, Button } from "react-materialize";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import classnames from "classnames";
+import PropTypes from "prop-types";
 
 class SetModal extends Component {
   constructor(props) {
@@ -28,6 +29,13 @@ class SetModal extends Component {
     //console.log(this.state.category);
     //console.log(nextProps);
     if (nextProps.tree) {
+      if (nextProps.tree.location) {
+        if (nextProps.tree.location.county !== "") {
+          this.setState({
+            location: nextProps.tree.location
+          });
+        }
+      }
       if (nextProps.tree.category) {
         this.setState({
           category: nextProps.tree.category
@@ -62,7 +70,7 @@ class SetModal extends Component {
           this.setState({
             sets: this.state.sets.concat(set)
           });
-          this.props.pushCat(set);
+          this.props.pushSet(set);
         } else {
           console.log("duplicate set");
         }
@@ -114,6 +122,12 @@ class SetModal extends Component {
   }
 }
 
+SetModal.propTypes = {
+  pushSet: PropTypes.func.isRequired,
+  tree: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
   tree: state.tree,
   errors: state.errors
@@ -121,7 +135,7 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { pushCat }
+  { pushSet }
 )(withRouter(SetModal));
 
 /*

@@ -1,5 +1,11 @@
 import axios from "axios";
-import { DATA_TREE, TRIVIAL_ERRORS, SET_CAT, PUSH_CAT } from "./types";
+import {
+  DATA_TREE,
+  TRIVIAL_ERRORS,
+  SET_CAT,
+  PUSH_SET,
+  SET_LOCATION
+} from "./types";
 
 export const callTree = () => dispatch => {
   axios
@@ -25,9 +31,16 @@ export const setCat = category => dispatch => {
   });
 };
 
-export const pushCat = set => dispatch => {
+export const pushSet = set => dispatch => {
   dispatch({
-    type: PUSH_CAT,
+    type: PUSH_SET,
     payload: set
+  });
+};
+
+export const setLocation = category => dispatch => {
+  dispatch({
+    type: SET_LOCATION,
+    payload: category
   });
 };

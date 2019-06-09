@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import PlacesData from "../../data/places.json";
 import FuzzySearch from "react-fuzzy";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { setLocation } from "../../actions/setActions";
+import { withRouter } from "react-router-dom";
 
 class Location extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      category: ""
-    };
-  }
-
   meme(q) {
     //console.log(q);
   }
   clickHandler(i) {
-    console.log(i);
-    console.log("feels");
+    /*
+        
+    get the value of state/county/country in a location variable and call
+    setLocation(location)
+  
+    */
   }
   render() {
     return (
@@ -44,4 +44,16 @@ class Location extends Component {
     );
   }
 }
-export default Location;
+
+Location.propTypes = {
+  setLocation: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  errors: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { setLocation }
+)(withRouter(Location));
