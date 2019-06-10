@@ -23,6 +23,7 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
+    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
     this.setState({
       currentSets: this.props.auth.user.sets
     });
@@ -53,9 +54,10 @@ class Dashboard extends Component {
       content: this.state.content,
       category: this.state.category,
       location: this.state.location,
-      _userid: this.props.auth.user.id
+      _userid: this.props.auth.user.id,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };
-    console.log(newPost);
+    //console.log(newPost);
     this.props.createPost(newPost, this.props.history);
   };
 
@@ -72,10 +74,6 @@ class Dashboard extends Component {
           <div className="landing-copy col s12 center-align">
             <h4>
               <b>Hey there,</b> {user.username}
-              <p className="flow-text grey-text text-darken-1">
-                You are logged into a full-stack{" "}
-                <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
-              </p>
             </h4>
 
             <PostCreate />
@@ -94,7 +92,12 @@ class Dashboard extends Component {
             </button>
             <div className="col s12  center-align">
               {this.state.posts.map(post => (
-                <Post key={post.postID}>
+                <Post
+                  key={post.postID}
+                  county={post.location.county}
+                  category={post.category}
+                  date={post.date}
+                >
                   {post.content}
                   <br />
                 </Post>

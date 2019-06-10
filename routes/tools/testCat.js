@@ -1,18 +1,30 @@
 const mongoose = require("mongoose");
 const Category = require("../../models/Category");
+const Post = require("../../models/Post");
+const User = require("../../models/User");
 const db = "mongodb://feels:badman1@ds121603.mlab.com:21603/usertests";
+ObjectId = require("mongodb").ObjectID;
+const moment = require("moment");
+
 //const hash = require("hashmap");
 //const isEmpty = require("is-empty");
 
 mongoose
-  .connect(
-    db,
-    { useNewUrlParser: true }
-  )
+  .connect(db, { useNewUrlParser: true })
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
+changeIT();
 
+async function changeIT() {
+  const change = await User.updateMany(
+    { _id: mongoose.Types.ObjectId("5cfb44bff02caf1bdc5a030c") },
+    { date: moment() }
+  );
+  console.log(change.n);
+  console.log(change.nModified);
+}
+/*
 var treeData = [];
 Category.find({ level: 0 }).then( categories => {
   categories.forEach((category) => {
@@ -167,13 +179,7 @@ function printTwo(a){
 }
 */
 
-
-
-
-
-
-
-  /*
+/*
 var data = [];
 Category.find({ level: 1 }).then( categories => {
     categories.forEach((category) => {
@@ -182,7 +188,6 @@ Category.find({ level: 1 }).then( categories => {
     })
 })
 */
-
 
 /*
 const newCat = new Category;

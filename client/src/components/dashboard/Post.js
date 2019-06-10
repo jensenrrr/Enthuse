@@ -5,7 +5,17 @@ import { upVotePost, comment } from "../../actions/postActions";
 
 class Post extends Component {
   render() {
-    return <div>{this.props.children}</div>;
+    return (
+      <div className="col s12" style={{ height: "5000%" }}>
+        {this.props.children}
+        <div>
+          <span className="left-align" style={{ paddingRight: "30%" }}>
+            {this.props.category}
+          </span>
+          <span className="right-align">{this.props.county} County</span>
+        </div>
+      </div>
+    );
   }
 }
 

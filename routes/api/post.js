@@ -5,6 +5,7 @@ ObjectId = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 
 const Post = require("../../models/Post");
+const User = require("../../models/User");
 
 router.post("/create", (req, res) => {
   const newPost = new Post({
@@ -34,46 +35,40 @@ router.post("/getposts", (req, res) => {
       category: set.category,
       location: set.location
     }).then(posts => {
-      posts.forEach(post => {
-        const returnPost = {
-          content: post.content,
-          category: post.category,
-          location: post.location
-        };
-        returnPosts.push(returnPost);
-      });
+      return Promise.all(
+        posts.map(async post => {
+          var dets = function(returnPosts, post) {
+            return new Promise(function(resolve, reject) {
+              User.findById({ _id: post._userID }).then(user => {
+                const dets = {
+                  username: user.username,
+                  name: {
+                    first: user.name.first,
+                    last: user.name.last
+                  }
+                };
+                const returnPost = {
+                  content: post.content,
+                  category: post.category,
+                  location: post.location,
+                  username: dets.username,
+                  firstname: dets.name.first,
+                  lastname: dets.name.last,
+                  date: post.date,
+                  postID: post._id
+                };
+                console.log(returnPost);
+                returnPosts.push(returnPost);
+                resolve(returnPosts);
+              });
+            });
+          };
+
+          return dets(returnPosts, post);
+        })
+      );
     });
     return returnPosts;
   }
-  //processPosts(returnPosts, req.body).then(posts => res.json(posts));
-  /*
-  async function pusher(post, array) {
-    array.push(post);
-
-    return 1;
-  }
-  async function processPosts(returnPosts, array) {
-    const promises = array.map(pusher);
-    await Promise.all(promises);
-    req.body.forEach(async post => {});
-
-    for (var i = 0; i < req.body.length(); i++) {
-      Post.find({
-        category: req.body[i].category,
-        location: req.body[i].location
-      }).then(posts => {
-        posts.forEach(post => {
-          const returnPost = {
-            content: post.content,
-            category: post.category,
-            location: post.location
-          };
-          returnPosts.push(returnPost);
-        });
-      });
-    }
-  }
-  */
 });
-
 module.exports = router;

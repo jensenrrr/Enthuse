@@ -21,6 +21,8 @@
     "hashmap": "^2.3.0",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.3.0",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.25",
     "mongoose": "^5.3.11",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
