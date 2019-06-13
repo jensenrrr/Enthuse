@@ -37,7 +37,7 @@ class Dashboard extends Component {
         this.setState({
           posts: nextProps.post.posts
         });
-        console.log(nextProps.post.posts);
+        //console.log(nextProps.post.posts);
       }
     }
   }
@@ -66,15 +66,13 @@ class Dashboard extends Component {
   };
 
   render() {
-    const { user } = this.props.auth;
-
     return (
       <div style={{ height: "75vh" }}>
         <div className="row">
           <div className="col s3 center-align blue lighten-1">
             Communities:
             <br />
-            {this.props.auth.user.sets.map(set => (
+            {this.props.set.currentSets.map(set => (
               <span key={set.category + set.location.county}>
                 {set.category} | {set.location.county}
                 <br />
@@ -118,7 +116,8 @@ Dashboard.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  post: state.post
+  post: state.post,
+  set: state.set
 });
 
 export default connect(

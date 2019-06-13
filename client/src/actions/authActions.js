@@ -2,7 +2,13 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 
-import { GET_ERRORS, SET_CURRENT_USER, USER_LOADING, DATA_TREE, TRIVIAL_ERRORS } from "./types";
+import {
+  GET_ERRORS,
+  SET_CURRENT_USER,
+  USER_LOADING,
+  DATA_TREE,
+  TRIVIAL_ERRORS
+} from "./types";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -57,15 +63,13 @@ export const setUserLoading = () => {
   };
 };
 
-
 export const callTree = () => dispatch => {
   axios
     .get("/api/tree/tree")
     .then(res => {
-      console.log(res.data)
       dispatch({
-          type: DATA_TREE,
-          payload: res.data
+        type: DATA_TREE,
+        payload: res.data
       });
     })
     .catch(err =>

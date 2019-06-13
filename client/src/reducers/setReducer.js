@@ -1,4 +1,10 @@
-import { DATA_TREE, SET_CAT, PUSH_SET, SET_LOCATION } from "../actions/types";
+import {
+  DATA_TREE,
+  SET_CAT,
+  PUSH_SET,
+  SET_LOCATION,
+  SET_CURRENT_USER
+} from "../actions/types";
 
 const initialState = {
   tree: [],
@@ -8,7 +14,9 @@ const initialState = {
     country: "",
     state: ""
   },
-  favoriteSets: []
+  favs: [],
+  homePage: [],
+  currentSets: []
 };
 
 export default function(state = initialState, action) {
@@ -17,6 +25,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         tree: action.payload
+      };
+    case SET_CURRENT_USER:
+      return {
+        ...state,
+        currentSets: action.payload.sets,
+        favs: action.payload.favs,
+        homePage: action.payload.sets
       };
     case SET_CAT:
       return {

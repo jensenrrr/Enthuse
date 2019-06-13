@@ -92,9 +92,9 @@ router.post("/login", (req, res) => {
         const payload = {
           id: user.id,
           username: user.username,
-          sets: user.homePage
+          sets: user.homePage,
+          favs: user.favoriteSets
         };
-
         // Sign token
         jwt.sign(
           payload,

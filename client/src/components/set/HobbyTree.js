@@ -23,9 +23,9 @@ class HobbyTree extends Component {
 
   componentWillReceiveProps(nextProps) {
     //console.log(nextProps);
-    if (nextProps.tree.tree)
+    if (nextProps.set.tree)
       this.setState({
-        treeData: nextProps.tree.tree
+        treeData: nextProps.set.tree
       });
   }
 
@@ -47,12 +47,12 @@ class HobbyTree extends Component {
 HobbyTree.propTypes = {
   callTree: PropTypes.func.isRequired,
   setCat: PropTypes.func.isRequired,
-  tree: PropTypes.object.isRequired,
+  set: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  tree: state.tree,
+  set: state.set,
   errors: state.errors
 });
 

@@ -21,10 +21,10 @@ class PostCreate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.tree) {
-      if (nextProps.tree.category) {
+    if (nextProps.set) {
+      if (nextProps.set.category) {
         this.setState({
-          category: nextProps.tree.category
+          category: nextProps.set.category
         });
       }
     }
@@ -105,7 +105,7 @@ const mapStateToProps = state => ({
   post: state.post,
   auth: state.auth,
   errors: state.errors,
-  tree: state.tree
+  set: state.set
 });
 
 export default connect(
