@@ -27,9 +27,8 @@ export const createPost = newPost => dispatch => {
 export const getPosts = sets => dispatch => {
   axios
     .post("/api/post/getposts", sets)
-
     .then(res => {
-      console.log(res);
+      //console.log(res.data);
       dispatch({
         type: POST_GET,
         payload: res.data

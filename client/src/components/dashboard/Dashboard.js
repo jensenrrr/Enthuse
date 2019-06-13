@@ -23,11 +23,11 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
     this.setState({
       currentSets: this.props.auth.user.sets
     });
-    console.log(this.props.auth.user.sets);
+    //console.log(this.props.auth.user.sets);
     this.props.getPosts(this.props.auth.user.sets);
   }
 
@@ -90,13 +90,16 @@ class Dashboard extends Component {
             >
               Logout
             </button>
-            <div className="col s12  center-align">
+            <div className="col s12">
               {this.state.posts.map(post => (
                 <Post
                   key={post.postID}
                   county={post.location.county}
                   category={post.category}
                   date={post.date}
+                  username={post.username}
+                  firstname={post.firstname}
+                  lastname={post.lastname}
                 >
                   {post.content}
                   <br />

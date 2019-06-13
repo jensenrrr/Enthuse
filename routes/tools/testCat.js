@@ -14,6 +14,11 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
+console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
+
+/*
+
+  Changes dates to moment js string dates
 changeIT();
 
 async function changeIT() {
@@ -24,6 +29,7 @@ async function changeIT() {
   console.log(change.n);
   console.log(change.nModified);
 }
+*
 /*
 var treeData = [];
 Category.find({ level: 0 }).then( categories => {

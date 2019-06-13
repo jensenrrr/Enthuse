@@ -3,6 +3,7 @@ const router = express.Router();
 const keys = require("../../config/keys");
 ObjectId = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
+var moment = require("moment-timezone");
 
 const Post = require("../../models/Post");
 const User = require("../../models/User");
@@ -22,6 +23,7 @@ router.post("/create", (req, res) => {
 
 router.post("/getposts", (req, res) => {
   const returnPosts = [];
+  console.log(req.body);
   processSets(req.body, returnPosts).then(posts => res.json(posts));
 
   async function processSets(sets, returnPosts) {
@@ -47,6 +49,13 @@ router.post("/getposts", (req, res) => {
                     last: user.name.last
                   }
                 };
+                /*
+                console.log(
+                  moment(parseInt(post.date))
+                    .tz(set.timzone)
+                    .format()
+                );*/
+
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -54,10 +63,10 @@ router.post("/getposts", (req, res) => {
                   username: dets.username,
                   firstname: dets.name.first,
                   lastname: dets.name.last,
-                  date: post.date,
+                  date: parseInt(post.date),
                   postID: post._id
                 };
-                console.log(returnPost);
+                //console.log(returnPost);
                 returnPosts.push(returnPost);
                 resolve(returnPosts);
               });
