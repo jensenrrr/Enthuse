@@ -35,9 +35,9 @@ class Register extends Component {
         errors: nextProps.errors
       });
     }
-    if (nextProps.tree) {
-      if (nextProps.tree.favoriteSets) {
-        this.setState({ sets: nextProps.tree.favoriteSets });
+    if (nextProps.set) {
+      if (nextProps.set.favoriteSets) {
+        this.setState({ sets: nextProps.set.favoriteSets });
       }
       //console.log(this.state.sets);
     }
@@ -212,13 +212,13 @@ Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
-  tree: PropTypes.object.isRequired
+  set: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
-  tree: state.tree
+  set: state.set
 });
 
 export default connect(

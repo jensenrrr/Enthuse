@@ -28,17 +28,17 @@ class SetModal extends Component {
   componentWillReceiveProps(nextProps) {
     //console.log(this.state.category);
     //console.log(nextProps);
-    if (nextProps.tree) {
-      if (nextProps.tree.location) {
-        if (nextProps.tree.location.county !== "") {
+    if (nextProps.set) {
+      if (nextProps.set.location) {
+        if (nextProps.set.location.county !== "") {
           this.setState({
-            location: nextProps.tree.location
+            location: nextProps.set.location
           });
         }
       }
-      if (nextProps.tree.category) {
+      if (nextProps.set.category) {
         this.setState({
-          category: nextProps.tree.category
+          category: nextProps.set.category
         });
         if (this.state.location) {
           this.setState({
@@ -124,12 +124,12 @@ class SetModal extends Component {
 
 SetModal.propTypes = {
   pushSet: PropTypes.func.isRequired,
-  tree: PropTypes.object.isRequired,
+  set: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  tree: state.tree,
+  set: state.set,
   errors: state.errors
 });
 
