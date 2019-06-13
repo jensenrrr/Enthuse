@@ -3,7 +3,6 @@ const router = express.Router();
 const keys = require("../../config/keys");
 ObjectId = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
-var moment = require("moment-timezone");
 
 const Post = require("../../models/Post");
 const User = require("../../models/User");
@@ -15,15 +14,25 @@ router.post("/create", (req, res) => {
     location: req.body.location,
     content: req.body.content
   });
+  //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
   newPost
     .save()
-    .then(post => res.json(post))
+    .then(post => {
+      updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
+      res.json(post);
+    })
     .catch(err => console.log(err));
+
+  function updateUserPostList(userid, postid) {
+    User.findByIdAndUpdate(
+      { _id: userid },
+      { $push: { _postIDs: { postid } } }
+    ).catch(err => console.log(err));
+  }
 });
 
 router.post("/getposts", (req, res) => {
   const returnPosts = [];
-  console.log(req.body);
   processSets(req.body, returnPosts).then(posts => res.json(posts));
 
   async function processSets(sets, returnPosts) {
