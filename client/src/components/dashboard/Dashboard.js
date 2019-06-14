@@ -1,10 +1,15 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { logoutUser } from "../../actions/authActions";
 import { createPost, getPosts } from "../../actions/postActions";
+import { removeCurrSet, pushCurrentSet } from "../../actions/setActions";
+import classnames from "classnames";
+import { Button, Icon } from "react-materialize";
+
 import Post from "./Post";
 import PostCreate from "./PostCreate";
+import HobbyTree from "../set/HobbyTree";
+import Location from "../set/Location";
 
 class Dashboard extends Component {
   constructor() {
@@ -17,6 +22,7 @@ class Dashboard extends Component {
         state: "Florida",
         county: "Alachua"
       },
+      ready: false,
       currentSets: [],
       posts: []
     };
@@ -40,6 +46,65 @@ class Dashboard extends Component {
         //console.log(nextProps.post.posts);
       }
     }
+    if (nextProps.set) {
+      if (nextProps.set.location) {
+        if (nextProps.set.location.county !== "") {
+          this.setState({
+            location: nextProps.set.location
+          });
+        }
+      }
+      if (nextProps.set.category) {
+        this.setState({
+          category: nextProps.set.category
+        });
+        if (this.state.location) {
+          this.setState({
+            ready: true
+          });
+        }
+      }
+    }
+  }
+
+  addSet() {
+    if (this.state) {
+      if (this.state.category && this.state.location) {
+        const set = {
+          category: this.state.category,
+          location: this.state.location
+        };
+        if (
+          !this.state.currentSets.some(
+            e =>
+              e.category === set.category &&
+              (e.location.county === set.location.county &&
+                e.location.country === set.location.country &&
+                e.location.state === set.location.state)
+          )
+        ) {
+          //console.log("non duplicate");
+          //console.log(this.state.currentSets);
+          this.setState({
+            currentSets: this.state.currentSets.concat(set)
+          });
+          this.props.pushCurrentSet(set);
+          this.props.getPosts(this.state.currentSets);
+        } else {
+          console.log("duplicate set");
+        }
+      } else if (this.state.category) {
+        console.log("no location");
+      } else if (this.state.location) {
+        console.log("no category");
+      } else {
+        console.log("neither location nor category");
+      }
+      /*
+    const set = [this.state.category,
+                this.state.location];
+                */
+    }
   }
 
   onLogoutClick = e => {
@@ -61,6 +126,13 @@ class Dashboard extends Component {
     this.props.createPost(newPost, this.props.history);
   };
 
+  remove(set) {
+    this.props.removeCurrSet(
+      this.props.set.currentSets.findIndex(
+        i => i.category === set.category && i.location === set.location
+      )
+    );
+  }
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
@@ -75,9 +147,36 @@ class Dashboard extends Component {
             {this.props.set.currentSets.map(set => (
               <span key={set.category + set.location.county}>
                 {set.category} | {set.location.county}
+                <Button
+                  small
+                  onClick={() =>
+                    this.remove({
+                      category: set.category,
+                      location: set.location
+                    })
+                  }
+                  waves="light"
+                >
+                  <Icon>remove</Icon>
+                </Button>
                 <br />
               </span>
             ))}
+            <div className="white left-align" style={{ marginTop: "30px" }}>
+              <Location />
+              <HobbyTree />
+            </div>
+            <Button
+              floating
+              waves="light"
+              onClick={this.addSet.bind(this)}
+              className={classnames("", {
+                red: !this.state.ready,
+                blue: this.state.ready
+              })}
+            >
+              Add
+            </Button>
           </div>
 
           <div className="landing-copy col s6 center-align">
@@ -108,8 +207,9 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
+  pushCurrentSet: PropTypes.func.isRequired,
   getPosts: PropTypes.func.isRequired,
+  removeCurrSet: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -122,5 +222,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser, createPost, getPosts }
+  { createPost, getPosts, removeCurrSet, pushCurrentSet }
 )(Dashboard);

@@ -4,8 +4,17 @@ import {
   TRIVIAL_ERRORS,
   SET_CAT,
   PUSH_SET,
-  SET_LOCATION
+  SET_LOCATION,
+  REMOVE_A_CURRENT_SET,
+  PUSH_A_CURRENT_SET
 } from "./types";
+
+export const removeCurrSet = index => dispatch => {
+  dispatch({
+    type: REMOVE_A_CURRENT_SET,
+    payload: index
+  });
+};
 
 export const callTree = () => dispatch => {
   axios
@@ -31,6 +40,12 @@ export const setCat = category => dispatch => {
   });
 };
 
+export const pushCurrentSet = set => dispatch => {
+  dispatch({
+    type: PUSH_A_CURRENT_SET,
+    payload: set
+  });
+};
 export const pushSet = set => dispatch => {
   dispatch({
     type: PUSH_SET,

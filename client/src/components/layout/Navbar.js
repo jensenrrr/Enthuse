@@ -16,7 +16,7 @@ class Navbar extends Component {
         <nav className="z-depth-0">
           <div className="nav-wrapper white">
             <Link
-              to="/"
+              to="/dashboard"
               style={{
                 fontFamily: "monospace"
               }}
@@ -29,8 +29,13 @@ class Navbar extends Component {
               id="nav-mobile"
               className="right hide-on-med-and-down black-text "
             >
-              <li style={{ marginRight: "5px" }}>
-                {this.props.auth.user.username}
+              <li className="black-text" style={{ marginRight: "5px" }}>
+                <a
+                  href="/profile"
+                  style={{ marginRight: "5px", color: "black" }}
+                >
+                  {this.props.auth.user.username}
+                </a>
               </li>
               <li className="blue lighten-1" onClick={this.onLogoutClick}>
                 Logout

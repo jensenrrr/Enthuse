@@ -42,6 +42,25 @@ export const getPosts = sets => dispatch => {
     );
 };
 
+export const getUserPosts = username => dispatch => {
+  console.log("userposts");
+  axios
+    .post("/api/post/getuserposts", username)
+    .then(res => {
+      //console.log(res.data);
+      dispatch({
+        type: POST_GET,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 export const upVotePost = upIDs => dispatch => {
   axios
     .post("/api/post/upvote", upIDs)

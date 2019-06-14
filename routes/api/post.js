@@ -31,6 +31,33 @@ router.post("/create", (req, res) => {
   }
 });
 
+router.post("/getuserposts", (req, res) => {
+  const returnPosts = [];
+  findUser(req.body.username, returnPosts).then(posts => res.json(posts));
+
+  async function findUser(username, returnPosts) {
+    await User.findOne({ username: username }).then(async user => {
+      await Post.find({
+        _userID: user._id
+      }).then(async posts => {
+        posts.map(post => {
+          returnPosts.push({
+            content: post.content,
+            category: post.category,
+            location: post.location,
+            username: user.username,
+            firstname: user.name.first,
+            lastname: user.name.last,
+            date: parseInt(post.date),
+            postID: post._id
+          });
+        });
+      });
+    });
+    return returnPosts;
+  }
+});
+
 router.post("/getposts", (req, res) => {
   const returnPosts = [];
   processSets(req.body, returnPosts).then(posts => res.json(posts));
