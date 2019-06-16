@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createPost, getPosts } from "../../actions/postActions";
-import { changeCurrentSet, getSetsAndPosts } from "../../actions/setActions";
+import {
+  changeCurrentSet,
+  getSetsAndPosts,
+  goHome
+} from "../../actions/setActions";
 import classnames from "classnames";
 import { Button, Icon } from "react-materialize";
 
@@ -138,7 +142,7 @@ class Dashboard extends Component {
   };
 
   goHome() {
-    console.log("home");
+    this.props.goHome({ id: this.props.auth.user.id });
   }
 
   remove(index) {
@@ -233,6 +237,7 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   changeCurrentSet: PropTypes.func.isRequired,
+  goHome: PropTypes.func.isRequired,
   getPosts: PropTypes.func.isRequired,
   getSetsAndPosts: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
@@ -247,5 +252,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createPost, getPosts, changeCurrentSet, getSetsAndPosts }
+  { createPost, getPosts, changeCurrentSet, getSetsAndPosts, goHome }
 )(Dashboard);

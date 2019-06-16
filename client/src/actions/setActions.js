@@ -37,6 +37,23 @@ export const getSetsAndPosts = data => dispatch => {
     );
 };
 
+export const goHome = data => dispatch => {
+  axios
+    .post("api/set/currentToHome", data)
+    .then(res => {
+      dispatch({
+        type: CHANGE_CURRENT_SET,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: SET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 export const changeCurrentSet = data => dispatch => {
   axios
     .post("/api/set/changeCurrent", data)

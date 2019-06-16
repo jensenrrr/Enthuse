@@ -11,7 +11,15 @@ router.post("/changeCurrent", (req, res) => {
     user.currentSets = req.body.sets;
     user.save().then(user => {
       res.json(user.currentSets);
-      console.log(user);
+    });
+  });
+});
+
+router.post("/currentToHome", (req, res) => {
+  User.findById(mongoose.Types.ObjectId(req.body.id)).then(user => {
+    user.currentSets = user.homePage;
+    user.save().then(user => {
+      res.json(user.currentSets);
     });
   });
 });
