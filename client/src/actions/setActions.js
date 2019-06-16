@@ -6,7 +6,8 @@ import {
   PUSH_SET,
   SET_LOCATION,
   REMOVE_A_CURRENT_SET,
-  PUSH_A_CURRENT_SET
+  CHANGE_CURRENT_SET,
+  SET_ERRORS
 } from "./types";
 
 export const removeCurrSet = index => dispatch => {
@@ -14,6 +15,23 @@ export const removeCurrSet = index => dispatch => {
     type: REMOVE_A_CURRENT_SET,
     payload: index
   });
+};
+
+export const changeCurrentSet = data => dispatch => {
+  axios
+    .post("/api/set/changeCurrent", data)
+    .then(res => {
+      dispatch({
+        type: CHANGE_CURRENT_SET,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: SET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };
 
 export const callTree = () => dispatch => {
@@ -39,13 +57,13 @@ export const setCat = category => dispatch => {
     payload: category
   });
 };
-
+/*
 export const pushCurrentSet = set => dispatch => {
   dispatch({
     type: PUSH_A_CURRENT_SET,
     payload: set
   });
-};
+};*/
 
 export const pushSet = set => dispatch => {
   dispatch({

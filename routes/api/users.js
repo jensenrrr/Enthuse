@@ -42,6 +42,7 @@ router.post("/register", (req, res) => {
           email: req.body.email,
           password: req.body.password,
           favoriteSets: req.body.sets,
+          currentSets: req.body.sets,
           homePage: req.body.sets
         });
 
@@ -92,8 +93,9 @@ router.post("/login", (req, res) => {
         const payload = {
           id: user.id,
           username: user.username,
-          sets: user.homePage,
-          favs: user.favoriteSets
+          homePage: user.homePage,
+          favs: user.favoriteSets,
+          sets: user.currentSets
         };
         // Sign token
         jwt.sign(

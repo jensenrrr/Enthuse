@@ -4,7 +4,7 @@ import {
   PUSH_SET,
   SET_LOCATION,
   SET_CURRENT_USER,
-  PUSH_A_CURRENT_SET,
+  CHANGE_CURRENT_SET,
   REMOVE_A_CURRENT_SET
 } from "../actions/types";
 
@@ -43,10 +43,10 @@ export default function(state = initialState, action) {
           ...state.currentSets.slice(action.payload + 1)
         ]
       };
-    case PUSH_A_CURRENT_SET:
+    case CHANGE_CURRENT_SET:
       return {
         ...state,
-        currentSets: [...state.currentSets, action.payload]
+        currentSets: action.payload
       };
     case SET_CAT:
       return {

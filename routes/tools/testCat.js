@@ -16,26 +16,80 @@ mongoose
 
 var id = "5cfb44bff02caf1bdc5a030c";
 var set = {
-  category: "League of Legends",
+  category: "Wrestling",
   location: {
     country: "US",
     state: "Florida",
     county: "Alachua"
   }
 };
-update(set);
+var sets = [
+  {
+    category: "League of Legends",
+    location: {
+      country: "US",
+      state: "Florida",
+      county: "Alachua"
+    }
+  },
+  {
+    category: "Basketball",
+    location: {
+      country: "US",
+      state: "Florida",
+      county: "Alachua"
+    }
+  }
+];
+change(sets);
+function change(sets) {
+  User.findById(id).then(user => {
+    user.currentSets = sets;
+    user.save().then(user => {
+      console.log(user);
+    });
+  });
+}
 
 function update(set) {
   User.findById(id).then(user => {
-    console.log(user);
-    console.log("\n\n" + user.currentSets);
-    //user.currentSets.push(set);
-    /*
+    //console.log(user);
+    //console.log("\n\n" + user.currentSets);
+    user.currentSets.push(set);
+
     user.save().then(user => {
       console.log(user);
-    });*/
+    });
   });
 }
+
+/*
+function update(sets) {
+  User.findById(id).then(user => {
+    //console.log(user);
+    //console.log("\n\n" + user.currentSets);
+    sets.forEach(function(set) {
+      user.currentSets.push(set);
+    });
+
+    user.save().then(user => {
+      console.log(user);
+    });
+  });
+}
+-------------------------------------------------------------------------------------------
+
+function update(set) {
+  User.findById(id).then(user => {
+    //console.log(user);
+    //console.log("\n\n" + user.currentSets);
+    user.currentSets.push(set);
+
+    user.save().then(user => {
+      console.log(user);
+    });
+  });
+*/
 
 //console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
 

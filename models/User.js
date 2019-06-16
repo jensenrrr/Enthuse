@@ -35,6 +35,16 @@ const UserSchema = new Schema({
       }
     }
   ],
+  currentSets: [
+    {
+      category: String,
+      location: {
+        country: String,
+        state: String,
+        county: String
+      }
+    }
+  ],
   homePage: [
     {
       category: String,
