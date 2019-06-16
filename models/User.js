@@ -25,6 +25,16 @@ const UserSchema = new Schema({
   _postIDs: {
     type: [Schema.Types.ObjectId]
   },
+  currentSets: [
+    {
+      category: String,
+      location: {
+        country: String,
+        state: String,
+        county: String
+      }
+    }
+  ],
   favoriteSets: [
     {
       category: String,

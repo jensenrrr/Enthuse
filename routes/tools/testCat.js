@@ -14,7 +14,21 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
-console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
+//console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
+
+updateUserPostList(
+  mongoose.Types.ObjectId("5cfb44bff02caf1bdc5a030c"),
+  mongoose.Types.ObjectId("5d044883f706460d68b95b8c")
+);
+
+function updateUserPostList(userid, postid) {
+  console.log(mongoose.Types.ObjectId.isValid(postid));
+
+  User.findByIdAndUpdate(
+    { _id: userid },
+    { $push: { _postIDs: { postid } } }
+  ).catch(err => console.log(err));
+}
 
 /*
 

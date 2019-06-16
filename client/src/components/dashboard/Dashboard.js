@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createPost, getPosts } from "../../actions/postActions";
-import { removeCurrSet, pushCurrentSet } from "../../actions/setActions";
+import { removeCurrSet, changeCurrentSet } from "../../actions/setActions";
 import classnames from "classnames";
 import { Button, Icon } from "react-materialize";
 
@@ -64,6 +64,10 @@ class Dashboard extends Component {
           });
         }
       }
+
+      if (nextProps.set.currentSets !== this.props.set.currentSets) {
+        this.props.getPosts(nextProps.set.currentSets);
+      }
     }
   }
 
@@ -75,7 +79,7 @@ class Dashboard extends Component {
           location: this.state.location
         };
         if (
-          !this.state.currentSets.some(
+          !this.props.set.currentSets.some(
             e =>
               e.category === set.category &&
               (e.location.county === set.location.county &&
@@ -83,13 +87,15 @@ class Dashboard extends Component {
                 e.location.state === set.location.state)
           )
         ) {
-          //console.log("non duplicate");
-          //console.log(this.state.currentSets);
-          this.setState({
-            currentSets: this.state.currentSets.concat(set)
-          });
-          this.props.pushCurrentSet(set);
-          this.props.getPosts(this.state.currentSets);
+          console.log("non duplicate");
+          var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
+          sendSets.push(set);
+          var data = {
+            sets: sendSets,
+            id: this.props.auth.user.id
+          };
+          console.log(data);
+          this.props.changeCurrentSet(data);
         } else {
           console.log("duplicate set");
         }
@@ -207,7 +213,7 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  pushCurrentSet: PropTypes.func.isRequired,
+  changeCurrentSet: PropTypes.func.isRequired,
   getPosts: PropTypes.func.isRequired,
   removeCurrSet: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
@@ -222,5 +228,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createPost, getPosts, removeCurrSet, pushCurrentSet }
+  { createPost, getPosts, removeCurrSet, changeCurrentSet }
 )(Dashboard);

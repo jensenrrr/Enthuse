@@ -46,7 +46,7 @@ export default function(state = initialState, action) {
     case PUSH_A_CURRENT_SET:
       return {
         ...state,
-        currentSets: [...state.currentSets, action.payload]
+        currentSets: action.payload
       };
     case SET_CAT:
       return {

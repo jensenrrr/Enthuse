@@ -6,6 +6,7 @@ const passport = require("passport");
 const users = require("./routes/api/users");
 const tree = require("./routes/api/hobbyTree");
 const post = require("./routes/api/post");
+const set = require("./routes/api/set");
 
 const app = express();
 
@@ -26,6 +27,7 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
+console.log(mongoose.version);
 // Passport middleware
 app.use(passport.initialize());
 
@@ -36,6 +38,7 @@ require("./config/passport")(passport);
 app.use("/api/users", users);
 app.use("/api/tree", tree);
 app.use("/api/post", post);
+app.use("/api/set", set);
 
 const port = process.env.PORT || 5000;
 

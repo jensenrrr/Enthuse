@@ -41,6 +41,7 @@ router.post("/register", (req, res) => {
           username: req.body.username,
           email: req.body.email,
           password: req.body.password,
+          currentSets: req.body.sets,
           favoriteSets: req.body.sets,
           homePage: req.body.sets
         });

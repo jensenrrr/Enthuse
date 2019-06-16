@@ -13,34 +13,45 @@ router.get("/tree", (req, res) => {
       return Promise.all(
         categories.map(category => {
           count++;
+          list = [category.label];
           var catArray = {
             key: category.label,
             label: category.label,
             index: count - 1,
+            list: list,
             nodes: []
           };
 
-          return recursiveCat(catArray.nodes, category.label, count - 1).then(
-            ray => ((catArray.nodes = ray), catArray)
-          );
+          return recursiveCat(
+            catArray.nodes,
+            category.label,
+            count - 1,
+            list.slice(0)
+          ).then(ray => ((catArray.nodes = ray), catArray));
         })
       );
     });
   }
 
-  function recursiveCat(nodes, parLabel, indexC) {
+  function recursiveCat(nodes, parLabel, indexC, list) {
     return Category.find({ parent: parLabel }).then(categories => {
       return Promise.all(
         categories.map(category => {
+          var iList = list.slice(0);
+          iList.push(category.label);
           var catArray = {
             key: category.label,
             label: category.label,
             index: indexC,
+            list: iList,
             nodes: []
           };
-          return recursiveCat(catArray.nodes, category.label, indexC).then(
-            ray => ((catArray.nodes = ray), catArray)
-          );
+          return recursiveCat(
+            catArray.nodes,
+            category.label,
+            indexC,
+            iList.slice(0)
+          ).then(ray => ((catArray.nodes = ray), catArray));
         })
       );
     });
