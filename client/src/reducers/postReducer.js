@@ -6,7 +6,8 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  posts: []
+  posts: [],
+  ready: false
 };
 
 export default function(state = initialState, action) {
@@ -18,7 +19,8 @@ export default function(state = initialState, action) {
     case POST_GET:
       return {
         ...state,
-        posts: action.payload
+        posts: action.payload,
+        ready: true
       };
     case POST_COMMENT:
       return {

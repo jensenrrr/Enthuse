@@ -11,8 +11,78 @@ router.post("/changeCurrent", (req, res) => {
     user.currentSets = req.body.sets;
     user.save().then(user => {
       res.json(user.currentSets);
+      console.log(user);
     });
   });
+});
+
+router.post("/setsAndPosts", (req, res) => {
+  User.findById(mongoose.Types.ObjectId(req.body.id)).then(async user => {
+    var data = {
+      currentSets: user.currentSets,
+      favoriteSets: user.favoriteSets,
+      homePage: user.homePage,
+      returnPosts: []
+    };
+    processSets(
+      JSON.parse(JSON.stringify(data.currentSets)),
+      data.returnPosts
+    ).then(posts => res.json(data));
+  });
+
+  async function processSets(sets, returnPosts) {
+    const promises = sets.map(set => findPosts(set, returnPosts));
+    await Promise.all(promises);
+    return returnPosts;
+  }
+
+  async function findPosts(set, returnPosts) {
+    await Post.find({
+      category: set.category,
+      location: set.location
+    }).then(posts => {
+      return Promise.all(
+        posts.map(async post => {
+          var dets = function(returnPosts, post) {
+            return new Promise(function(resolve, reject) {
+              User.findById({ _id: post._userID }).then(user => {
+                const dets = {
+                  username: user.username,
+                  name: {
+                    first: user.name.first,
+                    last: user.name.last
+                  }
+                };
+                /*
+                    console.log(
+                      moment(parseInt(post.date))
+                        .tz(set.timzone)
+                        .format()
+                    );*/
+
+                const returnPost = {
+                  content: post.content,
+                  category: post.category,
+                  location: post.location,
+                  username: dets.username,
+                  firstname: dets.name.first,
+                  lastname: dets.name.last,
+                  date: parseInt(post.date),
+                  postID: post._id
+                };
+                //console.log(returnPost);
+                returnPosts.push(returnPost);
+                resolve(returnPosts);
+              });
+            });
+          };
+
+          return dets(returnPosts, post);
+        })
+      );
+    });
+    return returnPosts;
+  }
 });
 /*
 function update(sets) {

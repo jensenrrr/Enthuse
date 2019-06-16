@@ -5,16 +5,36 @@ import {
   SET_CAT,
   PUSH_SET,
   SET_LOCATION,
-  REMOVE_A_CURRENT_SET,
   CHANGE_CURRENT_SET,
-  SET_ERRORS
+  SET_ERRORS,
+  SET_SETS,
+  POST_GET
 } from "./types";
 
-export const removeCurrSet = index => dispatch => {
-  dispatch({
-    type: REMOVE_A_CURRENT_SET,
-    payload: index
-  });
+export const getSetsAndPosts = data => dispatch => {
+  axios
+    .post("/api/set/setsAndPosts", data)
+    .then(res => {
+      const setsPayload = {
+        sets: res.data.currentSets,
+        favs: res.data.favoriteSets,
+        homePage: res.data.homePage
+      };
+      dispatch({
+        type: SET_SETS,
+        payload: setsPayload
+      });
+      dispatch({
+        type: POST_GET,
+        payload: res.data.returnPosts
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: SET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };
 
 export const changeCurrentSet = data => dispatch => {

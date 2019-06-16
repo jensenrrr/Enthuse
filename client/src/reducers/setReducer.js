@@ -3,9 +3,8 @@ import {
   SET_CAT,
   PUSH_SET,
   SET_LOCATION,
-  SET_CURRENT_USER,
-  CHANGE_CURRENT_SET,
-  REMOVE_A_CURRENT_SET
+  SET_SETS,
+  CHANGE_CURRENT_SET
 } from "../actions/types";
 
 const initialState = {
@@ -28,20 +27,12 @@ export default function(state = initialState, action) {
         ...state,
         tree: action.payload
       };
-    case SET_CURRENT_USER:
+    case SET_SETS:
       return {
         ...state,
         currentSets: action.payload.sets,
         favs: action.payload.favs,
-        homePage: action.payload.sets
-      };
-    case REMOVE_A_CURRENT_SET:
-      return {
-        ...state,
-        currentSets: [
-          ...state.currentSets.slice(0, action.payload),
-          ...state.currentSets.slice(action.payload + 1)
-        ]
+        homePage: action.payload.homePage
       };
     case CHANGE_CURRENT_SET:
       return {

@@ -63,6 +63,7 @@ router.post("/getposts", (req, res) => {
   processSets(req.body, returnPosts).then(posts => res.json(posts));
 
   async function processSets(sets, returnPosts) {
+    console.log(typeof sets + "\n\n" + sets.location + "\n\n");
     const promises = sets.map(set => findPosts(set, returnPosts));
     await Promise.all(promises);
     return returnPosts;

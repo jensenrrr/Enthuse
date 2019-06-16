@@ -7,7 +7,8 @@ import {
   SET_CURRENT_USER,
   USER_LOADING,
   DATA_TREE,
-  TRIVIAL_ERRORS
+  TRIVIAL_ERRORS,
+  SET_SETS
 } from "./types";
 
 // Register User
@@ -39,6 +40,7 @@ export const loginUser = userData => dispatch => {
       const decoded = jwt_decode(token);
       // Set current user
       dispatch(setCurrentUser(decoded));
+      dispatch(setSets(decoded));
     })
     .catch(err =>
       dispatch({
@@ -52,6 +54,13 @@ export const loginUser = userData => dispatch => {
 export const setCurrentUser = decoded => {
   return {
     type: SET_CURRENT_USER,
+    payload: decoded
+  };
+};
+
+export const setSets = decoded => {
+  return {
+    type: SET_SETS,
     payload: decoded
   };
 };

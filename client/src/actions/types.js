@@ -9,7 +9,7 @@ export const SET_CURRENT_USER = "SET_CURRENT_USER";
 //sets
 export const REMOVE_A_CURRENT_SET = "REMOVE_A_CURRENT_SET";
 export const CHANGE_CURRENT_SET = "CHANGE_CURRENT_SET";
-
+export const SET_SETS = "SET_SETS";
 export const DATA_TREE = "DATA_TREE";
 export const SET_CAT = "SET_CAT";
 export const SET_LOCATION = "SET_LOCATION";

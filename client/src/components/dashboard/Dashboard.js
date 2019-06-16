@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createPost, getPosts } from "../../actions/postActions";
-import { removeCurrSet, changeCurrentSet } from "../../actions/setActions";
+import { changeCurrentSet, getSetsAndPosts } from "../../actions/setActions";
 import classnames from "classnames";
 import { Button, Icon } from "react-materialize";
 
@@ -30,11 +30,13 @@ class Dashboard extends Component {
 
   componentDidMount() {
     //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    /*
     this.setState({
-      currentSets: this.props.auth.user.sets
-    });
+      currentSets: this.props.set.currentSets
+    });*/
     //console.log(this.props.auth.user.sets);
-    this.props.getPosts(this.props.auth.user.sets);
+    //this.props.getPosts(this.props.set.currentSets);
+    this.props.getSetsAndPosts({ id: this.props.auth.user.id });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,6 +64,13 @@ class Dashboard extends Component {
           this.setState({
             ready: true
           });
+        }
+      }
+
+      if (nextProps.set.currentSets !== this.props.set.currentSets) {
+        if (nextProps.post.ready) {
+          console.log("normal get called");
+          this.props.getPosts(nextProps.set.currentSets);
         }
       }
     }
@@ -128,12 +137,30 @@ class Dashboard extends Component {
     this.props.createPost(newPost, this.props.history);
   };
 
-  remove(set) {
+  goHome() {
+    console.log("home");
+  }
+
+  remove(index) {
+    //var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
+
+    var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
+    console.log(index);
+    sendSets.splice(index, 1);
+    console.log(sendSets);
+    var data = {
+      sets: sendSets,
+      id: this.props.auth.user.id
+    };
+    //console.log(data);
+
+    this.props.changeCurrentSet(data);
+    /*
     this.props.removeCurrSet(
       this.props.set.currentSets.findIndex(
         i => i.category === set.category && i.location === set.location
       )
-    );
+    );*/
   }
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
@@ -146,24 +173,20 @@ class Dashboard extends Component {
           <div className="col s3 center-align blue lighten-1">
             Communities:
             <br />
-            {this.props.set.currentSets.map(set => (
-              <span key={set.category + set.location.county}>
+            {this.props.set.currentSets.map((set, index) => (
+              <span
+                key={set.category + set.location.county + set.location.state}
+              >
                 {set.category} | {set.location.county}
-                <Button
-                  small
-                  onClick={() =>
-                    this.remove({
-                      category: set.category,
-                      location: set.location
-                    })
-                  }
-                  waves="light"
-                >
+                <Button small onClick={() => this.remove(index)} waves="light">
                   <Icon>remove</Icon>
                 </Button>
                 <br />
               </span>
             ))}
+            <Button onClick={() => this.goHome()}>
+              <Icon>home</Icon>{" "}
+            </Button>
             <div className="white left-align" style={{ marginTop: "30px" }}>
               <Location />
               <HobbyTree />
@@ -211,7 +234,7 @@ class Dashboard extends Component {
 Dashboard.propTypes = {
   changeCurrentSet: PropTypes.func.isRequired,
   getPosts: PropTypes.func.isRequired,
-  removeCurrSet: PropTypes.func.isRequired,
+  getSetsAndPosts: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -224,5 +247,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createPost, getPosts, removeCurrSet, changeCurrentSet }
+  { createPost, getPosts, changeCurrentSet, getSetsAndPosts }
 )(Dashboard);
