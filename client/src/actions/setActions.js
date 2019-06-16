@@ -46,6 +46,7 @@ export const pushCurrentSet = set => dispatch => {
     payload: set
   });
 };
+
 export const pushSet = set => dispatch => {
   dispatch({
     type: PUSH_SET,

@@ -56,7 +56,7 @@ export default function(state = initialState, action) {
     case PUSH_SET:
       return {
         ...state,
-        favoriteSets: [...state.favoriteSets, action.payload]
+        homePage: [...state.homePage, action.payload]
       };
     case SET_LOCATION:
       return {

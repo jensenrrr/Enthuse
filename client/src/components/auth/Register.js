@@ -36,8 +36,8 @@ class Register extends Component {
       });
     }
     if (nextProps.set) {
-      if (nextProps.set.favoriteSets) {
-        this.setState({ sets: nextProps.set.favoriteSets });
+      if (nextProps.set.homePage) {
+        this.setState({ sets: nextProps.set.homePage });
       }
       //console.log(this.state.sets);
     }

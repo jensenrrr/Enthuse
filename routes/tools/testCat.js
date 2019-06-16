@@ -14,7 +14,30 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
-console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
+var id = "5cfb44bff02caf1bdc5a030c";
+var set = {
+  category: "League of Legends",
+  location: {
+    country: "US",
+    state: "Florida",
+    county: "Alachua"
+  }
+};
+update(set);
+
+function update(set) {
+  User.findById(id).then(user => {
+    console.log(user);
+    console.log("\n\n" + user.currentSets);
+    //user.currentSets.push(set);
+    /*
+    user.save().then(user => {
+      console.log(user);
+    });*/
+  });
+}
+
+//console.log(moment(1560436342725).format("hh:mm A MMM D, YYYY"));
 
 /*
 
