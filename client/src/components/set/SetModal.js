@@ -20,6 +20,7 @@ class SetModal extends Component {
         state: "Florida",
         county: "Alachua"
       },
+      list: [],
       sets: [],
       ready: false
     };
@@ -38,7 +39,8 @@ class SetModal extends Component {
       }
       if (nextProps.set.category) {
         this.setState({
-          category: nextProps.set.category
+          category: nextProps.set.category,
+          list: nextProps.set.list
         });
         if (this.state.location) {
           this.setState({
@@ -54,7 +56,8 @@ class SetModal extends Component {
       if (this.state.category && this.state.location) {
         const set = {
           category: this.state.category,
-          location: this.state.location
+          location: this.state.location,
+          list: this.state.list
         };
         if (
           !this.state.sets.some(

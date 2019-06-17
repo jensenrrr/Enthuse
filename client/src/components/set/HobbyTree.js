@@ -12,6 +12,7 @@ class HobbyTree extends Component {
 
     this.state = {
       category: "",
+      list: [],
       errors: {},
       treeData: []
     };
@@ -33,11 +34,12 @@ class HobbyTree extends Component {
     return (
       <TreeMenu
         data={this.state.treeData}
-        onClickItem={({ key, label }) => {
+        onClickItem={({ key, label, list }) => {
           this.setState({
-            category: label
+            category: label,
+            list: list
           });
-          this.props.setCat(label);
+          this.props.setCat({ category: label, list: list });
         }}
       />
     );

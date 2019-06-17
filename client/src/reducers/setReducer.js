@@ -15,6 +15,7 @@ const initialState = {
     country: "",
     state: ""
   },
+  list: [],
   favs: [],
   homePage: [],
   currentSets: []
@@ -42,7 +43,8 @@ export default function(state = initialState, action) {
     case SET_CAT:
       return {
         ...state,
-        category: action.payload
+        category: action.payload.category,
+        list: action.payload.list
       };
     case PUSH_SET:
       return {

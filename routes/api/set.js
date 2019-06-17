@@ -39,14 +39,21 @@ router.post("/setsAndPosts", (req, res) => {
   });
 
   async function processSets(sets, returnPosts) {
-    const promises = sets.map(set => findPosts(set, returnPosts));
-    await Promise.all(promises);
+    const setMap = sets.map(set => {
+      const catLabels = set.list.map(catLabel => {
+        return findPosts(set, catLabel, returnPosts);
+      });
+      return Promise.all(catLabels).then(returnPosts => {
+        return returnPosts;
+      });
+    });
+    await Promise.all(setMap);
     return returnPosts;
   }
 
-  async function findPosts(set, returnPosts) {
+  async function findPosts(set, catLabel, returnPosts) {
     await Post.find({
-      category: set.category,
+      category: catLabel,
       location: set.location
     }).then(posts => {
       return Promise.all(
@@ -61,12 +68,6 @@ router.post("/setsAndPosts", (req, res) => {
                     last: user.name.last
                   }
                 };
-                /*
-                    console.log(
-                      moment(parseInt(post.date))
-                        .tz(set.timzone)
-                        .format()
-                    );*/
 
                 const returnPost = {
                   content: post.content,

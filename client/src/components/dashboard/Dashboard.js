@@ -26,6 +26,7 @@ class Dashboard extends Component {
         state: "Florida",
         county: "Alachua"
       },
+      list: [],
       ready: false,
       currentSets: [],
       posts: []
@@ -62,7 +63,8 @@ class Dashboard extends Component {
       }
       if (nextProps.set.category) {
         this.setState({
-          category: nextProps.set.category
+          category: nextProps.set.category,
+          list: nextProps.set.list
         });
         if (this.state.location) {
           this.setState({
@@ -85,7 +87,8 @@ class Dashboard extends Component {
       if (this.state.category && this.state.location) {
         const set = {
           category: this.state.category,
-          location: this.state.location
+          location: this.state.location,
+          list: this.state.list
         };
         if (
           !this.props.set.currentSets.some(

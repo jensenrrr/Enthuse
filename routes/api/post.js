@@ -18,8 +18,16 @@ router.post("/create", (req, res) => {
   newPost
     .save()
     .then(post => {
-      updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
+      //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
       res.json(post);
+      var meme = mongoose.Types.ObjectId(req.body._userid);
+
+      User.findById(meme).then(user => {
+        user._postIDs.push(post._id);
+        user.save(function(err) {
+          if (err) console.log("Adding post._id to _postIDs failed.  " + err);
+        });
+      });
     })
     .catch(err => console.log(err));
 
@@ -59,8 +67,11 @@ router.post("/getuserposts", (req, res) => {
 });
 
 router.post("/getposts", (req, res) => {
+  console.log(req.body);
   const returnPosts = [];
-  processSets(req.body, returnPosts).then(posts => res.json(posts));
+  processSets(req.body, returnPosts).then(posts => {
+    res.json(posts);
+  });
 
   async function processSets(sets, returnPosts) {
     const promises = sets.map(set => findPosts(set, returnPosts));

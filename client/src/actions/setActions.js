@@ -75,6 +75,7 @@ export const callTree = () => dispatch => {
   axios
     .get("/api/tree/tree")
     .then(res => {
+      console.log(res.data);
       dispatch({
         type: DATA_TREE,
         payload: res.data

@@ -28,6 +28,7 @@ const UserSchema = new Schema({
   favoriteSets: [
     {
       category: String,
+      list: [String],
       location: {
         country: String,
         state: String,
@@ -38,6 +39,7 @@ const UserSchema = new Schema({
   currentSets: [
     {
       category: String,
+      list: [String],
       location: {
         country: String,
         state: String,
@@ -48,6 +50,7 @@ const UserSchema = new Schema({
   homePage: [
     {
       category: String,
+      list: [String],
       location: {
         country: String,
         state: String,
