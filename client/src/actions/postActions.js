@@ -65,6 +65,7 @@ export const upVotePost = upIDs => dispatch => {
   axios
     .post("/api/post/upvote", upIDs)
     .then(res => {
+      console.log(res.data);
       dispatch({
         type: POST_UPVOTE,
         payload: res.data

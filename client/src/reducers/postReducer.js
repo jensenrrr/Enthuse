@@ -4,6 +4,7 @@ import {
   POST_COMMENT,
   POST_UPVOTE
 } from "../actions/types";
+import update from "react-addons-update";
 
 const initialState = {
   posts: [],
@@ -27,9 +28,14 @@ export default function(state = initialState, action) {
         ...state
       };
     case POST_UPVOTE:
-      return {
-        ...state
-      };
+      return update(state, {
+        posts: {
+          [action.payload.index]: {
+            liked: { $set: action.payload.liked },
+            likes: { $set: action.payload.likes }
+          }
+        }
+      });
     default:
       return state;
   }

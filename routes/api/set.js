@@ -68,7 +68,21 @@ router.post("/setsAndPosts", (req, res) => {
                     last: user.name.last
                   }
                 };
+                var liked = false;
+                //console.log(post);
 
+                if (
+                  user._likedPosts.some(function(arrVal) {
+                    //console.log("in user list " + arrVal);
+                    //console.log("postID" + post._id);
+                    return (
+                      JSON.parse(JSON.stringify(post._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -76,8 +90,10 @@ router.post("/setsAndPosts", (req, res) => {
                   username: dets.username,
                   firstname: dets.name.first,
                   lastname: dets.name.last,
+                  likes: post._likedUserIDs.length,
                   date: parseInt(post.date),
-                  postID: post._id
+                  postID: post._id,
+                  liked: liked
                 };
                 //console.log(returnPost);
                 returnPosts.push(returnPost);

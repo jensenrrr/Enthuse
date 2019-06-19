@@ -30,14 +30,66 @@ router.post("/create", (req, res) => {
       });
     })
     .catch(err => console.log(err));
-
-  function updateUserPostList(userid, postid) {
-    User.findByIdAndUpdate(
-      { _id: userid },
-      { $push: { _postIDs: { postid } } }
-    ).catch(err => console.log(err));
-  }
 });
+//upvote a post if it isnt already upvoted by a user
+//if it has already been upvoted then remove upvote
+//JSON.parse(JSON.stringify(data.currentSets)),
+
+router.post("/upvote", (req, res) => {
+  var userID = mongoose.Types.ObjectId(req.body.userid);
+  //console.log(userID);
+  User.findOne(userID).then(user => {
+    console.log(user);
+    var postID = mongoose.Types.ObjectId(req.body.postid);
+    // console.log(postID);
+    if (
+      user._likedPosts.some(function(arrVal) {
+        //console.log("in user list " + arrVal);
+        //console.log("postID" + postID);
+        return req.body.postid === JSON.parse(JSON.stringify(arrVal));
+      })
+    ) {
+      //console.log("dislike\\n\n\n\n");
+      Post.findOne(postID).then(post => {
+        // console.log(post);
+        user._likedPosts.pull(post._id);
+        // console.log(req.body.userid);
+        post._likedUserIDs.pull(user._id);
+        post.save().then(post => {
+          user
+            .save()
+            .then(user =>
+              res.json({
+                liked: false,
+                index: req.body.index,
+                likes: post._likedUserIDs.length
+              })
+            );
+        });
+      });
+    } else {
+      Post.findOne(postID).then(post => {
+        //console.log(post);
+        user._likedPosts.push(post._id);
+        //console.log(req.body.userid);
+        post._likedUserIDs.push(user._id);
+        post.save().then(post => {
+          user
+            .save()
+            .then(user =>
+              res.json({
+                liked: true,
+                index: req.body.index,
+                likes: post._likedUserIDs.length
+              })
+            );
+        });
+      });
+    }
+  });
+});
+
+router.post("/commentOnPost", (req, res) => {});
 
 router.post("/getuserposts", (req, res) => {
   const returnPosts = [];
@@ -55,6 +107,7 @@ router.post("/getuserposts", (req, res) => {
             location: post.location,
             username: user.username,
             firstname: user.name.first,
+            likes: post._likedUserIDs.length,
             lastname: user.name.last,
             date: parseInt(post.date),
             postID: post._id
@@ -67,21 +120,27 @@ router.post("/getuserposts", (req, res) => {
 });
 
 router.post("/getposts", (req, res) => {
-  console.log(req.body);
   const returnPosts = [];
   processSets(req.body, returnPosts).then(posts => {
     res.json(posts);
   });
 
   async function processSets(sets, returnPosts) {
-    const promises = sets.map(set => findPosts(set, returnPosts));
-    await Promise.all(promises);
+    const setMap = sets.map(set => {
+      const catLabels = set.list.map(catLabel => {
+        return findPosts(set, catLabel, returnPosts);
+      });
+      return Promise.all(catLabels).then(returnPosts => {
+        return returnPosts;
+      });
+    });
+    await Promise.all(setMap);
     return returnPosts;
   }
 
-  async function findPosts(set, returnPosts) {
+  async function findPosts(set, catLabel, returnPosts) {
     await Post.find({
-      category: set.category,
+      category: catLabel,
       location: set.location
     }).then(posts => {
       return Promise.all(
@@ -96,13 +155,17 @@ router.post("/getposts", (req, res) => {
                     last: user.name.last
                   }
                 };
-                /*
-                console.log(
-                  moment(parseInt(post.date))
-                    .tz(set.timzone)
-                    .format()
-                );*/
-
+                var liked = false;
+                if (
+                  user._likedPosts.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(post._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -110,8 +173,10 @@ router.post("/getposts", (req, res) => {
                   username: dets.username,
                   firstname: dets.name.first,
                   lastname: dets.name.last,
+                  likes: post._likedUserIDs.length,
                   date: parseInt(post.date),
-                  postID: post._id
+                  postID: post._id,
+                  liked: liked
                 };
                 //console.log(returnPost);
                 returnPosts.push(returnPost);

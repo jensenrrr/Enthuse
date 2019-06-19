@@ -75,7 +75,7 @@ class Dashboard extends Component {
 
       if (nextProps.set.currentSets !== this.props.set.currentSets) {
         if (nextProps.post.ready) {
-          console.log("normal get called");
+          //console.log("normal get called");
           this.props.getPosts(nextProps.set.currentSets);
         }
       }
@@ -99,7 +99,7 @@ class Dashboard extends Component {
                 e.location.state === set.location.state)
           )
         ) {
-          console.log("non duplicate");
+          //console.log("non duplicate");
           var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
           sendSets.push(set);
           var data = {
@@ -216,15 +216,19 @@ class Dashboard extends Component {
             <br />
 
             <div className="col s12">
-              {this.state.posts.map(post => (
+              {this.props.post.posts.map((post, i) => (
                 <Post
                   key={post.postID}
+                  id={post.postID}
                   county={post.location.county}
                   category={post.category}
                   date={post.date}
                   username={post.username}
                   firstname={post.firstname}
                   lastname={post.lastname}
+                  likes={post.likes}
+                  liked={post.liked}
+                  index={i}
                 >
                   {post.content}
                   <br />

@@ -25,6 +25,12 @@ const UserSchema = new Schema({
   _postIDs: {
     type: [Schema.Types.ObjectId]
   },
+  _commentIDs: {
+    type: [Schema.Types.ObjectId]
+  },
+  _likedPosts: {
+    type: [Schema.Types.ObjectId]
+  },
   favoriteSets: [
     {
       category: String,

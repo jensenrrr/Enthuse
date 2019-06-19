@@ -15,6 +15,7 @@ export const getSetsAndPosts = data => dispatch => {
   axios
     .post("/api/set/setsAndPosts", data)
     .then(res => {
+      console.log(res.data);
       const setsPayload = {
         sets: res.data.currentSets,
         favs: res.data.favoriteSets,
@@ -75,7 +76,6 @@ export const callTree = () => dispatch => {
   axios
     .get("/api/tree/tree")
     .then(res => {
-      console.log(res.data);
       dispatch({
         type: DATA_TREE,
         payload: res.data
