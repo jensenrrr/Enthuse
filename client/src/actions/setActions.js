@@ -16,6 +16,7 @@ export const getSetsAndPosts = data => dispatch => {
     .post("/api/set/setsAndPosts", data)
     .then(res => {
       console.log(res.data);
+      console.log("getandset");
       const setsPayload = {
         sets: res.data.currentSets,
         favs: res.data.favoriteSets,

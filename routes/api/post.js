@@ -6,6 +6,85 @@ const mongoose = require("mongoose");
 
 const Post = require("../../models/Post");
 const User = require("../../models/User");
+const Comment = require("../../models/Comment");
+
+router.post("/createComment", (req, res) => {
+  const newComment = new Comment({
+    _userID: mongoose.Types.ObjectId(req.body._userid),
+    content: req.body.content,
+    _postID: mongoose.Types.ObjectId(req.body._postid)
+  });
+
+  newComment.save().then(comment => {
+    var userid = mongoose.Types.ObjectId(req.body._userid);
+    var postid = mongoose.Types.ObjectId(req.body._postid);
+
+    User.findById(userid).then(user => {
+      user._commentIDs.push(comment._id);
+      user.save(function(err) {
+        if (err)
+          console.log("Adding comment._id to _commentIDs failed.  " + err);
+      });
+    });
+    Post.findById(postid).then(post => {
+      post._commentIDs.push(comment._id);
+      post.save(function(err) {
+        if (err) console.log("Adding comment._id to post failed. " + err);
+      });
+    });
+  });
+});
+
+router.post("/getComments", (req, res) => {
+  const returnComments = [];
+  Post.findById(req.body).then(async post => {
+    const promises = post._commentIDs.map(commentID => {
+      return getComments(commentID, returnComments);
+    });
+    await Promise.all(promises);
+    return returnComments;
+  });
+
+  function getComments(commentID, returnComments) {
+    Comment.findById(commentID).then(comment => {
+      var dets = function(returnComments, comment) {
+        return new Promise(function(resolve, reject) {
+          User.findById({ _id: comment._userID }).then(user => {
+            var liked = false;
+            if (
+              user._likedComments.some(function(arrVal) {
+                //console.log("in user list " + arrVal);
+                //console.log("postID" + post._id);
+                return (
+                  JSON.parse(JSON.stringify(comment._id)) ===
+                  JSON.parse(JSON.stringify(arrVal))
+                );
+              })
+            ) {
+              liked = true;
+            }
+            const returnComment = {
+              content: comment.content,
+              category: comment.category,
+              location: comment.location,
+              username: dets.username,
+              firstname: dets.name.first,
+              lastname: dets.name.last,
+              likes: comment._likedUserIDs.length,
+              commentCount: comment._commentIDs.length,
+              date: parseInt(comment.date),
+              commentID: comment._id,
+              liked: liked
+            };
+            //console.log(returnPost);
+            returnComments.push(returnComment);
+            resolve(returnComments);
+          });
+        });
+      };
+    });
+  }
+});
 
 router.post("/create", (req, res) => {
   const newPost = new Post({
@@ -56,15 +135,13 @@ router.post("/upvote", (req, res) => {
         // console.log(req.body.userid);
         post._likedUserIDs.pull(user._id);
         post.save().then(post => {
-          user
-            .save()
-            .then(user =>
-              res.json({
-                liked: false,
-                index: req.body.index,
-                likes: post._likedUserIDs.length
-              })
-            );
+          user.save().then(user =>
+            res.json({
+              liked: false,
+              index: req.body.index,
+              likes: post._likedUserIDs.length
+            })
+          );
         });
       });
     } else {
@@ -74,22 +151,18 @@ router.post("/upvote", (req, res) => {
         //console.log(req.body.userid);
         post._likedUserIDs.push(user._id);
         post.save().then(post => {
-          user
-            .save()
-            .then(user =>
-              res.json({
-                liked: true,
-                index: req.body.index,
-                likes: post._likedUserIDs.length
-              })
-            );
+          user.save().then(user =>
+            res.json({
+              liked: true,
+              index: req.body.index,
+              likes: post._likedUserIDs.length
+            })
+          );
         });
       });
     }
   });
 });
-
-router.post("/commentOnPost", (req, res) => {});
 
 router.post("/getuserposts", (req, res) => {
   const returnPosts = [];
@@ -108,6 +181,7 @@ router.post("/getuserposts", (req, res) => {
             username: user.username,
             firstname: user.name.first,
             likes: post._likedUserIDs.length,
+            commentCount: post._commentIDs.length,
             lastname: user.name.last,
             date: parseInt(post.date),
             postID: post._id
@@ -148,16 +222,11 @@ router.post("/getposts", (req, res) => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
               User.findById({ _id: post._userID }).then(user => {
-                const dets = {
-                  username: user.username,
-                  name: {
-                    first: user.name.first,
-                    last: user.name.last
-                  }
-                };
                 var liked = false;
                 if (
                   user._likedPosts.some(function(arrVal) {
+                    //console.log("in user list " + arrVal);
+                    //console.log("postID" + post._id);
                     return (
                       JSON.parse(JSON.stringify(post._id)) ===
                       JSON.parse(JSON.stringify(arrVal))
@@ -170,10 +239,11 @@ router.post("/getposts", (req, res) => {
                   content: post.content,
                   category: post.category,
                   location: post.location,
-                  username: dets.username,
-                  firstname: dets.name.first,
-                  lastname: dets.name.last,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
                   likes: post._likedUserIDs.length,
+                  commentCount: post._commentIDs.length,
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked

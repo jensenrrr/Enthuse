@@ -229,6 +229,7 @@ class Dashboard extends Component {
                   likes={post.likes}
                   liked={post.liked}
                   index={i}
+                  commentCount={post.commentCount}
                 >
                   {post.content}
                   <br />

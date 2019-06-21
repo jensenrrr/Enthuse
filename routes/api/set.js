@@ -61,16 +61,7 @@ router.post("/setsAndPosts", (req, res) => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
               User.findById({ _id: post._userID }).then(user => {
-                const dets = {
-                  username: user.username,
-                  name: {
-                    first: user.name.first,
-                    last: user.name.last
-                  }
-                };
                 var liked = false;
-                //console.log(post);
-
                 if (
                   user._likedPosts.some(function(arrVal) {
                     //console.log("in user list " + arrVal);
@@ -87,10 +78,11 @@ router.post("/setsAndPosts", (req, res) => {
                   content: post.content,
                   category: post.category,
                   location: post.location,
-                  username: dets.username,
-                  firstname: dets.name.first,
-                  lastname: dets.name.last,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
                   likes: post._likedUserIDs.length,
+                  commentCount: post._commentIDs.length,
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked

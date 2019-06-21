@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { upVotePost, comment } from "../../actions/postActions";
-import { Button, Icon } from "react-materialize";
+import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
 
@@ -11,7 +11,8 @@ class Post extends Component {
     super();
     this.state = {
       zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      colorIn: "favorite_border"
+      colorIn: "favorite_border",
+      showReplyBox: false
     };
   }
   componentDidMount() {
@@ -24,7 +25,7 @@ class Post extends Component {
     //console.log(nextProps.post.posts[this.props.index].liked);
     //console.log(this.props.post.posts[this.props.index].liked);
     if (
-      nextProps.post.posts[this.props.index].liked !=
+      nextProps.post.posts[this.props.index].liked !==
       this.props.post.posts[this.props.index].liked
     ) {
       this.changeIcon();
@@ -60,6 +61,12 @@ class Post extends Component {
     //console.log("liked");
   }
 
+  openCommentBox() {
+    this.setState({
+      showReplyBox: !this.state.showReplyBox
+    });
+  }
+
   render() {
     return (
       <div style={{ marginTop: "15px", borderStyle: "solid" }}>
@@ -89,7 +96,7 @@ class Post extends Component {
             </Moment>
           </span>
         </div>
-        <div className="left-align">
+        <div className="center-align">
           <span style={{ marginLeft: "15px", paddingRight: "20%" }}>
             <span
               onClick={() => this.likePress()}
@@ -100,6 +107,21 @@ class Post extends Component {
             </span>{" "}
             {this.props.likes}
           </span>
+          <span>
+            Comments: {this.props.commentCount}
+            <Button
+              style={{ marginLeft: "15px", marginBottom: "10px" }}
+              small
+              onClick={() => this.openCommentBox()}
+            >
+              Reply
+            </Button>
+          </span>
+          {this.state.showReplyBox ? (
+            <div>
+              <Textarea s={8} m={6} l={4} xl={6} />
+            </div>
+          ) : null}
         </div>
       </div>
     );

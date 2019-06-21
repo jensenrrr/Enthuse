@@ -11,6 +11,12 @@ const CommentSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true
   },
+  _likedUserIDs: {
+    type: [Schema.Types.ObjectId]
+  },
+  _commentIDs: {
+    type: [Schema.Types.ObjectId]
+  },
   content: {
     type: String,
     required: true
