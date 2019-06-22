@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { comment } from "../../actions/postActions";
-import { Button, Comment, Form, Header } from "semantic-ui-react";
+import { commentOnComment } from "../../actions/postActions";
+import { Comment, Form, Header } from "semantic-ui-react";
+import { Button, Textarea } from "react-materialize";
+
 import Moment from "react-moment";
 import "moment-timezone";
 
@@ -16,15 +18,42 @@ class Comments extends Component {
   }
   componentDidMount() {
     this.setState({
-      colorIn: this.props.liked ? "favorite" : "favorite_border"
+      colorIn: this.props.liked ? "favorite" : "favorite_border",
+      showReplyBox: false
     });
   }
+
+  openCommentBox() {
+    this.setState({
+      showReplyBox: !this.state.showReplyBox
+    });
+  }
+
+  onChange = e => {
+    //var fieldName = e.target.name;
+    //const fieldValue = event.target.value;
+    this.setState({ [e.target.id]: e.target.value });
+  };
+
+  submit() {
+    console.log(this.props.id);
+    var data = {
+      _userid: this.props.auth.user.id,
+      _commentid: this.props.id,
+      _postid: this.props.postid,
+      content: this.state.commentContent,
+      index: this.props.index
+    };
+    this.props.commentOnComment(data);
+    this.openCommentBox();
+  }
+
   render() {
     return (
-      <div>
-        <Comment>
+      <div className="ui comments">
+        <Comment className="comment">
           <Comment.Content>
-            <Comment.Author as="a">
+            <Comment.Author className="author" as="a">
               {this.props.username} {"  "} {this.props.fistName}{" "}
               {this.props.lastName}
             </Comment.Author>
@@ -37,18 +66,43 @@ class Comments extends Component {
                 {this.props.date}
               </Moment>
             </Comment.Metadata>
+            <Comment.Text className="content">
+              {this.props.children}
+            </Comment.Text>
             <Comment.Actions>
-              <Comment.Action>Reply</Comment.Action>
+              <Comment.Action onClick={() => this.openCommentBox()}>
+                Reply
+              </Comment.Action>
             </Comment.Actions>
-            <Comment.Text>{this.props.content}</Comment.Text>
           </Comment.Content>
+          {this.state.showReplyBox ? (
+            <div style={{ height: "70px" }}>
+              <Textarea
+                label="Comment.."
+                onChange={this.onChange.bind(this)}
+                value={this.state.commentContent}
+                id="commentContent"
+                s={8}
+                m={6}
+                l={4}
+                xl={8}
+              />
+              <Button
+                style={{ marginLeft: "15px", marginBottom: "10px" }}
+                small
+                onClick={() => this.submit()}
+              >
+                Submit
+              </Button>
+            </div>
+          ) : null}
         </Comment>
       </div>
     );
   }
 }
 Comments.propTypes = {
-  comment: PropTypes.func.isRequired,
+  commentOnComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -62,5 +116,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { comment }
+  { commentOnComment }
 )(Comments);
