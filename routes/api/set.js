@@ -60,7 +60,7 @@ router.post("/setsAndPosts", (req, res) => {
         posts.map(async post => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
-              User.findById({ _id: post._userID }).then(user => {
+              User.findById({ _id: post._userID }).then(async user => {
                 var liked = false;
                 if (
                   user._likedPosts.some(function(arrVal) {
@@ -74,6 +74,14 @@ router.post("/setsAndPosts", (req, res) => {
                 ) {
                   liked = true;
                 }
+                const returnComments = [];
+                await Promise.all(
+                  post._commentIDs.map(async commentID => {
+                    const retC = await getComments(commentID, returnComments);
+                    return retC;
+                  })
+                );
+
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -85,7 +93,8 @@ router.post("/setsAndPosts", (req, res) => {
                   commentCount: post._commentIDs.length,
                   date: parseInt(post.date),
                   postID: post._id,
-                  liked: liked
+                  liked: liked,
+                  comments: returnComments
                 };
                 //console.log(returnPost);
                 returnPosts.push(returnPost);
@@ -99,6 +108,45 @@ router.post("/setsAndPosts", (req, res) => {
       );
     });
     return returnPosts;
+  }
+
+  async function getComments(commentID, returnComments) {
+    await Comment.findById(commentID).then(comment => {
+      var dets = function(returnComments, comment) {
+        return new Promise(function(resolve, reject) {
+          User.findById({ _id: comment._userid }).then(user => {
+            var liked = false;
+            if (
+              user._likedComments.some(function(arrVal) {
+                return (
+                  JSON.parse(JSON.stringify(comment._id)) ===
+                  JSON.parse(JSON.stringify(arrVal))
+                );
+              })
+            ) {
+              liked = true;
+            }
+            const returnComment = {
+              content: comment.content,
+              username: user.username,
+              firstname: user.name.first,
+              lastname: user.name.last,
+              likes: comment._likedUserIDs.length,
+              commentCount: comment._commentIDs.length,
+              date: parseInt(comment.date),
+              commentID: comment._id,
+              liked: liked
+            };
+            //console.log(returnPost);
+            returnComments.push(returnComment);
+            //console.log(returnComments);
+            resolve(returnComments);
+          });
+        });
+      };
+      return dets(returnComments, comment);
+    });
+    return returnComments;
   }
 });
 /*

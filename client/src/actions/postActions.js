@@ -80,6 +80,24 @@ export const upVotePost = upIDs => dispatch => {
     );
 };
 
+export const commentOnComment = upIDs => dispatch => {
+  axios
+    .post("/api/post/commentOnComment", upIDs)
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: POST_UPVOTE,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 export const comment = comment => dispatch => {
   axios
     .post("/api/post/comment", comment)

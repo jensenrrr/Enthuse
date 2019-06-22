@@ -6,6 +6,7 @@ const db = "mongodb://feels:badman1@ds121603.mlab.com:21603/usertests";
 ObjectId = require("mongodb").ObjectID;
 const moment = require("moment");
 var HashMap = require("hashmap");
+const Comment = require("../../models/Comment");
 
 //const hash = require("hashmap");
 //const isEmpty = require("is-empty");
@@ -15,88 +16,61 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
-function createTreeJson() {
-  var count = 0;
-  console.log("Tree Creation Triggered:\n\n\n");
-  return Category.find({ level: 0 }).then(categories => {
-    return Promise.all(
-      categories.map(category => {
-        count++;
-        list = [category.label];
-        var catArray = {
-          key: category.label,
-          label: category.label,
-          index: count - 1,
-          list: list,
-          nodes: []
-        };
-
-        return recursiveCat(catArray.nodes, category.label, count - 1, [
-          list
-        ]).then(ray => ((catArray.nodes = ray), catArray));
-      })
-    );
-  });
-}
-
-function recursiveCat(nodes, parLabel, indexC, lists) {
-  return Category.find({ parent: parLabel }).then(categories => {
-    return Promise.all(
-      categories.map(category => {
-        var unconnectedList = [];
-        lists.forEach(element => {
-          unconnectedList.push(element);
-        });
-        unconnectedList.push([]);
-        unconnectedList.forEach(element => {
-          element.push(category.label);
-        });
-        var catArray = {
-          key: category.label,
-          label: category.label,
-          index: indexC,
-          list: unconnectedList[unconnectedList.length - 1],
-          nodes: []
-        };
-        return recursiveCat(
-          catArray.nodes,
-          category.label,
-          indexC,
-          unconnectedList
-        ).then(ray => ((catArray.nodes = ray), catArray));
-      })
-    );
-  });
-}
-
-createTreeJson().then(ray => {
-  ray.map(catObj => {
-    catObj.nodes.map(childObj => {
-      recrusivelyGetandSetLists(childObj);
-      //console.log("would call  " + childObj.label);
-    });
-    console.log(catObj.label);
-    Category.findOne({ label: catObj.label }).then(mongoObj => {
-      console.log(mongoObj);
-
-      mongoObj.list = catObj.list;
-      mongoObj.save().then(cat => console.log(cat));
-    });
-  });
+const returnComments = [];
+const id = "5cfd20daedfb1e2c107ba974";
+startGet(id, returnComments).then(comments => {
+  console.log(comments);
 });
 
-function recrusivelyGetandSetLists(catObj) {
-  Category.findOne({ label: catObj.label }).then(mongoObj => {
-    console.log(catObj);
-
-    if (catObj.nodes.length > 0) {
-      catObj.nodes.map(childObj => {
-        recrusivelyGetandSetLists(childObj);
-      });
-    }
-    mongoObj.list = catObj.list;
-    mongoObj.save().then(cat => console.log(cat));
+async function startGet(id, returnComments) {
+  await Post.findById(id).then(async post => {
+    await Promise.all(
+      post._commentIDs.map(async commentID => {
+        const retC = await getComments(commentID, returnComments);
+        return retC;
+      })
+    );
   });
+  return returnComments;
+}
+
+async function getComments(commentID, returnComments) {
+  await Comment.findById(commentID).then(comment => {
+    var dets = function(returnComments, comment) {
+      return new Promise(function(resolve, reject) {
+        User.findById({ _id: comment._userID }).then(user => {
+          var liked = false;
+          if (
+            user._likedComments.some(function(arrVal) {
+              return (
+                JSON.parse(JSON.stringify(comment._id)) ===
+                JSON.parse(JSON.stringify(arrVal))
+              );
+            })
+          ) {
+            liked = true;
+          }
+          const returnComment = {
+            content: comment.content,
+            username: user.username,
+            firstname: user.name.first,
+            lastname: user.name.last,
+            likes: comment._likedUserIDs.length,
+            commentCount: comment._commentIDs.length,
+            date: parseInt(comment.date),
+            commentID: comment._id,
+            liked: liked
+          };
+          //console.log(returnPost);
+          returnComments.push(returnComment);
+          //console.log(returnComments);
+          resolve(returnComments);
+        });
+      });
+    };
+    return dets(returnComments, comment);
+  });
+  return returnComments;
 }
 
 /*
