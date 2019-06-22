@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Comments from "./Comments";
 import { upVotePost, comment } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
@@ -24,11 +25,13 @@ class Post extends Component {
   componentWillReceiveProps(nextProps) {
     //console.log(nextProps.post.posts[this.props.index].liked);
     //console.log(this.props.post.posts[this.props.index].liked);
-    if (
-      nextProps.post.posts[this.props.index].liked !==
-      this.props.post.posts[this.props.index].liked
-    ) {
-      this.changeIcon();
+    if (nextProps.post.posts[this.props.index]) {
+      if (
+        nextProps.post.posts[this.props.index].liked !==
+        this.props.post.posts[this.props.index].liked
+      ) {
+        this.changeIcon();
+      }
     }
     /*
     if (
@@ -65,6 +68,24 @@ class Post extends Component {
     this.setState({
       showReplyBox: !this.state.showReplyBox
     });
+  }
+  onChange = e => {
+    //var fieldName = e.target.name;
+    //const fieldValue = event.target.value;
+    console.log(this.state.commentContent);
+    this.setState({ [e.target.id]: e.target.value });
+  };
+
+  submit() {
+    console.log(this.state.commentContent);
+    var data = {
+      _userid: this.props.auth.user.id,
+      _postid: this.props.id,
+      content: this.state.commentContent,
+      index: this.props.index
+    };
+    this.props.comment(data);
+    this.openCommentBox();
   }
 
   render() {
@@ -116,12 +137,49 @@ class Post extends Component {
             >
               Reply
             </Button>
+            {this.state.showReplyBox ? (
+              <div style={{ height: "70px" }}>
+                <Textarea
+                  label="Comment.."
+                  onChange={this.onChange.bind(this)}
+                  value={this.state.commentContent}
+                  id="commentContent"
+                  s={8}
+                  m={6}
+                  l={4}
+                  xl={8}
+                />
+                <Button
+                  style={{ marginLeft: "15px", marginBottom: "10px" }}
+                  small
+                  onClick={() => this.submit()}
+                >
+                  Submit
+                </Button>
+              </div>
+            ) : null}
           </span>
-          {this.state.showReplyBox ? (
-            <div>
-              <Textarea s={8} m={6} l={4} xl={6} />
-            </div>
-          ) : null}
+        </div>
+        <div>
+          {this.props.post.posts[this.props.index].comments.map(
+            (comment, i) => (
+              <Comments
+                key={comment.commentID}
+                id={comment.commentID}
+                postid={this.props.id}
+                date={comment.date}
+                username={comment.username}
+                firstname={comment.firstname}
+                lastname={comment.lastname}
+                likes={comment.likes}
+                //liked={comment.liked}
+                index={i}
+                commentCount={comment.commentCount}
+              >
+                {comment.content}
+              </Comments>
+            )
+          )}
         </div>
       </div>
     );

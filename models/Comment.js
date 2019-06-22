@@ -11,6 +11,9 @@ const CommentSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true
   },
+  _parComment: {
+    type: Schema.Types.ObjectId
+  },
   _likedUserIDs: {
     type: [Schema.Types.ObjectId]
   },
@@ -26,3 +29,4 @@ const CommentSchema = new Schema({
     default: moment()
   }
 });
+module.exports = Comment = mongoose.model("comments", CommentSchema);
