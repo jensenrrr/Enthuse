@@ -8,7 +8,7 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
 
-router.post("/createComment", (req, res) => {
+router.post("/comment", (req, res) => {
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     content: req.body.content,
@@ -35,21 +35,56 @@ router.post("/createComment", (req, res) => {
   });
 });
 
+router.post("/commentOnComment", (req, res) => {
+  console.log(req.body);
+  const cid = req.body._commentid;
+  const uid = req.body._userid;
+  //console.log("comment:  " + cid + "  user: " + uid);
+  //console.log(req.body._user])
+  const newComment = new Comment({
+    _userID: mongoose.Types.ObjectId(req.body._userid),
+    _parComment: cid,
+    content: req.body.content,
+    _postID: mongoose.Types.ObjectId(req.body._postid)
+  });
+  console.log("comment:  " + cid + "  user: " + uid);
+  newComment.save().then(comment => {
+    User.findById(uid).then(user => {
+      user._commentIDs.push(comment._id);
+      user.save(function(err) {
+        if (err)
+          console.log("Adding comment._id to _commentIDs failed.  " + err);
+      });
+    });
+    Comment.findById(cid).then(comment => {
+      comment._commentIDs.push(comment._id);
+      comment.save(function(err) {
+        if (err) console.log("Adding comment._id to post failed. " + err);
+      });
+    });
+  });
+});
+
 router.post("/getComments", (req, res) => {
   const returnComments = [];
-  Post.findById(req.body).then(async post => {
-    const promises = post._commentIDs.map(commentID => {
-      return getComments(commentID, returnComments);
+  const id = req.body;
+  startGet(id, returnComments).then(comments => res.json(comments));
+
+  async function startGet(id, returnComments) {
+    Post.findById(id).then(async post => {
+      const promises = post._commentIDs.map(commentID => {
+        return getComments(commentID, returnComments);
+      });
+      await Promise.all(promises);
+      return returnComments;
     });
-    await Promise.all(promises);
-    return returnComments;
-  });
+  }
 
   function getComments(commentID, returnComments) {
     Comment.findById(commentID).then(comment => {
       var dets = function(returnComments, comment) {
         return new Promise(function(resolve, reject) {
-          User.findById({ _id: comment._userID }).then(user => {
+          User.findById({ _id: comment._userid }).then(user => {
             var liked = false;
             if (
               user._likedComments.some(function(arrVal) {
@@ -221,7 +256,7 @@ router.post("/getposts", (req, res) => {
         posts.map(async post => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
-              User.findById({ _id: post._userID }).then(user => {
+              User.findById({ _id: post._userID }).then(async user => {
                 var liked = false;
                 if (
                   user._likedPosts.some(function(arrVal) {
@@ -235,6 +270,14 @@ router.post("/getposts", (req, res) => {
                 ) {
                   liked = true;
                 }
+                const returnComments = [];
+                await Promise.all(
+                  post._commentIDs.map(async commentID => {
+                    const retC = await getComments(commentID, returnComments);
+                    return retC;
+                  })
+                );
+
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -246,7 +289,8 @@ router.post("/getposts", (req, res) => {
                   commentCount: post._commentIDs.length,
                   date: parseInt(post.date),
                   postID: post._id,
-                  liked: liked
+                  liked: liked,
+                  comments: returnComments
                 };
                 //console.log(returnPost);
                 returnPosts.push(returnPost);
@@ -260,6 +304,47 @@ router.post("/getposts", (req, res) => {
       );
     });
     return returnPosts;
+  }
+
+  async function getComments(commentID, returnComments) {
+    await Comment.findById(commentID).then(comment => {
+      console.log(comment);
+      var dets = function(returnComments, comment) {
+        return new Promise(function(resolve, reject) {
+          console.log(comment);
+          User.findById({ _id: comment._userID }).then(user => {
+            var liked = false;
+            if (
+              user._likedComments.some(function(arrVal) {
+                return (
+                  JSON.parse(JSON.stringify(comment._id)) ===
+                  JSON.parse(JSON.stringify(arrVal))
+                );
+              })
+            ) {
+              liked = true;
+            }
+            const returnComment = {
+              content: comment.content,
+              username: user.username,
+              firstname: user.name.first,
+              lastname: user.name.last,
+              likes: comment._likedUserIDs.length,
+              commentCount: comment._commentIDs.length,
+              date: parseInt(comment.date),
+              commentID: comment._id,
+              liked: liked
+            };
+            //console.log(returnPost);
+            returnComments.push(returnComment);
+            //console.log(returnComments);
+            resolve(returnComments);
+          });
+        });
+      };
+      return dets(returnComments, comment);
+    });
+    return returnComments;
   }
 });
 module.exports = router;

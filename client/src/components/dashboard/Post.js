@@ -161,7 +161,6 @@ class Post extends Component {
           </span>
         </div>
         <div>
-          {/*
           {this.props.post.posts[this.props.index].comments.map(
             (comment, i) => (
               <Comments
@@ -181,7 +180,6 @@ class Post extends Component {
               </Comments>
             )
           )}
-            */}
         </div>
       </div>
     );
