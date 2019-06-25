@@ -1,7 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { commentOnComment } from "../../actions/postActions";
 import { Comment, Form, Header } from "semantic-ui-react";
 import { Button, Textarea } from "react-materialize";
 
@@ -30,15 +27,17 @@ class Comments extends Component {
   }
 
   onChange = e => {
+    console.log(this.props.com);
+
     //var fieldName = e.target.name;
     //const fieldValue = event.target.value;
     this.setState({ [e.target.id]: e.target.value });
   };
-
+  /*
   submit() {
     console.log(this.props.id);
     var data = {
-      _userid: this.props.auth.user.id,
+      _userid: this.props.userid,
       _commentid: this.props.id,
       _postid: this.props.postid,
       content: this.state.commentContent,
@@ -46,7 +45,7 @@ class Comments extends Component {
     };
     this.props.commentOnComment(data);
     this.openCommentBox();
-  }
+  }*/
 
   render() {
     return (
@@ -90,31 +89,48 @@ class Comments extends Component {
               <Button
                 style={{ marginLeft: "15px", marginBottom: "10px" }}
                 small
-                onClick={() => this.submit()}
+                onClick={() => {
+                  this.props.submit({
+                    content: this.state.commentContent,
+                    _commentid: this.props.id,
+                    _postid: this.props.postid,
+                    _userid: this.props.userid,
+                    index: this.props.index
+                  });
+                  this.openCommentBox();
+                }}
               >
                 Submit
               </Button>
             </div>
           ) : null}
+          <Comment.Group>
+            {this.props.com.comments.map((comment, i) => (
+              <Comments
+                com={comment}
+                key={comment.commentID}
+                id={comment.commentID}
+                postid={this.props.postid}
+                date={comment.date}
+                username={comment.username}
+                firstname={comment.firstname}
+                lastname={comment.lastname}
+                likes={comment.likes}
+                //liked={comment.liked}
+                index={i}
+                userid={this.props.userid}
+                commentCount={comment.commentCount}
+                submit={this.props.submit.bind(this)}
+              >
+                {comment.content}
+                <br />
+              </Comments>
+            ))}
+          </Comment.Group>
         </Comment>
       </div>
     );
   }
 }
-Comments.propTypes = {
-  commentOnComment: PropTypes.func.isRequired,
-  post: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
-};
 
-const mapStateToProps = state => ({
-  post: state.post,
-  errors: state.errors,
-  auth: state.auth
-});
-
-export default connect(
-  mapStateToProps,
-  { commentOnComment }
-)(Comments);
+export default Comments;

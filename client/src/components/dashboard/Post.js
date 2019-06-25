@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Comments from "./Comments";
-import { upVotePost, comment } from "../../actions/postActions";
+import {
+  upVotePost,
+  comment,
+  commentOnComment
+} from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
@@ -88,6 +92,10 @@ class Post extends Component {
     this.openCommentBox();
   }
 
+  commentOnComment = e => {
+    this.props.commentOnComment(e);
+  };
+
   render() {
     return (
       <div style={{ marginTop: "15px", borderStyle: "solid" }}>
@@ -164,6 +172,8 @@ class Post extends Component {
           {this.props.post.posts[this.props.index].comments.map(
             (comment, i) => (
               <Comments
+                com={this.props.post.posts[this.props.index].comments[i]}
+                userid={this.props.auth.user.id}
                 key={comment.commentID}
                 id={comment.commentID}
                 postid={this.props.id}
@@ -173,6 +183,7 @@ class Post extends Component {
                 lastname={comment.lastname}
                 likes={comment.likes}
                 //liked={comment.liked}
+                submit={this.commentOnComment.bind(this)}
                 index={i}
                 commentCount={comment.commentCount}
               >
@@ -189,6 +200,7 @@ class Post extends Component {
 Post.propTypes = {
   upVotePost: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
+  commentOnComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -202,5 +214,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { upVotePost, comment }
+  { upVotePost, comment, commentOnComment }
 )(Post);

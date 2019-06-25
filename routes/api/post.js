@@ -56,8 +56,9 @@ router.post("/commentOnComment", (req, res) => {
           console.log("Adding comment._id to _commentIDs failed.  " + err);
       });
     });
+    const newcid = comment._id;
     Comment.findById(cid).then(comment => {
-      comment._commentIDs.push(comment._id);
+      comment._commentIDs.push(newcid);
       comment.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
       });
