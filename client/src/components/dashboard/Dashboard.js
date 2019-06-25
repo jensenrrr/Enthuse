@@ -216,9 +216,10 @@ class Dashboard extends Component {
             <br />
 
             <div className="col s12">
-              {this.props.post.posts.map((post, i) => (
+              {this.props.post.posts.map((post, index) => (
                 <Post
                   key={post.postID}
+                  index={index}
                   id={post.postID}
                   county={post.location.county}
                   category={post.category}
@@ -228,7 +229,6 @@ class Dashboard extends Component {
                   lastname={post.lastname}
                   likes={post.likes}
                   liked={post.liked}
-                  index={i}
                   commentCount={post.commentCount}
                 >
                   {post.content}

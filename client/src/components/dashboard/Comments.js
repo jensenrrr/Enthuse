@@ -105,27 +105,28 @@ class Comments extends Component {
             </div>
           ) : null}
           <Comment.Group>
-            {this.props.com.comments.map((comment, i) => (
-              <Comments
-                com={comment}
-                key={comment.commentID}
-                id={comment.commentID}
-                postid={this.props.postid}
-                date={comment.date}
-                username={comment.username}
-                firstname={comment.firstname}
-                lastname={comment.lastname}
-                likes={comment.likes}
-                //liked={comment.liked}
-                index={i}
-                userid={this.props.userid}
-                commentCount={comment.commentCount}
-                submit={this.props.submit.bind(this)}
-              >
-                {comment.content}
-                <br />
-              </Comments>
-            ))}
+            {this.props.com.comments &&
+              this.props.com.comments.map((comment, i) => (
+                <Comments
+                  com={comment}
+                  key={comment.commentID}
+                  id={comment.commentID}
+                  postid={this.props.postid}
+                  date={comment.date}
+                  username={comment.username}
+                  firstname={comment.firstname}
+                  lastname={comment.lastname}
+                  likes={comment.likes}
+                  //liked={comment.liked}
+                  index={i}
+                  userid={this.props.userid}
+                  commentCount={comment.commentCount}
+                  submit={this.props.submit.bind(this)}
+                >
+                  {comment.content}
+                  <br />
+                </Comments>
+              ))}
           </Comment.Group>
         </Comment>
       </div>

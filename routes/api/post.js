@@ -313,7 +313,7 @@ router.post("/getposts", (req, res) => {
       var dets = function(returnComments, comment) {
         return new Promise(function(resolve, reject) {
           console.log(comment);
-          User.findById({ _id: comment._userID }).then(user => {
+          User.findById({ _id: comment._userID }).then(async user => {
             var liked = false;
             if (
               user._likedComments.some(function(arrVal) {
@@ -325,6 +325,15 @@ router.post("/getposts", (req, res) => {
             ) {
               liked = true;
             }
+            const nextComments = [];
+            if (comment._commentIDs.length > 0) {
+              await Promise.all(
+                comment._commentIDs.map(async commentID => {
+                  const retC = await getComments(commentID, nextComments);
+                  return retC;
+                })
+              );
+            }
             const returnComment = {
               content: comment.content,
               username: user.username,
@@ -334,6 +343,7 @@ router.post("/getposts", (req, res) => {
               commentCount: comment._commentIDs.length,
               date: parseInt(comment.date),
               commentID: comment._id,
+              comments: nextComments,
               liked: liked
             };
             //console.log(returnPost);

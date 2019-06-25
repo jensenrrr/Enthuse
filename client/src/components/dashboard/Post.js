@@ -47,6 +47,7 @@ class Post extends Component {
   }
 
   changeIcon() {
+    console.log(this.props.index);
     if (this.state.colorIn === "favorite_border") {
       this.setState({
         colorIn: "favorite"

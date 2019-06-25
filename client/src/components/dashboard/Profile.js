@@ -32,15 +32,20 @@ class Profile extends Component {
     return (
       <div className="container col s8 center-align">
         Your Posts:
-        {this.props.post.posts.map(post => (
+        {this.props.post.posts.map((post, index) => (
           <Post
             key={post.postID}
+            index={index}
+            id={post.postID}
             county={post.location.county}
             category={post.category}
             date={post.date}
             username={post.username}
             firstname={post.firstname}
             lastname={post.lastname}
+            likes={post.likes}
+            liked={post.liked}
+            commentCount={post.commentCount}
           >
             {post.content}
             <br />

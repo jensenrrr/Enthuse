@@ -44,11 +44,10 @@ export const getPosts = sets => dispatch => {
 };
 
 export const getUserPosts = username => dispatch => {
-  console.log("userposts");
   axios
     .post("/api/post/getuserposts", username)
     .then(res => {
-      //console.log(res.data);
+      console.log(res.data);
       dispatch({
         type: POST_GET,
         payload: res.data
