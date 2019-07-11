@@ -26,7 +26,7 @@ router.post("/currentToHome", (req, res) => {
 });
 
 router.post("/setsAndPosts", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   User.findById(mongoose.Types.ObjectId(req.body.id)).then(async user => {
     var data = {
       currentSets: user.currentSets,
@@ -114,10 +114,10 @@ router.post("/setsAndPosts", (req, res) => {
 
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then(comment => {
-      console.log(comment);
+      //console.log(comment);
       var dets = function(returnComments, comment) {
         return new Promise(function(resolve, reject) {
-          console.log(comment);
+          //console.log(comment);
           User.findById({ _id: comment._userID }).then(async user => {
             var liked = false;
             if (

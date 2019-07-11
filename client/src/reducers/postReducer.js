@@ -2,7 +2,9 @@ import {
   POST_CREATE,
   POST_GET,
   POST_COMMENT,
-  POST_UPVOTE
+  POST_UPVOTE,
+  LIKE_COMMENT,
+  POST_COMMENT_ON_COMMENT
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -24,6 +26,25 @@ export default function(state = initialState, action) {
         ready: true
       };
     case POST_COMMENT:
+      const updatedPosts = state.posts;
+      updatedPosts[action.payload.index].comments.push(action.payload.comment);
+      return {
+        ...state,
+        posts: updatedPosts
+      };
+    case POST_COMMENT_ON_COMMENT:
+      const up = state.posts;
+      var meme = up[action.payload.indices[0]];
+      action.payload.indices.forEach((element, i) => {
+        if (i >= 1) meme = meme.comments[element];
+      });
+
+      meme.comments.push(action.payload.comment);
+      return {
+        ...state,
+        posts: up
+      };
+    case LIKE_COMMENT:
       return {
         ...state
       };

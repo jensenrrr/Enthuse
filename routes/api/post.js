@@ -8,6 +8,57 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
 
+router.post("/likeComment", (req, res) => {
+  console.log("likecomment");
+  var userID = mongoose.Types.ObjectId(req.body.userid);
+  //console.log(userID);
+  User.findOne(userID).then(user => {
+    //console.log(user);
+    var commentID = mongoose.Types.ObjectId(req.body.commentid);
+    // console.log(commentID);
+    if (
+      user._likedComments.some(function(arrVal) {
+        //console.log("in user list " + arrVal);
+        //console.log("commentID" + commentID);
+        return req.body.commentid === JSON.parse(JSON.stringify(arrVal));
+      })
+    ) {
+      //console.log("dislike\\n\n\n\n");
+      Comment.findOne(commentID).then(comment => {
+        // console.log(comment);
+        user._likedComments.pull(comment._id);
+        // console.log(req.body.userid);
+        comment._likedUserIDs.pull(user._id);
+        comment.save().then(comment => {
+          user.save().then(user =>
+            res.json({
+              liked: false,
+              index: req.body.index,
+              likes: comment._likedUserIDs.length
+            })
+          );
+        });
+      });
+    } else {
+      Comment.findOne(commentID).then(comment => {
+        //console.log(post);
+        user._likedComments.push(comment._id);
+        //console.log(req.body.userid);
+        comment._likedUserIDs.push(user._id);
+        comment.save().then(comment => {
+          user.save().then(user =>
+            res.json({
+              liked: true,
+              index: req.body.index,
+              likes: comment._likedUserIDs.length
+            })
+          );
+        });
+      });
+    }
+  });
+});
+
 router.post("/comment", (req, res) => {
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
@@ -20,6 +71,32 @@ router.post("/comment", (req, res) => {
     var postid = mongoose.Types.ObjectId(req.body._postid);
 
     User.findById(userid).then(user => {
+      var liked = false;
+      if (
+        user._likedComments.some(function(arrVal) {
+          return (
+            JSON.parse(JSON.stringify(comment._id)) ===
+            JSON.parse(JSON.stringify(arrVal))
+          );
+        })
+      ) {
+        liked = true;
+      }
+      const returnComment = {
+        content: comment.content,
+        username: user.username,
+        firstname: user.name.first,
+        lastname: user.name.last,
+        likes: comment._likedUserIDs.length,
+        commentCount: comment._commentIDs.length,
+        date: parseInt(comment.date),
+        commentID: comment._id,
+        comments: [],
+        liked: liked
+      };
+      console.log(req.body);
+      res.json({ comment: returnComment, index: req.body.index });
+
       user._commentIDs.push(comment._id);
       user.save(function(err) {
         if (err)
@@ -36,7 +113,7 @@ router.post("/comment", (req, res) => {
 });
 
 router.post("/commentOnComment", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const cid = req.body._commentid;
   const uid = req.body._userid;
   //console.log("comment:  " + cid + "  user: " + uid);
@@ -47,9 +124,33 @@ router.post("/commentOnComment", (req, res) => {
     content: req.body.content,
     _postID: mongoose.Types.ObjectId(req.body._postid)
   });
-  console.log("comment:  " + cid + "  user: " + uid);
+  // console.log("comment:  " + cid + "  user: " + uid);
   newComment.save().then(comment => {
     User.findById(uid).then(user => {
+      var liked = false;
+      if (
+        user._likedComments.some(function(arrVal) {
+          return (
+            JSON.parse(JSON.stringify(comment._id)) ===
+            JSON.parse(JSON.stringify(arrVal))
+          );
+        })
+      ) {
+        liked = true;
+      }
+      const returnComment = {
+        content: comment.content,
+        username: user.username,
+        firstname: user.name.first,
+        lastname: user.name.last,
+        likes: comment._likedUserIDs.length,
+        commentCount: comment._commentIDs.length,
+        date: parseInt(comment.date),
+        commentID: comment._id,
+        comments: [],
+        liked: liked
+      };
+      res.json({ comment: returnComment, indices: req.body.indices });
       user._commentIDs.push(comment._id);
       user.save(function(err) {
         if (err)
@@ -154,7 +255,7 @@ router.post("/upvote", (req, res) => {
   var userID = mongoose.Types.ObjectId(req.body.userid);
   //console.log(userID);
   User.findOne(userID).then(user => {
-    console.log(user);
+    //console.log(user);
     var postID = mongoose.Types.ObjectId(req.body.postid);
     // console.log(postID);
     if (
@@ -309,10 +410,10 @@ router.post("/getposts", (req, res) => {
 
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then(comment => {
-      console.log(comment);
+      // console.log(comment);
       var dets = function(returnComments, comment) {
         return new Promise(function(resolve, reject) {
-          console.log(comment);
+          // console.log(comment);
           User.findById({ _id: comment._userID }).then(async user => {
             var liked = false;
             if (

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Comment, Form, Header } from "semantic-ui-react";
-import { Button, Textarea } from "react-materialize";
+import { Button, Textarea, Icon } from "react-materialize";
 
 import Moment from "react-moment";
 import "moment-timezone";
@@ -26,8 +26,21 @@ class Comments extends Component {
     });
   }
 
+  changeIcon() {
+    //console.log(this.props.index);
+    if (this.state.colorIn === "favorite_border") {
+      this.setState({
+        colorIn: "favorite"
+      });
+    } else {
+      this.setState({
+        colorIn: "favorite_border"
+      });
+    }
+  }
+
   onChange = e => {
-    console.log(this.props.com);
+    // console.log(this.props.com);
 
     //var fieldName = e.target.name;
     //const fieldValue = event.target.value;
@@ -69,6 +82,21 @@ class Comments extends Component {
               {this.props.children}
             </Comment.Text>
             <Comment.Actions>
+              <span style={{ marginLeft: "15px", paddingRight: "20%" }}>
+                <span
+                  onClick={() =>
+                    this.props.likeAComment({
+                      commentid: this.props.id,
+                      userid: this.props.userid
+                    })
+                  }
+                  onMouseEnter={() => this.changeIcon()}
+                  onMouseLeave={() => this.changeIcon()}
+                >
+                  <Icon> {this.state.colorIn} </Icon>
+                </span>{" "}
+                {this.props.likes}
+              </span>
               <Comment.Action onClick={() => this.openCommentBox()}>
                 Reply
               </Comment.Action>
@@ -95,7 +123,8 @@ class Comments extends Component {
                     _commentid: this.props.id,
                     _postid: this.props.postid,
                     _userid: this.props.userid,
-                    index: this.props.index
+                    index: this.props.index,
+                    indices: this.props.indices
                   });
                   this.openCommentBox();
                 }}
@@ -122,6 +151,8 @@ class Comments extends Component {
                   userid={this.props.userid}
                   commentCount={comment.commentCount}
                   submit={this.props.submit.bind(this)}
+                  indices={[...this.props.indices, i]}
+                  likeAComment={this.props.likeAComment.bind(this)}
                 >
                   {comment.content}
                   <br />

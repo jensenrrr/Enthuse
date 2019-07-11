@@ -4,7 +4,9 @@ import {
   POST_UPVOTE,
   POST_COMMENT,
   POST_GET,
-  POST_ERRORS
+  POST_ERRORS,
+  LIKE_COMMENT,
+  POST_COMMENT_ON_COMMENT
 } from "./types";
 
 export const createPost = newPost => dispatch => {
@@ -78,13 +80,31 @@ export const upVotePost = upIDs => dispatch => {
       })
     );
 };
+
+export const comment = comment => dispatch => {
+  axios
+    .post("/api/post/comment", comment)
+    .then(res => {
+      console.log(res);
+      dispatch({
+        type: POST_COMMENT,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: "err"
+      })
+    );
+};
+
 export const commentOnComment = upIDs => dispatch => {
   axios
     .post("/api/post/commentOnComment", upIDs)
     .then(res => {
-      //console.log(res.data);
       dispatch({
-        type: POST_UPVOTE,
+        type: POST_COMMENT_ON_COMMENT,
         payload: res.data
       });
     })
@@ -96,12 +116,12 @@ export const commentOnComment = upIDs => dispatch => {
     );
 };
 
-export const comment = comment => dispatch => {
+export const likeComment = data => dispatch => {
   axios
-    .post("/api/post/comment", comment)
+    .post("/api/post/likeComment", data)
     .then(res => {
       dispatch({
-        type: POST_COMMENT,
+        type: LIKE_COMMENT,
         payload: res.data
       });
     })

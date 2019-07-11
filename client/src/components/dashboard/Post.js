@@ -5,7 +5,8 @@ import Comments from "./Comments";
 import {
   upVotePost,
   comment,
-  commentOnComment
+  commentOnComment,
+  likeComment
 } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
@@ -47,7 +48,7 @@ class Post extends Component {
   }
 
   changeIcon() {
-    console.log(this.props.index);
+    //console.log(this.props.index);
     if (this.state.colorIn === "favorite_border") {
       this.setState({
         colorIn: "favorite"
@@ -77,7 +78,7 @@ class Post extends Component {
   onChange = e => {
     //var fieldName = e.target.name;
     //const fieldValue = event.target.value;
-    console.log(this.state.commentContent);
+    //console.log(this.state.commentContent);
     this.setState({ [e.target.id]: e.target.value });
   };
 
@@ -95,6 +96,10 @@ class Post extends Component {
 
   commentOnComment = e => {
     this.props.commentOnComment(e);
+  };
+
+  likeAComment = e => {
+    this.props.likeComment(e);
   };
 
   render() {
@@ -185,7 +190,9 @@ class Post extends Component {
                 likes={comment.likes}
                 //liked={comment.liked}
                 submit={this.commentOnComment.bind(this)}
+                likeAComment={this.likeAComment.bind(this)}
                 index={i}
+                indices={[this.props.index, i]}
                 commentCount={comment.commentCount}
               >
                 {comment.content}
@@ -202,6 +209,7 @@ Post.propTypes = {
   upVotePost: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
   commentOnComment: PropTypes.func.isRequired,
+  likeComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -215,5 +223,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { upVotePost, comment, commentOnComment }
+  { upVotePost, comment, commentOnComment, likeComment }
 )(Post);
