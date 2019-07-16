@@ -46,6 +46,11 @@ class Comments extends Component {
     //const fieldValue = event.target.value;
     this.setState({ [e.target.id]: e.target.value });
   };
+
+  like = e => {
+    this.props.likeAComment(e);
+    this.changeIcon();
+  };
   /*
   submit() {
     console.log(this.props.id);
@@ -85,9 +90,10 @@ class Comments extends Component {
               <span style={{ marginLeft: "15px", paddingRight: "20%" }}>
                 <span
                   onClick={() =>
-                    this.props.likeAComment({
+                    this.like({
                       commentid: this.props.id,
-                      userid: this.props.userid
+                      userid: this.props.userid,
+                      indices: this.props.indices
                     })
                   }
                   onMouseEnter={() => this.changeIcon()}
@@ -146,7 +152,7 @@ class Comments extends Component {
                   firstname={comment.firstname}
                   lastname={comment.lastname}
                   likes={comment.likes}
-                  //liked={comment.liked}
+                  liked={comment.liked}
                   index={i}
                   userid={this.props.userid}
                   commentCount={comment.commentCount}

@@ -10,6 +10,7 @@ const Comment = require("../../models/Comment");
 
 router.post("/likeComment", (req, res) => {
   console.log("likecomment");
+  console.log(req.body);
   var userID = mongoose.Types.ObjectId(req.body.userid);
   //console.log(userID);
   User.findOne(userID).then(user => {
@@ -33,7 +34,7 @@ router.post("/likeComment", (req, res) => {
           user.save().then(user =>
             res.json({
               liked: false,
-              index: req.body.index,
+              indices: req.body.indices,
               likes: comment._likedUserIDs.length
             })
           );
@@ -49,7 +50,7 @@ router.post("/likeComment", (req, res) => {
           user.save().then(user =>
             res.json({
               liked: true,
-              index: req.body.index,
+              indices: req.body.indices,
               likes: comment._likedUserIDs.length
             })
           );
@@ -105,6 +106,8 @@ router.post("/comment", (req, res) => {
     });
     Post.findById(postid).then(post => {
       post._commentIDs.push(comment._id);
+      var x = post.commentCount;
+      post.commentCount = x + 1;
       post.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
       });
@@ -162,6 +165,12 @@ router.post("/commentOnComment", (req, res) => {
       comment._commentIDs.push(newcid);
       comment.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
+      });
+    });
+    Post.findById(postid).then(post => {
+      post.commentCount = post.commentCount++;
+      post.save(function(err) {
+        if (err) console.log("Adding commentcouint to post failed. " + err);
       });
     });
   });
@@ -388,7 +397,7 @@ router.post("/getposts", (req, res) => {
                   firstname: user.name.first,
                   lastname: user.name.last,
                   likes: post._likedUserIDs.length,
-                  commentCount: post._commentIDs.length,
+                  commentCount: post.commentCount,
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked,

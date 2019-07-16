@@ -92,7 +92,7 @@ router.post("/setsAndPosts", (req, res) => {
                   firstname: user.name.first,
                   lastname: user.name.last,
                   likes: post._likedUserIDs.length,
-                  commentCount: post._commentIDs.length,
+                  commentCount: post.commentCount,
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked,

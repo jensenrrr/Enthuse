@@ -30,6 +30,10 @@ const PostSchema = new Schema({
     type: String,
     required: true
   },
+  commentCount: {
+    type: Number,
+    default: 0
+  },
   date: {
     type: String,
     default: moment()

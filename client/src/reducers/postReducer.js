@@ -45,8 +45,16 @@ export default function(state = initialState, action) {
         posts: up
       };
     case LIKE_COMMENT:
+      const upCommentLikes = state.posts;
+      var meme = upCommentLikes[action.payload.indices[0]];
+      action.payload.indices.forEach((element, i) => {
+        if (i >= 1) meme = meme.comments[element];
+      });
+      meme.liked = action.payload.liked;
+      meme.likes = action.payload.likes;
       return {
-        ...state
+        ...state,
+        posts: upCommentLikes
       };
     case POST_UPVOTE:
       return update(state, {

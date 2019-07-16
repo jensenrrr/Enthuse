@@ -188,7 +188,7 @@ class Post extends Component {
                 firstname={comment.firstname}
                 lastname={comment.lastname}
                 likes={comment.likes}
-                //liked={comment.liked}
+                liked={comment.liked}
                 submit={this.commentOnComment.bind(this)}
                 likeAComment={this.likeAComment.bind(this)}
                 index={i}

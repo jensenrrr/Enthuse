@@ -120,6 +120,7 @@ export const likeComment = data => dispatch => {
   axios
     .post("/api/post/likeComment", data)
     .then(res => {
+      console.log(res.data);
       dispatch({
         type: LIKE_COMMENT,
         payload: res.data
