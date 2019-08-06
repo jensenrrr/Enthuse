@@ -39,7 +39,7 @@ router.post("/setsAndPosts", (req, res) => {
       data.returnPosts
     ).then(posts => {
       data.returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
-      console.log(data.returnPosts);
+      //console.log(data.returnPosts);
       res.json(data);
     });
   });
@@ -104,7 +104,20 @@ router.post("/setsAndPosts", (req, res) => {
                   comments: returnComments
                 };
                 //console.log(returnPost);
-                returnPosts.push(returnPost);
+                var alreadyExists = false;
+                for (var i = 0; i < returnPosts.length; i++) {
+                  if (
+                    JSON.stringify(returnPost.postID) ==
+                    JSON.stringify(returnPosts[i].postID)
+                  ) {
+                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                    alreadyExists = true;
+                  }
+                }
+
+                if (!alreadyExists) {
+                  returnPosts.push(returnPost);
+                }
                 resolve(returnPosts);
               });
             });

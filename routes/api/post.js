@@ -419,7 +419,20 @@ router.post("/getposts", (req, res) => {
                   comments: returnComments
                 };
                 //console.log(returnPost);
-                returnPosts.push(returnPost);
+                var alreadyExists = false;
+                for (var i = 0; i < returnPosts.length; i++) {
+                  if (
+                    JSON.stringify(returnPost.postID) ==
+                    JSON.stringify(returnPosts[i].postID)
+                  ) {
+                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                    alreadyExists = true;
+                  }
+                }
+
+                if (!alreadyExists) {
+                  returnPosts.push(returnPost);
+                }
                 resolve(returnPosts);
               });
             });
