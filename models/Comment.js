@@ -24,6 +24,10 @@ const CommentSchema = new Schema({
     type: String,
     required: true
   },
+  hRank: {
+    type: Number,
+    default: 0
+  },
   date: {
     type: String,
     default: moment()

@@ -7,6 +7,8 @@ const users = require("./routes/api/users");
 const tree = require("./routes/api/hobbyTree");
 const post = require("./routes/api/post");
 const set = require("./routes/api/set");
+const moment = require("moment");
+const Post = require("./models/Post");
 
 const app = express();
 
@@ -26,6 +28,27 @@ mongoose
   .connect(db, { useNewUrlParser: true })
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
+
+// update rating interval
+the_interval = 5 * 60 * 1000;
+setInterval(function() {
+  console.log("meme at 5");
+  Post.find({}).then(posts => {
+    posts.map(post => {
+      //console.log(moment(post.date));
+      console.log(moment() - post.date + "\n");
+      if (post.hRank > 0.001) {
+        //time difference between create date and now in minutes
+        var timeDiff = (moment() - post.date) / 3600000;
+        var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
+        console.log(x);
+        post.hRank = post.hRank * x;
+        console.log(post.hRank + "\n");
+        post.save();
+      }
+    });
+  });
+}, the_interval);
 
 // Passport middleware
 app.use(passport.initialize());

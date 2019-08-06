@@ -107,6 +107,7 @@ router.post("/comment", (req, res) => {
     Post.findById(postid).then(post => {
       post._commentIDs.push(comment._id);
       var x = post.commentCount;
+      post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
       post.commentCount = x + 1;
       post.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
@@ -168,6 +169,7 @@ router.post("/commentOnComment", (req, res) => {
       });
     });
     Post.findById(postid).then(post => {
+      post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
       post.commentCount = post.commentCount++;
       post.save(function(err) {
         if (err) console.log("Adding commentcouint to post failed. " + err);
@@ -280,6 +282,12 @@ router.post("/upvote", (req, res) => {
         user._likedPosts.pull(post._id);
         // console.log(req.body.userid);
         post._likedUserIDs.pull(user._id);
+        post.hRank -=
+          1 /
+          (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
+            Math.pow(post.commentCount.length, 1.2) * 0.05 +
+            1);
+
         post.save().then(post => {
           user.save().then(user =>
             res.json({
@@ -296,6 +304,11 @@ router.post("/upvote", (req, res) => {
         user._likedPosts.push(post._id);
         //console.log(req.body.userid);
         post._likedUserIDs.push(user._id);
+        post.hRank +=
+          1 /
+          (Math.pow(post._likedUserIDs.length, 1.2) * 0.1 +
+            Math.pow(post.commentCount.length, 1.2) * 0.05 +
+            1);
         post.save().then(post => {
           user.save().then(user =>
             res.json({
@@ -342,6 +355,8 @@ router.post("/getuserposts", (req, res) => {
 router.post("/getposts", (req, res) => {
   const returnPosts = [];
   processSets(req.body, returnPosts).then(posts => {
+    returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+    console.log(returnPosts);
     res.json(posts);
   });
 

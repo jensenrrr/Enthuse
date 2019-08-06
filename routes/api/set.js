@@ -37,7 +37,11 @@ router.post("/setsAndPosts", (req, res) => {
     processSets(
       JSON.parse(JSON.stringify(data.currentSets)),
       data.returnPosts
-    ).then(posts => res.json(data));
+    ).then(posts => {
+      data.returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+      console.log(data.returnPosts);
+      res.json(data);
+    });
   });
 
   async function processSets(sets, returnPosts) {
@@ -96,6 +100,7 @@ router.post("/setsAndPosts", (req, res) => {
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked,
+                  hRank: post.hRank,
                   comments: returnComments
                 };
                 //console.log(returnPost);

@@ -34,6 +34,10 @@ const PostSchema = new Schema({
     type: Number,
     default: 0
   },
+  hRank: {
+    type: Number,
+    default: 0
+  },
   date: {
     type: String,
     default: moment()
