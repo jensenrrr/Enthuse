@@ -36,7 +36,7 @@ const PostSchema = new Schema({
   },
   hRank: {
     type: Number,
-    default: 0
+    default: 5
   },
   date: {
     type: String,

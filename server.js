@@ -36,14 +36,11 @@ setInterval(function() {
   Post.find({}).then(posts => {
     posts.map(post => {
       //console.log(moment(post.date));
-      console.log(moment() - post.date + "\n");
       if (post.hRank > 0.001) {
         //time difference between create date and now in minutes
         var timeDiff = (moment() - post.date) / 3600000;
         var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
-        console.log(x);
         post.hRank = post.hRank * x;
-        console.log(post.hRank + "\n");
         post.save();
       }
     });

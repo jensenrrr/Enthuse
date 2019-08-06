@@ -129,7 +129,7 @@ router.post("/setsAndPosts", (req, res) => {
     });
     return returnPosts;
   }
-
+  //db.collection.find().sort({age:-1}).limit(1) // for MAX
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then(comment => {
       //console.log(comment);
@@ -180,6 +180,56 @@ router.post("/setsAndPosts", (req, res) => {
     });
     return returnComments;
   }
+  /*async function getComments(commentID, returnComments) {
+    await Comment.findById(commentID).then(comment => {
+      //console.log(comment);
+      var dets = function(returnComments, comment) {
+        return new Promise(function(resolve, reject) {
+          //console.log(comment);
+          User.findById({ _id: comment._userID }).then(async user => {
+            var liked = false;
+            if (
+              user._likedComments.some(function(arrVal) {
+                return (
+                  JSON.parse(JSON.stringify(comment._id)) ===
+                  JSON.parse(JSON.stringify(arrVal))
+                );
+              })
+            ) {
+              liked = true;
+            }
+            const nextComments = [];
+            if (comment._commentIDs.length > 0) {
+              await Promise.all(
+                comment._commentIDs.map(async commentID => {
+                  const retC = await getComments(commentID, nextComments);
+                  return retC;
+                })
+              );
+            }
+            const returnComment = {
+              content: comment.content,
+              username: user.username,
+              firstname: user.name.first,
+              lastname: user.name.last,
+              likes: comment._likedUserIDs.length,
+              commentCount: comment._commentIDs.length,
+              date: parseInt(comment.date),
+              commentID: comment._id,
+              comments: nextComments,
+              liked: liked
+            };
+            //console.log(returnPost);
+            returnComments.push(returnComment);
+            //console.log(returnComments);
+            resolve(returnComments);
+          });
+        });
+      };
+      return dets(returnComments, comment);
+    });
+    return returnComments;
+  }*/
 });
 /*
 function update(sets) {

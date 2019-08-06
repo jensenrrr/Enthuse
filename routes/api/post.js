@@ -28,6 +28,11 @@ router.post("/likeComment", (req, res) => {
       Comment.findOne(commentID).then(comment => {
         // console.log(comment);
         user._likedComments.pull(comment._id);
+        comment.hRank -=
+          1 /
+          (Math.pow(comment._likedUserIDs.length - 1, 1.2) * 0.1 +
+            Math.pow(comment.commentCount.length, 1.2) * 0.05 +
+            1);
         // console.log(req.body.userid);
         comment._likedUserIDs.pull(user._id);
         comment.save().then(comment => {
@@ -46,6 +51,11 @@ router.post("/likeComment", (req, res) => {
         user._likedComments.push(comment._id);
         //console.log(req.body.userid);
         comment._likedUserIDs.push(user._id);
+        comment.hRank +=
+          1 /
+          (Math.pow(comment._likedUserIDs.length - 1, 1.2) * 0.1 +
+            Math.pow(comment.commentCount.length, 1.2) * 0.05 +
+            1);
         comment.save().then(comment => {
           user.save().then(user =>
             res.json({
@@ -161,16 +171,35 @@ router.post("/commentOnComment", (req, res) => {
           console.log("Adding comment._id to _commentIDs failed.  " + err);
       });
     });
+
     const newcid = comment._id;
     Comment.findById(cid).then(comment => {
       comment._commentIDs.push(newcid);
+      comment.commentCount += 1;
+      incrementCommentCountonComments(comment._parComment);
       comment.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
       });
+
+      function incrementCommentCountonComments(parid) {
+        Comment.findById(parid).then(comment => {
+          comment.commentCount += 1;
+          comment.hRank += 1 / (0.1 * Math.pow(comment.commentCount, 1.2) + 1);
+          if (comment._parComment) {
+            incrementCommentCountonComments(comment._parComment);
+          }
+          comment.save(function(err) {
+            if (err) console.log("Adding comment._id to post failed. " + err);
+          });
+        });
+      }
     });
-    Post.findById(postid).then(post => {
+
+    Post.findById(mongoose.Types.ObjectId(req.body._postid)).then(post => {
+      console.log(post);
       post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
-      post.commentCount = post.commentCount++;
+      post.commentCount += 1;
+      //console.log(post.content + " incremented one");
       post.save(function(err) {
         if (err) console.log("Adding commentcouint to post failed. " + err);
       });

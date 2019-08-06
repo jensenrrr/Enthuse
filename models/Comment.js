@@ -26,6 +26,10 @@ const CommentSchema = new Schema({
   },
   hRank: {
     type: Number,
+    default: 5
+  },
+  commentCount: {
+    type: Number,
     default: 0
   },
   date: {
