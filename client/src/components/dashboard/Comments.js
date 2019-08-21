@@ -14,6 +14,7 @@ class Comments extends Component {
     };
   }
   componentDidMount() {
+    console.log(this.props.commentCount - this.props.com.comments.length);
     this.setState({
       colorIn: this.props.liked ? "favorite" : "favorite_border",
       showReplyBox: false
@@ -50,6 +51,10 @@ class Comments extends Component {
   like = e => {
     this.props.likeAComment(e);
     this.changeIcon();
+  };
+
+  load = e => {
+    this.props.loadMoreComments(e);
   };
   /*
   submit() {
@@ -165,6 +170,27 @@ class Comments extends Component {
                 </Comments>
               ))}
           </Comment.Group>
+          <div
+            onClick={() => {
+              const alreadyLoaded = [];
+              this.props.com.comments.forEach(comment => {
+                alreadyLoaded.push(comment.commnetID);
+              });
+
+              this.load({
+                parentID: this.props.id,
+                alreadyLoadedComments: alreadyLoaded
+              });
+            }}
+            className={
+              this.props.commentCount - this.props.com.comments.length > 0
+                ? ""
+                : "hideThis"
+            }
+          >
+            {this.props.commentCount - this.props.com.comments.length} More
+            Replies
+          </div>
         </Comment>
       </div>
     );

@@ -28,6 +28,10 @@ code {
     monospace;
 }
 
+.hideThis {
+  display: none;
+}
+
 .ui.comments {
   margin: 1.5em 0;
   max-width: 650px;

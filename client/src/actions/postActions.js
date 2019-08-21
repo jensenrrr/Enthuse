@@ -6,7 +6,8 @@ import {
   POST_GET,
   POST_ERRORS,
   LIKE_COMMENT,
-  POST_COMMENT_ON_COMMENT
+  POST_COMMENT_ON_COMMENT,
+  LOAD_COMMENT
 } from "./types";
 
 export const createPost = newPost => dispatch => {
@@ -123,6 +124,24 @@ export const likeComment = data => dispatch => {
       console.log(res.data);
       dispatch({
         type: LIKE_COMMENT,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const loadRestComments = data => dispatch => {
+  axios
+    .post("/api/set/loadMoreComments", data)
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: LOAD_COMMENT,
         payload: res.data
       });
     })

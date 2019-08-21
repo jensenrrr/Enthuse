@@ -4,7 +4,8 @@ import {
   POST_COMMENT,
   POST_UPVOTE,
   LIKE_COMMENT,
-  POST_COMMENT_ON_COMMENT
+  POST_COMMENT_ON_COMMENT,
+  LOAD_COMMENT
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -46,16 +47,18 @@ export default function(state = initialState, action) {
       };
     case LIKE_COMMENT:
       const upCommentLikes = state.posts;
-      var meme = upCommentLikes[action.payload.indices[0]];
+      var dream = upCommentLikes[action.payload.indices[0]];
       action.payload.indices.forEach((element, i) => {
-        if (i >= 1) meme = meme.comments[element];
+        if (i >= 1) dream = dream.comments[element];
       });
-      meme.liked = action.payload.liked;
-      meme.likes = action.payload.likes;
+      dream.liked = action.payload.liked;
+      dream.likes = action.payload.likes;
       return {
         ...state,
         posts: upCommentLikes
       };
+    case LOAD_COMMENT:
+      return state;
     case POST_UPVOTE:
       return update(state, {
         posts: {

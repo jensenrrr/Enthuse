@@ -24,6 +24,71 @@ router.post("/currentToHome", (req, res) => {
     });
   });
 });
+//untested
+router.post("/loadMoreComments", (req, res) => {
+  //need req.alreadyloadedcomments (ids) and req.parentID
+  const returnComments = [];
+  processComments(req, returnComments).then(meme => {
+    returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+    //console.log(returnComments);
+    console.log("ressing");
+    res.json(returnComments);
+  });
+
+  async function processComments(req, returnComments) {
+    await Comment.find({ _parComment: req.body.parentID }).then(comments => {
+      comments.forEach(async comment => {
+        var alreadyExists = false;
+        for (var i = 0; i < req.body.alreadyLoadedComments.length; i++) {
+          if (comment._id == req.body.alreadyLoadedComments[i]) {
+            alreadyExists = true;
+            break;
+          }
+        }
+        if (!alreadyExists) {
+          let promise = new Promise((resolve, reject) => {
+            User.findById({ _id: comment._userID }).then(async user => {
+              var liked = false;
+              if (
+                user._likedComments.some(function(arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank
+              };
+              returnComments.push(returnComment);
+              console.log(returnComment.content + "\n");
+              resolve("done");
+              //console.log(returnComments);
+            });
+          });
+
+          let result = await promise;
+          console.log(result);
+        }
+      });
+    });
+    return returnComments;
+  }
+});
 
 router.post("/setsAndPosts", (req, res) => {
   //console.log(req.body);
@@ -81,13 +146,8 @@ router.post("/setsAndPosts", (req, res) => {
                   liked = true;
                 }
                 const returnComments = [];
-                await Promise.all(
-                  post._commentIDs.map(async commentID => {
-                    const retC = await getComments(commentID, returnComments);
-                    return retC;
-                  })
-                );
-
+                await getComments(post._id, returnComments);
+                returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
                 const returnPost = {
                   content: post.content,
                   category: post.category,
@@ -129,55 +189,132 @@ router.post("/setsAndPosts", (req, res) => {
     });
     return returnPosts;
   }
-  //db.collection.find().sort({age:-1}).limit(1) // for MAX
-  async function getComments(commentID, returnComments) {
-    await Comment.findById(commentID).then(comment => {
-      //console.log(comment);
-      var dets = function(returnComments, comment) {
-        return new Promise(function(resolve, reject) {
-          //console.log(comment);
-          User.findById({ _id: comment._userID }).then(async user => {
-            var liked = false;
-            if (
-              user._likedComments.some(function(arrVal) {
-                return (
-                  JSON.parse(JSON.stringify(comment._id)) ===
-                  JSON.parse(JSON.stringify(arrVal))
-                );
-              })
-            ) {
-              liked = true;
-            }
-            const nextComments = [];
-            if (comment._commentIDs.length > 0) {
-              await Promise.all(
-                comment._commentIDs.map(async commentID => {
-                  const retC = await getComments(commentID, nextComments);
-                  return retC;
+
+  //db.collection.find({_parComment: null}).sort({hRank:-1}).limit(3) // for MAX
+  async function getComments(parid, returnComments) {
+    await Comment.find({ _parComment: null, _postID: parid })
+      .sort({ hRank: -1 })
+      .limit(3)
+      .then(async comments => {
+        //console.log(comments);
+        //console.log(comments.size);
+
+        var dets = function(returnComments, comment) {
+          return new Promise(function(resolve, reject) {
+            //console.log(comment);
+            User.findById({ _id: comment._userID }).then(async user => {
+              var liked = false;
+              if (
+                user._likedComments.some(function(arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
                 })
-              );
-            }
-            const returnComment = {
-              content: comment.content,
-              username: user.username,
-              firstname: user.name.first,
-              lastname: user.name.last,
-              likes: comment._likedUserIDs.length,
-              commentCount: comment._commentIDs.length,
-              date: parseInt(comment.date),
-              commentID: comment._id,
-              comments: nextComments,
-              liked: liked
-            };
-            //console.log(returnPost);
-            returnComments.push(returnComment);
-            //console.log(returnComments);
-            resolve(returnComments);
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                await getCommentsofComment(comment._id, nextComments, 1);
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank
+              };
+              //console.log(returnPost);
+              //console.log("dets:   " + returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            });
           });
-        });
-      };
-      return dets(returnComments, comment);
-    });
+        };
+
+        await Promise.all(
+          comments.map(async comment => {
+            return await dets(returnComments, comment);
+          })
+        );
+      });
+    return returnComments;
+  }
+
+  async function getCommentsofComment(parid, returnComments, level) {
+    level++;
+    await Comment.find({ _parComment: parid })
+      .sort({ hRank: -1 })
+      .limit(2)
+      .then(async comments => {
+        //console.log(comments);
+        //console.log(comments.size);
+
+        var dets = function(returnComments, comment) {
+          return new Promise(function(resolve, reject) {
+            //console.log(comment);
+            User.findById({ _id: comment._userID }).then(async user => {
+              var liked = false;
+              if (
+                user._likedComments.some(function(arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                if (level < 4)
+                  await await getCommentsofComment(
+                    comment._id,
+                    nextComments,
+                    level + 1
+                  );
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank
+              };
+              //console.log(returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            });
+          });
+        };
+
+        await Promise.all(
+          comments.map(async comment => {
+            return await dets(returnComments, comment);
+          })
+        );
+      });
     return returnComments;
   }
   /*async function getComments(commentID, returnComments) {
