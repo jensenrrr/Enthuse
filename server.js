@@ -33,12 +33,16 @@ mongoose
 the_interval = 5 * 60 * 1000;
 setInterval(function() {
   console.log("meme at 5");
-  Comment.find({}).then(comments => {
+  Comment.find({ hRank: NaN }).then(comments => {
     comments.map(comment => {
-      var timeDiff = (moment() - comment.date) / 3600000;
-      var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
-      comment.hRank = comment.hRank * x;
-      comment.save();
+      comment.hRank = (1 + comment.likes + comment.commentCount) * 0.1;
+      /*
+      if (comment.hRank > 0.001) {
+        var timeDiff = (moment() - comment.date) / 3600000;
+        var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
+        comment.hRank = comment.hRank * x;
+        comment.save();
+      }*/
     });
   });
   Post.find({}).then(posts => {

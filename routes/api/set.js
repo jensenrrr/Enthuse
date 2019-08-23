@@ -35,58 +35,62 @@ router.post("/loadMoreComments", (req, res) => {
     res.json(returnComments);
   });
 
-  async function processComments(req, returnComments) {
-    await Comment.find({ _parComment: req.body.parentID }).then(comments => {
-      comments.forEach(async comment => {
-        var alreadyExists = false;
-        for (var i = 0; i < req.body.alreadyLoadedComments.length; i++) {
-          if (comment._id == req.body.alreadyLoadedComments[i]) {
-            alreadyExists = true;
-            break;
+  function processComments(req, returnComments) {
+    return new Promise(function(resolve, reject) {
+      Comment.find({ _parComment: req.body.parentID }).then(comments => {
+        comments.forEach(async comment => {
+          //alreadyExists not currently working
+          var alreadyExists = false;
+          for (var i = 0; i < req.body.alreadyLoadedComments.length; i++) {
+            alreadyExists = false;
+            if (comment._id == req.body.alreadyLoadedComments[i]) {
+              alreadyExists = true;
+              break;
+            }
           }
-        }
-        if (!alreadyExists) {
-          let promise = new Promise((resolve, reject) => {
-            User.findById({ _id: comment._userID }).then(async user => {
-              var liked = false;
-              if (
-                user._likedComments.some(function(arrVal) {
-                  return (
-                    JSON.parse(JSON.stringify(comment._id)) ===
-                    JSON.parse(JSON.stringify(arrVal))
-                  );
-                })
-              ) {
-                liked = true;
-              }
-              const nextComments = [];
+          if (!alreadyExists) {
+            let promise = new Promise((resolve, reject) => {
+              User.findById({ _id: comment._userID }).then(async user => {
+                var liked = false;
+                if (
+                  user._likedComments.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
 
-              const returnComment = {
-                content: comment.content,
-                username: user.username,
-                firstname: user.name.first,
-                lastname: user.name.last,
-                likes: comment._likedUserIDs.length,
-                commentCount: comment._commentIDs.length,
-                date: parseInt(comment.date),
-                commentID: comment._id,
-                comments: nextComments,
-                liked: liked,
-                hRank: comment.hRank
-              };
-              returnComments.push(returnComment);
-              console.log(returnComment.content + "\n");
-              resolve("done");
-              //console.log(returnComments);
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank
+                };
+                returnComments.push(returnComment);
+                console.log(returnComment.content + "\n");
+                resolve("done");
+                //console.log(returnComments);
+              });
             });
-          });
 
-          let result = await promise;
-          console.log(result);
-        }
+            let result = await promise;
+            console.log(result);
+            resolve("e");
+          }
+        });
       });
     });
-    return returnComments;
   }
 });
 
