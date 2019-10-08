@@ -30,20 +30,24 @@ mongoose
   .catch(err => console.log(err));
 
 // update rating interval
-the_interval = 5 * 60 * 1000;
+the_interval = 6 * 60 * 1000;
 setInterval(function() {
   console.log("meme at 5");
 
   Comment.find().then(comments => {
-    comments.map(comment => {
-      if (comment.hRank > 0.001) {
-        var timeDiff = (moment() - comment.date) / 3600000;
-        var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
-        comment.hRank = comment.hRank * x;
+    comments
+      .map(comment => {
+        if (comment.hRank > 0.001) {
+          var timeDiff = (moment() - comment.date) / 3600000;
+          var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
+          comment.hRank = Number(comment.hRank * x);
+          comment.save();
+        }
         comment.save();
-      }
-      comment.save();
-    });
+      })
+      .catch(comment => {
+        console.log(comment.content + " update failed.");
+      });
   });
   Post.find({}).then(posts => {
     posts.map(post => {
