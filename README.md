@@ -1,4 +1,4 @@
-# Statua
+# Enthuse
 
 This project uses the following technologies:
 
