@@ -6,7 +6,8 @@ import {
   upVotePost,
   comment,
   commentOnComment,
-  likeComment
+  likeComment,
+  loadRestComments
 } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
@@ -102,6 +103,10 @@ class Post extends Component {
     this.props.likeComment(e);
   };
 
+  loadMoreComments = e => {
+    this.props.loadRestComments(e);
+  };
+
   render() {
     return (
       <div style={{ marginTop: "15px", borderStyle: "solid" }}>
@@ -191,6 +196,7 @@ class Post extends Component {
                 liked={comment.liked}
                 submit={this.commentOnComment.bind(this)}
                 likeAComment={this.likeAComment.bind(this)}
+                loadMoreComments={this.loadMoreComments.bind(this)}
                 index={i}
                 indices={[this.props.index, i]}
                 commentCount={comment.commentCount}
@@ -223,5 +229,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { upVotePost, comment, commentOnComment, likeComment }
+  { upVotePost, comment, commentOnComment, likeComment, loadRestComments }
 )(Post);

@@ -21,3 +21,4 @@ export const POST_COMMENT = "POST_COMMENT";
 export const POST_COMMENT_ON_COMMENT = "POST_COMMENT_ON_COMMENT";
 export const POST_GET = "POST_GET";
 export const LIKE_COMMENT = "LIKE_COMMENT";
+export const LOAD_COMMENT = "LOAD_COMMENT";

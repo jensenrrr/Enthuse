@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Category = require("../../models/Category");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
+const Comment = require("../../models/Comment");
 const db = "mongodb://feels:badman1@ds121603.mlab.com:21603/usertests";
 ObjectId = require("mongodb").ObjectID;
 const moment = require("moment");
@@ -15,6 +16,58 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
+//reset all post hRanks to 5
+Post.find()
+  .then(posts => {
+    console.log(posts.length);
+    posts.map(post => {
+      console.log(post.content);
+      post.hRank = 5;
+      post.save();
+    });
+  })
+  .catch(post => {
+    console.log(post.content + " update failed. " + post._id);
+  });
+
+//reset all comment hRanks to 5
+/*
+Comment.find()
+  .then(comments => {
+    comments.map(comment => {
+      console.log(comment.content);
+      comment.hRank = 5;
+      comment.save();
+    });
+  })
+  .catch(comment => {
+    console.log(comment.content + " update failed. " + comment._id);
+  });
+*/
+/*
+Comment.findOne({ content: "fgfd" }).then(comment => {
+  console.log(comment);
+
+  var y,
+    z = 0;
+  if (comment.commentCount.length > 0) {
+    z = comment.commentCount.length;
+  }
+  if (comment._likedUserIDs.length > 0) {
+    y = comment._likedUserIDs.length;
+  }
+  // if comment._liked || commentCount have 0 length then make var for them 0
+  x = Number(
+    1 /
+      (Math.pow(Number(y) - 1, 1.2) * 0.1 + Math.pow(Number(z), 1.2) * 0.05 + 1)
+  );
+  console.log(x + " " + y + " " + z);
+  console.log(comment.hRank + x);
+  comment.hRank = comment.hRank + x;
+  comment.save();
+});
+*/
+/*
 function createTreeJson() {
   var count = 0;
   console.log("Tree Creation Triggered:\n\n\n");
@@ -98,7 +151,7 @@ function recrusivelyGetandSetLists(catObj) {
     mongoObj.save().then(cat => console.log(cat));
   });
 }
-
+*/
 /*
 Category.findOne({ label: "Video Games" }).then(mongoObj => {
   console.log(mongoObj);
