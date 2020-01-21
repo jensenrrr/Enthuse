@@ -9,6 +9,7 @@ const post = require("./routes/api/post");
 const set = require("./routes/api/set");
 const moment = require("moment");
 const Post = require("./models/Post");
+const { setIntervalAsync } = require("set-interval-async/dynamic");
 
 const app = express();
 
@@ -29,40 +30,47 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
-// update rating interval
-the_interval = 6 * 60 * 1000;
-setInterval(function() {
-  console.log("meme at 5");
+the_interval = 5 * 60 * 1000;
+setIntervalAsync(hRankUpdatePosts, the_interval);
+setIntervalAsync(hRankUpdateComments, the_interval);
+
+async function hRankUpdateComments() {
+  console.log("commup");
 
   Comment.find().then(comments => {
-    comments
-      .map(comment => {
+    return new Promise((resolve, reject) => {
+      comments.map((comment, i) => {
         if (comment.hRank > 0.001) {
           var timeDiff = (moment() - comment.date) / 3600000;
           var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
           comment.hRank = Number(comment.hRank * x);
           comment.save();
         }
-        comment.save();
-      })
-      .catch(comment => {
-        console.log(comment.content + " update failed.");
+        if (i == comments.length) {
+          resolve();
+        }
       });
-  });
-  Post.find({}).then(posts => {
-    posts.map(post => {
-      //console.log(moment(post.date));
-      if (post.hRank > 0.001) {
-        //time difference between create date and now in minutes
-        var timeDiff = (moment() - post.date) / 3600000;
-        var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
-        post.hRank = post.hRank * x;
-        post.save();
-      }
     });
   });
-}, the_interval);
-
+}
+async function hRankUpdatePosts() {
+  console.log("postup");
+  Post.find().then(posts => {
+    return new Promise((resolve, reject) => {
+      posts.map((post, i) => {
+        if (post.hRank > 0.001) {
+          var timeDiff = (moment() - post.date) / 3600000;
+          var x = 0.8 + 0.2 * (1 / (1 + Math.log((timeDiff ^ 2) + 2)));
+          post.hRank = Number(post.hRank * x);
+          post.save();
+        }
+        if (i == posts.length) {
+          resolve();
+        }
+      });
+    });
+  });
+}
 // Passport middleware
 app.use(passport.initialize());
 
