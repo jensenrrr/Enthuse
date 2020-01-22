@@ -23,7 +23,7 @@ class Navbar extends Component {
               className="col s4 brand-logo center black-text"
             >
               <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
             <ul
               id="nav-mobile"
@@ -54,7 +54,7 @@ class Navbar extends Component {
               className="col s5 brand-logo center black-text"
             >
               <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
           </div>
         </nav>
@@ -74,7 +74,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(Navbar);
+export default connect(mapStateToProps, { logoutUser })(Navbar);
