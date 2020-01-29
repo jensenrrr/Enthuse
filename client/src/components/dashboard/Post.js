@@ -179,33 +179,35 @@ class Post extends Component {
             ) : null}
           </span>
         </div>
-        <div>
-          {this.props.post.posts[this.props.index].comments.map(
-            (comment, i) => (
-              <Comments
-                com={this.props.post.posts[this.props.index].comments[i]}
-                userid={this.props.auth.user.id}
-                key={comment.commentID}
-                id={comment.commentID}
-                postid={this.props.id}
-                date={comment.date}
-                username={comment.username}
-                firstname={comment.firstname}
-                lastname={comment.lastname}
-                likes={comment.likes}
-                liked={comment.liked}
-                submit={this.commentOnComment.bind(this)}
-                likeAComment={this.likeAComment.bind(this)}
-                loadMoreComments={this.loadMoreComments.bind(this)}
-                index={i}
-                indices={[this.props.index, i]}
-                commentCount={comment.commentCount}
-              >
-                {comment.content}
-              </Comments>
-            )
-          )}
-        </div>
+        {this.props.post.posts[this.props.index].comments != undefined && (
+          <div>
+            {this.props.post.posts[this.props.index].comments.map(
+              (comment, i) => (
+                <Comments
+                  com={this.props.post.posts[this.props.index].comments[i]}
+                  userid={this.props.auth.user.id}
+                  key={comment.commentID}
+                  id={comment.commentID}
+                  postid={this.props.id}
+                  date={comment.date}
+                  username={comment.username}
+                  firstname={comment.firstname}
+                  lastname={comment.lastname}
+                  likes={comment.likes}
+                  liked={comment.liked}
+                  submit={this.commentOnComment.bind(this)}
+                  likeAComment={this.likeAComment.bind(this)}
+                  loadMoreComments={this.loadMoreComments.bind(this)}
+                  index={i}
+                  indices={[this.props.index, i]}
+                  commentCount={comment.commentCount}
+                >
+                  {comment.content}
+                </Comments>
+              )
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -227,7 +229,10 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { upVotePost, comment, commentOnComment, likeComment, loadRestComments }
-)(Post);
+export default connect(mapStateToProps, {
+  upVotePost,
+  comment,
+  commentOnComment,
+  likeComment,
+  loadRestComments
+})(Post);
