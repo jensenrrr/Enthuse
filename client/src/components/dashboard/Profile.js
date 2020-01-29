@@ -31,7 +31,7 @@ class Profile extends Component {
   render() {
     return (
       <div className="container col s8 center-align">
-        Your Posts:
+        {this.props.location.pathname.substring(9)}'s Posts:
         {this.props.post.posts.map((post, index) => (
           <Post
             key={post.postID}
