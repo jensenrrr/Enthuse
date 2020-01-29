@@ -373,6 +373,9 @@ router.post("/getuserposts", (req, res) => {
 
   async function findUser(username, returnPosts) {
     await User.findOne({ username: username }).then(async user => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
       await Post.find({
         _userID: user._id
       }).then(async posts => {
