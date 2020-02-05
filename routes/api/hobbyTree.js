@@ -4,9 +4,18 @@ const router = express.Router();
 const keys = require("../../config/keys");
 //const passport = require("passport");
 const Category = require("../../models/Category");
+const fs = require("fs");
 
 router.get("/tree", (req, res) => {
-  createTreeJson().then(ray => res.json(ray));
+  createTreeJson().then(ray => {
+    res.json(ray);
+    fs.writeFile("../tools/tree.json", JSON.stringify(ray), "utf8", function(
+      err
+    ) {
+      if (err) console.log("err");
+      console.log("tree written to file");
+    });
+  });
   function createTreeJson() {
     var count = 0;
     return Category.find({ level: 0 }).then(categories => {
