@@ -6,10 +6,14 @@ const passport = require("passport");
 const users = require("./routes/api/users");
 const tree = require("./routes/api/hobbyTree");
 const post = require("./routes/api/post");
+
 const set = require("./routes/api/set");
 const moment = require("moment");
 const Post = require("./models/Post");
 const { setIntervalAsync } = require("set-interval-async/dynamic");
+
+const init_db = require("./db").init_db;
+const get_db = require("./db").get_db;
 
 const app = express();
 
@@ -19,17 +23,33 @@ app.use(
     extended: false
   })
 );
-app.use(bodyParser.json());
 
-// DB Config
-const db = require("./config/keys").mongoURI;
+//declare port
+const port = process.env.PORT || 5000;
 
-// Connect to MongoDB
-mongoose
-  .connect(db, { useNewUrlParser: true })
-  .then(() => console.log("MongoDB successfully connected"))
-  .catch(err => console.log(err));
+//initialize db connection
+init_db(function(err) {
+  if (err) throw err;
+  app.listen(port, () =>
+    console.log(`Server up and running on port ${port} !`)
+  );
+  const files = require("./routes/api/files");
+  app.use("/api/files", files);
+});
 
+// Routes
+app.use("/api/users", users);
+app.use("/api/tree", tree);
+app.use("/api/post", post);
+app.use("/api/set", set);
+
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport config
+require("./config/passport")(passport);
+
+//hotness ranking updaters
 the_interval = 5 * 60 * 1000;
 setIntervalAsync(hRankUpdatePosts, the_interval);
 setIntervalAsync(hRankUpdateComments, the_interval);
@@ -71,18 +91,3 @@ async function hRankUpdatePosts() {
     });
   });
 }
-// Passport middleware
-app.use(passport.initialize());
-
-// Passport config
-require("./config/passport")(passport);
-
-// Routes
-app.use("/api/users", users);
-app.use("/api/tree", tree);
-app.use("/api/post", post);
-app.use("/api/set", set);
-
-const port = process.env.PORT || 5000;
-
-app.listen(port, () => console.log(`Server up and running on port ${port} !`));

@@ -9,12 +9,6 @@ const fs = require("fs");
 router.get("/tree", (req, res) => {
   createTreeJson().then(ray => {
     res.json(ray);
-    fs.writeFile("../tools/tree.json", JSON.stringify(ray), "utf8", function(
-      err
-    ) {
-      if (err) console.log("err");
-      console.log("tree written to file");
-    });
   });
   function createTreeJson() {
     var count = 0;

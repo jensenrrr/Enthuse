@@ -8,34 +8,6 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
 
-const multer = require("multer");
-const { mongo, connection } = require("mongoose");
-const Grid = require("gridfs-stream");
-Grid.mongo = mongo;
-var gfs = Grid(connection.db);
-const GridFsStorage = require("multer-gridfs-storage");
-
-//gfs testing
-// sets file input to single file
-const singleUpload = multer({ storage: storage }).single("file");
-
-router.get("/files/:filename", (req, res) => {
-  gfs.files.find({ filename: req.params.filename }).toArray((err, files) => {
-    if (!files || files.length === 0) {
-      return res.status(404).json({
-        message: "Could not find file"
-      });
-    }
-    var readstream = gfs.createReadStream({
-      filename: files[0].filename
-    });
-    res.set("Content-Type", files[0].contentType);
-    return readstream.pipe(res);
-  });
-});
-
-//end gfs testing
-
 router.post("/likeComment", (req, res) => {
   console.log("likecomment");
   console.log(req.body);
@@ -307,6 +279,7 @@ router.post("/getComments", (req, res) => {
 });
 
 router.post("/create", (req, res) => {
+  console.log("make post");
   const newPost = new Post({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     category: req.body.category,
