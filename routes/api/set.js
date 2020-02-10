@@ -136,6 +136,11 @@ router.post("/setsAndPosts", (req, res) => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
               User.findById({ _id: post._userID }).then(async user => {
+                if (!user) {
+                  console.log("error user not found findposts setsAndPosts");
+                  resolve("user not foound");
+                }
+
                 var liked = false;
                 if (
                   user._likedPosts.some(function(arrVal) {

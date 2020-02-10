@@ -430,57 +430,64 @@ router.post("/getposts", (req, res) => {
           var dets = function(returnPosts, post) {
             return new Promise(function(resolve, reject) {
               User.findById({ _id: post._userID }).then(async user => {
-                var liked = false;
-                if (
-                  user._likedPosts.some(function(arrVal) {
-                    //console.log("in user list " + arrVal);
-                    //console.log("postID" + post._id);
-                    return (
-                      JSON.parse(JSON.stringify(post._id)) ===
-                      JSON.parse(JSON.stringify(arrVal))
-                    );
-                  })
-                ) {
-                  liked = true;
-                }
-                const returnComments = [];
-                await Promise.all(
-                  post._commentIDs.map(async commentID => {
-                    const retC = await getComments(commentID, returnComments);
-                    return retC;
-                  })
-                );
+                if (!user) {
+                  console.log("error user not found findposts setsAndPosts");
 
-                const returnPost = {
-                  content: post.content,
-                  category: post.category,
-                  location: post.location,
-                  username: user.username,
-                  firstname: user.name.first,
-                  lastname: user.name.last,
-                  likes: post._likedUserIDs.length,
-                  commentCount: post.commentCount,
-                  date: parseInt(post.date),
-                  postID: post._id,
-                  liked: liked,
-                  comments: returnComments
-                };
-                //console.log(returnPost);
-                var alreadyExists = false;
-                for (var i = 0; i < returnPosts.length; i++) {
+                  resolve("user not foound");
+                } else {
+                  //console.log(user);
+                  var liked = false;
                   if (
-                    JSON.stringify(returnPost.postID) ==
-                    JSON.stringify(returnPosts[i].postID)
+                    user._likedPosts.some(function(arrVal) {
+                      //console.log("in user list " + arrVal);
+                      //console.log("postID" + post._id);
+                      return (
+                        JSON.parse(JSON.stringify(post._id)) ===
+                        JSON.parse(JSON.stringify(arrVal))
+                      );
+                    })
                   ) {
-                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
-                    alreadyExists = true;
+                    liked = true;
                   }
-                }
+                  const returnComments = [];
+                  await Promise.all(
+                    post._commentIDs.map(async commentID => {
+                      const retC = await getComments(commentID, returnComments);
+                      return retC;
+                    })
+                  );
 
-                if (!alreadyExists) {
-                  returnPosts.push(returnPost);
+                  const returnPost = {
+                    content: post.content,
+                    category: post.category,
+                    location: post.location,
+                    username: user.username,
+                    firstname: user.name.first,
+                    lastname: user.name.last,
+                    likes: post._likedUserIDs.length,
+                    commentCount: post.commentCount,
+                    date: parseInt(post.date),
+                    postID: post._id,
+                    liked: liked,
+                    comments: returnComments
+                  };
+                  //console.log(returnPost);
+                  var alreadyExists = false;
+                  for (var i = 0; i < returnPosts.length; i++) {
+                    if (
+                      JSON.stringify(returnPost.postID) ==
+                      JSON.stringify(returnPosts[i].postID)
+                    ) {
+                      returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                      alreadyExists = true;
+                    }
+                  }
+
+                  if (!alreadyExists) {
+                    returnPosts.push(returnPost);
+                  }
+                  resolve(returnPosts);
                 }
-                resolve(returnPosts);
               });
             });
           };
@@ -500,6 +507,10 @@ router.post("/getposts", (req, res) => {
           // console.log(comment);
           User.findById({ _id: comment._userID }).then(async user => {
             var liked = false;
+            if (!user) {
+              console.log("error user not found get comments");
+              resolve("error user not foudn");
+            }
             if (
               user._likedComments.some(function(arrVal) {
                 return (
