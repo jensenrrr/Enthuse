@@ -285,22 +285,25 @@ router.post("/create", (req, res) => {
     location: req.body.location,
     content: req.body.content
   });
-  //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
-  newPost
-    .save()
-    .then(post => {
-      //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
-      res.json(post);
-      var meme = mongoose.Types.ObjectId(req.body._userid);
+  User.findById(mongoose.Types.ObjectId(req.body._userid)).then(user => {
+    if (!user) {
+      res.status(400).json("user does not exist");
+    } else {
+      newPost
+        .save()
+        .then(post => {
+          //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
+          res.json(post);
 
-      User.findById(meme).then(user => {
-        user._postIDs.push(post._id);
-        user.save(function(err) {
-          if (err) console.log("Adding post._id to _postIDs failed.  " + err);
-        });
-      });
-    })
-    .catch(err => console.log(err));
+          user._postIDs.push(post._id);
+          user.save(function(err) {
+            if (err) console.log("Adding post._id to _postIDs failed.  " + err);
+          });
+        })
+        .catch(err => console.log(err));
+    }
+  });
+  //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
 });
 //upvote a post if it isnt already upvoted by a user
 //if it has already been upvoted then remove upvote
