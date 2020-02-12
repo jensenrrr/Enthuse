@@ -7,10 +7,38 @@ import { setLocation } from "../../actions/setActions";
 import { withRouter } from "react-router-dom";
 
 class Location extends Component {
-  meme(q) {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      country: "",
+      state: "",
+      county: "",
+      city: "",
+      nickname: ""
+    };
+  }
+  action(q) {
     console.log(q);
   }
-  clickHandler(i) {
+  clickHandler(i, j, k, l) {
+    console.log(i);
+    console.log(j);
+    this.setState({
+      country: i,
+      state: j,
+      city: l,
+      county:  k
+      
+    });
+
+    this.props.setLocation({
+      country: i,
+      state: j,
+      city: l,
+      county:  k,
+      nickname: ""
+    });
     /*
         
     get the value of state/county/country in a location variable and call
@@ -25,8 +53,8 @@ class Location extends Component {
         list={PlacesData}
         keys={["city", "state_name"]}
         width={250}
-        onSelect={() => this.meme("selected")}
         threshold={0.4}
+        //onSelect={this.action('selected')}
         resultsTemplate={(props, state, styles, clickHandler) => {
           return state.results.map((val, i) => {
             const style =
@@ -34,8 +62,8 @@ class Location extends Component {
                 ? styles.selectedResultStyle
                 : styles.resultsStyle;
             return (
-              <div key={i} style={style} onClick={() => clickHandler(i)}>
-                {val.city}, {val.state_name}
+              <div key={i} style={style} onClick={() => this.clickHandler(val.country, val.state, val.city, val.county)}>
+                {val.city}, {val.state}
               </div>
             );
           });

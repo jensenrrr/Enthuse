@@ -22,9 +22,11 @@ class Dashboard extends Component {
       content: "",
       category: "",
       location: {
-        country: "US",
-        state: "Florida",
-        county: "Alachua"
+        country: "",
+        state: "",
+        city:"",
+        county: "",
+        nickname:""
       },
       list: [],
       ready: false,
@@ -66,11 +68,13 @@ class Dashboard extends Component {
           category: nextProps.set.category,
           list: nextProps.set.list
         });
+        
         if (this.state.location) {
           this.setState({
             ready: true
           });
         }
+        
       }
 
       if (nextProps.set.currentSets !== this.props.set.currentSets) {
@@ -96,7 +100,8 @@ class Dashboard extends Component {
               e.category === set.category &&
               (e.location.county === set.location.county &&
                 e.location.country === set.location.country &&
-                e.location.state === set.location.state)
+                e.location.state === set.location.state &&
+                e.location.city === set.location.city)
           )
         ) {
           //console.log("non duplicate");
@@ -152,9 +157,9 @@ class Dashboard extends Component {
     //var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
 
     var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
-    console.log(index);
+ //console.log(index);
     sendSets.splice(index, 1);
-    console.log(sendSets);
+    //console.log(sendSets);
     var data = {
       sets: sendSets,
       id: this.props.auth.user.id
@@ -249,7 +254,8 @@ Dashboard.propTypes = {
   getPosts: PropTypes.func.isRequired,
   getSetsAndPosts: PropTypes.func.isRequired,
   createPost: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

@@ -8,6 +8,14 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true
   },
+  hasImage: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  _imageIDs: {
+    type: [Schema.Types.ObjectId]
+  },
   _commentIDs: {
     type: [Schema.Types.ObjectId]
   },
@@ -24,7 +32,9 @@ const PostSchema = new Schema({
   location: {
     country: { type: String, required: true },
     state: { type: String, required: true },
-    county: { type: String, required: true }
+    city: { type: String, required: true },
+    county: { type: String, required: true },
+    nickname: { type: String, default: "" }
   },
   content: {
     type: String,

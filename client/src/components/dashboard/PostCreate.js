@@ -13,9 +13,11 @@ class PostCreate extends Component {
       content: "",
       category: "",
       location: {
-        country: "US",
-        state: "Florida",
-        county: "Alachua"
+        country: "",
+        state: "",
+        city:"",
+        county: "",
+        nickname:""
       }
     };
   }
@@ -26,6 +28,11 @@ class PostCreate extends Component {
         this.setState({
           category: nextProps.set.category
         });
+      }
+      if (nextProps.set.location) {
+          this.setState({
+            location: nextProps.set.location
+          });
       }
     }
   }
@@ -64,6 +71,7 @@ class PostCreate extends Component {
             <div className="col s6">
               Location
               <Location />{" "}
+              {this.state.location.county}
             </div>
             <div className="col s6">
               Categories
