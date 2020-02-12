@@ -41,7 +41,9 @@ const UserSchema = new Schema({
       location: {
         country: String,
         state: String,
-        county: String
+        city: String,
+        county: String,
+        nickname: String
       }
     }
   ],
@@ -52,7 +54,9 @@ const UserSchema = new Schema({
       location: {
         country: String,
         state: String,
-        county: String
+        city: String,
+        county: String,
+        nickname: String
       }
     }
   ],

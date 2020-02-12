@@ -118,7 +118,7 @@ router.post("/comment", (req, res) => {
         comments: [],
         liked: liked
       };
-      console.log(req.body);
+      //console.log(req.body);
       res.json({ comment: returnComment, index: req.body.index });
 
       user._commentIDs.push(comment._id);
@@ -211,7 +211,7 @@ router.post("/commentOnComment", (req, res) => {
     });
 
     Post.findById(mongoose.Types.ObjectId(req.body._postid)).then(post => {
-      console.log(post);
+      //console.log(post);
       post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
       post.commentCount += 1;
       //console.log(post.content + " incremented one");
@@ -282,7 +282,14 @@ router.post("/create", (req, res) => {
   const newPost = new Post({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     category: req.body.category,
-    location: req.body.location,
+    hasImage: false,
+    location: {
+      country: req.body.location.country,
+      state: req.body.location.state,
+      city: req.body.location.city,
+      county: req.body.location.county,
+      nickname: ""
+    },
     content: req.body.content
   });
   //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
@@ -397,10 +404,11 @@ router.post("/getuserposts", (req, res) => {
 });
 
 router.post("/getposts", (req, res) => {
+ // console.log(req.body);
   const returnPosts = [];
   processSets(req.body, returnPosts).then(posts => {
     returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
-    console.log(returnPosts);
+    //console.log(returnPosts);
     res.json(posts);
   });
 
@@ -418,9 +426,13 @@ router.post("/getposts", (req, res) => {
   }
 
   async function findPosts(set, catLabel, returnPosts) {
+    //console.log(set.location.county);
     await Post.find({
-      category: catLabel,
-      location: set.location
+      "category": catLabel,
+      "location.county": set.location.county,
+      "location.country": set.location.country,
+      "location.state": set.location.state
+
     }).then(posts => {
       return Promise.all(
         posts.map(async post => {

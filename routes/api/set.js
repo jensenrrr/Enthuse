@@ -129,7 +129,9 @@ router.post("/setsAndPosts", (req, res) => {
   async function findPosts(set, catLabel, returnPosts) {
     await Post.find({
       category: catLabel,
-      location: set.location
+      "location.county": set.location.county,
+      "location.country": set.location.country,
+      "location.state": set.location.state
     }).then(posts => {
       return Promise.all(
         posts.map(async post => {

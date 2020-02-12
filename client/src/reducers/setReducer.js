@@ -11,9 +11,11 @@ const initialState = {
   tree: [],
   category: "",
   location: {
-    county: "",
     country: "",
-    state: ""
+        state: "",
+        county: "",
+        city: "",
+        nickname: ""
   },
   list: [],
   favs: [],

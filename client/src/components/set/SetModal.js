@@ -16,9 +16,11 @@ class SetModal extends Component {
       category: "",
       //location may need adjusting
       location: {
-        country: "US",
-        state: "Florida",
-        county: "Alachua"
+        country: "",
+        state: "",
+        county: "",
+        city: "",
+        nickname: ""
       },
       list: [],
       sets: [],
@@ -31,11 +33,11 @@ class SetModal extends Component {
     //console.log(nextProps);
     if (nextProps.set) {
       if (nextProps.set.location) {
-        if (nextProps.set.location.county !== "") {
+       
           this.setState({
             location: nextProps.set.location
           });
-        }
+        
       }
       if (nextProps.set.category) {
         this.setState({
@@ -65,7 +67,8 @@ class SetModal extends Component {
               e.category === set.category &&
               (e.location.county === set.location.county &&
                 e.location.country === set.location.country &&
-                e.location.state === set.location.state)
+                e.location.state === set.location.state &&
+                e.location.city === set.location.city)
           )
         ) {
           //console.log("non duplicate");

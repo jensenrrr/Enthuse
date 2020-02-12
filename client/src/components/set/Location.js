@@ -11,25 +11,34 @@ class Location extends Component {
     super(props);
 
     this.state = {
+      country: "",
+      state: "",
+      county: "",
       city: "",
-      state_name: "",
-      county: ""
+      nickname: ""
     };
   }
   action(q) {
     console.log(q);
   }
-  clickHandler(i, j, k) {
+  clickHandler(i, j, k, l) {
     console.log(i);
     console.log(j);
     this.setState({
-      city: i,
-      state_name: j,
+      country: i,
+      state: j,
+      city: l,
       county:  k
+      
     });
-    this.props.setLocation({ city: i,
-      state_name: j,
-      county:  k });
+
+    this.props.setLocation({
+      country: i,
+      state: j,
+      city: l,
+      county:  k,
+      nickname: ""
+    });
     /*
         
     get the value of state/county/country in a location variable and call
@@ -45,7 +54,7 @@ class Location extends Component {
         keys={["city", "state_name"]}
         width={250}
         threshold={0.4}
-        onSelect={this.action('selected')}
+        //onSelect={this.action('selected')}
         resultsTemplate={(props, state, styles, clickHandler) => {
           return state.results.map((val, i) => {
             const style =
@@ -53,8 +62,8 @@ class Location extends Component {
                 ? styles.selectedResultStyle
                 : styles.resultsStyle;
             return (
-              <div key={i} style={style} onClick={() => this.clickHandler(val.city, val.state_name, val.county)}>
-                {val.city}, {val.state_name}
+              <div key={i} style={style} onClick={() => this.clickHandler(val.country, val.state, val.city, val.county)}>
+                {val.city}, {val.state}
               </div>
             );
           });
