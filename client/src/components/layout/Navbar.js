@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import Profile from "../dashboard/Profile";
 
 class Navbar extends Component {
   onLogoutClick = e => {
@@ -23,20 +24,21 @@ class Navbar extends Component {
               className="col s4 brand-logo center black-text"
             >
               <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
             <ul
               id="nav-mobile"
               className="right hide-on-med-and-down black-text "
             >
               <li className="black-text" style={{ marginRight: "5px" }}>
-                <a
-                  href="/profile"
+                <Link
+                  to={`/profile/${this.props.auth.user.username}`}
                   style={{ marginRight: "5px", color: "black" }}
                 >
                   {this.props.auth.user.username}
-                </a>
+                </Link>
               </li>
+
               <li className="blue lighten-1" onClick={this.onLogoutClick}>
                 Logout
               </li>
@@ -54,7 +56,7 @@ class Navbar extends Component {
               className="col s5 brand-logo center black-text"
             >
               <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
           </div>
         </nav>
@@ -74,7 +76,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(Navbar);
+export default connect(mapStateToProps, { logoutUser })(Navbar);

@@ -235,4 +235,6 @@ export default connect(mapStateToProps, {
   commentOnComment,
   likeComment,
   loadRestComments
+
 })(Post);
+

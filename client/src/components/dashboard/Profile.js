@@ -5,19 +5,19 @@ import { getUserPosts } from "../../actions/postActions";
 import Post from "./Post";
 
 class Profile extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       posts: []
     };
   }
   componentDidMount() {
-    var send = {
-      username: this.props.auth.user.username
-    };
-    this.props.getUserPosts(send);
+    console.log(this.props.location.pathname.substring(9));
+    this.props.getUserPosts({
+      username: this.props.location.pathname.substring(9)
+    });
   }
-  /*
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.post) {
       if (nextProps.post.posts) {
@@ -27,11 +27,11 @@ class Profile extends Component {
         //console.log(nextProps.post.posts);
       }
     }
-  }*/
+  }
   render() {
     return (
       <div className="container col s8 center-align">
-        Your Posts:
+        {this.props.location.pathname.substring(9)}'s Posts:
         {this.props.post.posts.map((post, index) => (
           <Post
             key={post.postID}
@@ -67,7 +67,4 @@ const mapStateToProps = state => ({
   post: state.post
 });
 
-export default connect(
-  mapStateToProps,
-  { getUserPosts }
-)(Profile);
+export default connect(mapStateToProps, { getUserPosts })(Profile);
