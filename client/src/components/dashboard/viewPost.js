@@ -7,13 +7,14 @@ import {
   comment,
   commentOnComment,
   likeComment,
-  loadRestComments
+  loadRestComments,
+  getSinglePost
 } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
 
-class Post extends Component {
+class viewPost extends Component {
   constructor() {
     super();
     this.state = {
@@ -106,20 +107,11 @@ class Post extends Component {
   loadMoreComments = e => {
     this.props.loadRestComments(e);
   };
-
+  
   render() {
     return (
-      <div style={{ marginTop: "15px", borderStyle: "solid" }}>
-        <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <div> 
-          <a
-                  href="/post"
-                  style={{ marginRight: "5px", color: "black" }}
-                >
-                  {this.props.id}
-                </a>
-          </div>
-          
+      <div style={{ marginTop: "100px", marginLeft: "100px", borderStyle: "solid" }}>
+        <div style={{ marginTop: "100px", marginBottom: "100px" }}>
           <span
             className="left-align"
             style={{ fontWeight: "bold", paddingRight: "30%" }}
@@ -188,7 +180,7 @@ class Post extends Component {
             ) : null}
           </span>
         </div>
-        <div>
+        {/*<div>
           {this.props.post.posts[this.props.index].comments.map(
             (comment, i) => (
               <Comments
@@ -214,13 +206,13 @@ class Post extends Component {
               </Comments>
             )
           )}
-        </div>
+            </div> */}
       </div>
     );
   }
 }
 
-Post.propTypes = {
+viewPost.propTypes = {
   upVotePost: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
   commentOnComment: PropTypes.func.isRequired,
@@ -239,4 +231,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { upVotePost, comment, commentOnComment, likeComment, loadRestComments }
-)(Post);
+)(viewPost);

@@ -7,7 +7,8 @@ import {
   POST_ERRORS,
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
-  LOAD_COMMENT
+  LOAD_COMMENT,
+  SINGLEPOST_GET
 } from "./types";
 
 export const createPost = newPost => dispatch => {
@@ -35,6 +36,25 @@ export const getPosts = sets => dispatch => {
       console.log("getposts");
       dispatch({
         type: POST_GET,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const getSinglePost = id => dispatch => {
+  axios
+    .post("/api/post/getSinglePost", id)
+    .then(res => {
+      console.log(res.data);
+      console.log("getsinglepost");
+      dispatch({
+        type: SINGLEPOST_GET,
         payload: res.data
       });
     })
@@ -152,3 +172,4 @@ export const loadRestComments = data => dispatch => {
       })
     );
 };
+
