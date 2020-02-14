@@ -396,6 +396,7 @@ router.post("/getuserposts", (req, res) => {
   }
 });
 
+
 router.post("/getposts", (req, res) => {
   const returnPosts = [];
   processSets(req.body, returnPosts).then(posts => {
@@ -488,7 +489,163 @@ router.post("/getposts", (req, res) => {
     });
     return returnPosts;
   }
-
+  router.post("/getSinglePost", (req, res) => {
+    console.log(req.body);
+    Post.findById(mongoose.Types.ObjectId(req.body)).then(async post => {
+      if (!post) {
+        console.log("Post not found." + req.body);
+        res.status(400);
+        return;
+      }
+      const returnComments = [];
+      await getComments(post._id, returnComments);
+      returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+      const returnPost = {
+        content: post.content,
+        category: post.category,
+        location: post.location,
+        username: user.username,
+        firstname: user.name.first,
+        lastname: user.name.last,
+        likes: post._likedUserIDs.length,
+        commentCount: post.commentCount,
+        date: parseInt(post.date),
+        postID: post._id,
+        liked: liked,
+        hRank: post.hRank,
+        comments: returnComments
+      };
+      return returnPost;
+    });
+  
+    async function getComments(parid, returnComments) {
+      await Comment.find({ _parComment: null, _postID: parid })
+        .sort({ hRank: -1 })
+        .limit(3)
+        .then(async comments => {
+          //console.log(comments);
+          //console.log(comments.size);
+  
+          var dets = function(returnComments, comment) {
+            return new Promise(function(resolve, reject) {
+              //console.log(comment);
+              User.findById({ _id: comment._userID }).then(async user => {
+                var liked = false;
+                if (
+                  user._likedComments.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
+  
+                if (comment._commentIDs.length > 0) {
+                  await getCommentsofComment(comment._id, nextComments, 1);
+                }
+  
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank
+                };
+                //console.log(returnPost);
+                //console.log("dets:   " + returnComment.content);
+  
+                returnComments.push(returnComment);
+                //console.log(returnComments);
+                resolve(returnComments);
+              });
+            });
+          };
+  
+          await Promise.all(
+            comments.map(async comment => {
+              return await dets(returnComments, comment);
+            })
+          );
+        });
+      return returnComments;
+    }
+  
+    async function getCommentsofComment(parid, returnComments, level) {
+      level++;
+      await Comment.find({ _parComment: parid })
+        .sort({ hRank: -1 })
+        .limit(2)
+        .then(async comments => {
+          //console.log(comments);
+          //console.log(comments.size);
+  
+          var dets = function(returnComments, comment) {
+            return new Promise(function(resolve, reject) {
+              //console.log(comment);
+              User.findById({ _id: comment._userID }).then(async user => {
+                var liked = false;
+                if (
+                  user._likedComments.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
+  
+                if (comment._commentIDs.length > 0) {
+                  if (level < 4)
+                    await await getCommentsofComment(
+                      comment._id,
+                      nextComments,
+                      level + 1
+                    );
+                }
+  
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank
+                };
+                //console.log(returnComment.content);
+  
+                returnComments.push(returnComment);
+                //console.log(returnComments);
+                resolve(returnComments);
+              });
+            });
+          };
+  
+          await Promise.all(
+            comments.map(async comment => {
+              return await dets(returnComments, comment);
+            })
+          );
+        });
+      return returnComments;
+    }
+  });
+  
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then(comment => {
       // console.log(comment);

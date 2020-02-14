@@ -13,8 +13,10 @@ import {
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
+import Post from "./Post";
 
-class viewPost extends Component {
+
+class ViewPost extends Component {
   constructor() {
     super();
     this.state = {
@@ -24,8 +26,9 @@ class viewPost extends Component {
     };
   }
   componentDidMount() {
-    this.setState({
-      colorIn: this.props.liked ? "favorite" : "favorite_border"
+    console.log(this.props.location.pathname.substring(4));
+    this.props.getSinglePost({
+      id: this.props.location.pathname.substring(8)
     });
   }
 
@@ -95,7 +98,9 @@ class viewPost extends Component {
     this.props.comment(data);
     this.openCommentBox();
   }
-
+  getSinglePost = e => {
+    this.props.getSinglePost(e);
+  };
   commentOnComment = e => {
     this.props.commentOnComment(e);
   };
@@ -112,6 +117,10 @@ class viewPost extends Component {
     return (
       <div style={{ marginTop: "100px", marginLeft: "100px", borderStyle: "solid" }}>
         <div style={{ marginTop: "100px", marginBottom: "100px" }}>
+          <div>
+            {this.props.post.singlepost}
+            {this.props.id}
+          </div>
           <span
             className="left-align"
             style={{ fontWeight: "bold", paddingRight: "30%" }}
@@ -206,20 +215,21 @@ class viewPost extends Component {
               </Comments>
             )
           )}
-            </div> */}
+            </div>*/}
       </div>
     );
   }
 }
 
-viewPost.propTypes = {
+ViewPost.propTypes = {
   upVotePost: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
   commentOnComment: PropTypes.func.isRequired,
   likeComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  getSinglePost: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -230,5 +240,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { upVotePost, comment, commentOnComment, likeComment, loadRestComments }
-)(viewPost);
+  { upVotePost, comment, commentOnComment, likeComment, loadRestComments, getSinglePost }
+)(ViewPost);

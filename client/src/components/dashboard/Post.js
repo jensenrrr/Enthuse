@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import Comments from "./Comments";
 import {
   upVotePost,
@@ -111,13 +112,13 @@ class Post extends Component {
     return (
       <div style={{ marginTop: "15px", borderStyle: "solid" }}>
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <div> 
-          <a
-                  href="/post"
+          <div>
+          <Link
+                  to={`/post/${this.props.id}`}
                   style={{ marginRight: "5px", color: "black" }}
                 >
-                  {this.props.id}
-                </a>
+                  {"View Post"}
+          </Link>
           </div>
           
           <span
@@ -214,7 +215,7 @@ class Post extends Component {
               </Comments>
             )
           )}
-        </div>
+            </div>
       </div>
     );
   }
