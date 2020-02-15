@@ -15,26 +15,38 @@ import Moment from "react-moment";
 import "moment-timezone";
 import Post from "./Post";
 
-
 class ViewPost extends Component {
   constructor() {
     super();
     this.state = {
       zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       colorIn: "favorite_border",
-      showReplyBox: false
+      showReplyBox: false,
+      post: {}
     };
   }
   componentDidMount() {
     console.log(this.props.location.pathname.substring(6));
-    this.props.getSinglePost(
-      this.props.location.pathname.substring(6)
-    );
+    this.props.getSinglePost({
+      id: this.props.location.pathname.substring(6)
+    });
+    console.log(this.props.post);
   }
 
   componentWillReceiveProps(nextProps) {
     //console.log(nextProps.post.posts[this.props.index].liked);
     //console.log(this.props.post.posts[this.props.index].liked);
+
+    if (nextProps.post) {
+      if (nextProps.post.singlepost) {
+        this.setState({
+          post: nextProps.post.singlepost
+        });
+        //console.log(nextProps.post.posts);
+      }
+    }
+    console.log(this.state.post);
+
     if (nextProps.post.posts[this.props.index]) {
       if (
         nextProps.post.posts[this.props.index].liked !==
@@ -112,15 +124,14 @@ class ViewPost extends Component {
   loadMoreComments = e => {
     this.props.loadRestComments(e);
   };
-  
+
   render() {
     return (
-      <div style={{ marginTop: "15px", marginLeft: "15px", borderStyle: "solid" }}>
+      <div
+        style={{ marginTop: "15px", marginLeft: "15px", borderStyle: "solid" }}
+      >
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <div>
-            {/*{this.props.post.singlepost}
-            {this.props.id} */}
-          </div>
+          <div>{this.state.post.content}</div>
           <span
             className="left-align"
             style={{ fontWeight: "bold", paddingRight: "30%" }}
@@ -238,7 +249,11 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { upVotePost, comment, commentOnComment, likeComment, loadRestComments, getSinglePost }
-)(ViewPost);
+export default connect(mapStateToProps, {
+  upVotePost,
+  comment,
+  commentOnComment,
+  likeComment,
+  loadRestComments,
+  getSinglePost
+})(ViewPost);
