@@ -5,7 +5,8 @@ import {
   POST_UPVOTE,
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
-  LOAD_COMMENT
+  LOAD_COMMENT,
+  SINGLEPOST_GET
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -26,6 +27,11 @@ export default function(state = initialState, action) {
         posts: action.payload,
         ready: true
       };
+    case SINGLEPOST_GET:
+      return {
+        ...state,
+        singlepost: action.payload
+        };
     case POST_COMMENT:
       const updatedPosts = state.posts;
       updatedPosts[action.payload.index].comments.push(action.payload.comment);

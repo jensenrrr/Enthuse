@@ -417,7 +417,7 @@ router.post("/getposts", (req, res) => {
     //console.log(returnPosts);
     res.json(posts);
   });
-
+});
   async function processSets(sets, returnPosts) {
     const setMap = sets.map(set => {
       const catLabels = set.list.map(catLabel => {
@@ -513,7 +513,36 @@ router.post("/getposts", (req, res) => {
     });
     return returnPosts;
   }
-
+  
+  router.post("/getSinglePost", (req, res) => {
+    console.log(req.body);
+    Post.findById(mongoose.Types.ObjectId(req.body)).then(async post => {
+      if (!post) {
+        console.log("Post not found." + req.body);
+        res.status(400);
+        return;
+      }
+      const returnComments = [];
+      await getComments(post._id, returnComments);
+      returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+      const returnPost = {
+        content: post.content,
+        category: post.category,
+        location: post.location,
+        username: user.username,
+        firstname: user.name.first,
+        lastname: user.name.last,
+        likes: post._likedUserIDs.length,
+        commentCount: post.commentCount,
+        date: parseInt(post.date),
+        postID: post._id,
+        liked: liked,
+        hRank: post.hRank,
+        comments: returnComments
+      };
+      return returnPost;
+  });
+  });
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then(comment => {
       // console.log(comment);
@@ -567,6 +596,8 @@ router.post("/getposts", (req, res) => {
       return dets(returnComments, comment);
     });
     return returnComments;
-  }
-});
+}
+
+
+
 module.exports = router;

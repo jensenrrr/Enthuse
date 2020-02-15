@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import Comments from "./Comments";
 import {
   upVotePost,
@@ -14,8 +13,10 @@ import {
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
+import Post from "./Post";
 
-class Post extends Component {
+
+class ViewPost extends Component {
   constructor() {
     super();
     this.state = {
@@ -25,9 +26,10 @@ class Post extends Component {
     };
   }
   componentDidMount() {
-    this.setState({
-      colorIn: this.props.liked ? "favorite" : "favorite_border"
-    });
+    console.log(this.props.location.pathname.substring(6));
+    this.props.getSinglePost(
+      this.props.location.pathname.substring(6)
+    );
   }
 
   componentWillReceiveProps(nextProps) {
@@ -96,7 +98,9 @@ class Post extends Component {
     this.props.comment(data);
     this.openCommentBox();
   }
-
+  getSinglePost = e => {
+    this.props.getSinglePost(e);
+  };
   commentOnComment = e => {
     this.props.commentOnComment(e);
   };
@@ -108,23 +112,15 @@ class Post extends Component {
   loadMoreComments = e => {
     this.props.loadRestComments(e);
   };
-  getSinglePost = e => {
-    this.props.getSinglePost(e);
-  };
-
+  
   render() {
     return (
-      <div style={{ marginTop: "15px", borderStyle: "solid" }}>
+      <div style={{ marginTop: "15px", marginLeft: "15px", borderStyle: "solid" }}>
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
           <div>
-          <Link
-                  to={`/post/${this.props.id}`}
-                  style={{ marginRight: "5px", color: "black" }}
-                >
-                  {"View Post"}
-          </Link>
+            {/*{this.props.post.singlepost}
+            {this.props.id} */}
           </div>
-          
           <span
             className="left-align"
             style={{ fontWeight: "bold", paddingRight: "30%" }}
@@ -193,48 +189,47 @@ class Post extends Component {
             ) : null}
           </span>
         </div>
-        {this.props.post.posts[this.props.index].comments != undefined && (
-          <div>
-            {this.props.post.posts[this.props.index].comments.map(
-              (comment, i) => (
-                <Comments
-                  com={this.props.post.posts[this.props.index].comments[i]}
-                  userid={this.props.auth.user.id}
-                  key={comment.commentID}
-                  id={comment.commentID}
-                  postid={this.props.id}
-                  date={comment.date}
-                  username={comment.username}
-                  firstname={comment.firstname}
-                  lastname={comment.lastname}
-                  likes={comment.likes}
-                  liked={comment.liked}
-                  submit={this.commentOnComment.bind(this)}
-                  likeAComment={this.likeAComment.bind(this)}
-                  loadMoreComments={this.loadMoreComments.bind(this)}
-                  index={i}
-                  indices={[this.props.index, i]}
-                  commentCount={comment.commentCount}
-                >
-                  {comment.content}
-                </Comments>
-              )
-            )}
-        </div>
-        )}
+        {/*<div>
+          {this.props.post.posts[this.props.index].comments.map(
+            (comment, i) => (
+              <Comments
+                com={this.props.post.posts[this.props.index].comments[i]}
+                userid={this.props.auth.user.id}
+                key={comment.commentID}
+                id={comment.commentID}
+                postid={this.props.id}
+                date={comment.date}
+                username={comment.username}
+                firstname={comment.firstname}
+                lastname={comment.lastname}
+                likes={comment.likes}
+                liked={comment.liked}
+                submit={this.commentOnComment.bind(this)}
+                likeAComment={this.likeAComment.bind(this)}
+                loadMoreComments={this.loadMoreComments.bind(this)}
+                index={i}
+                indices={[this.props.index, i]}
+                commentCount={comment.commentCount}
+              >
+                {comment.content}
+              </Comments>
+            )
+          )}
+            </div>*/}
       </div>
     );
   }
 }
 
-Post.propTypes = {
+ViewPost.propTypes = {
   upVotePost: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
   commentOnComment: PropTypes.func.isRequired,
   likeComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  getSinglePost: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -243,13 +238,7 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, {
-  upVotePost,
-  comment,
-  commentOnComment,
-  likeComment,
-  loadRestComments,
-  getSinglePost
-
-})(Post);
-
+export default connect(
+  mapStateToProps,
+  { upVotePost, comment, commentOnComment, likeComment, loadRestComments, getSinglePost }
+)(ViewPost);
