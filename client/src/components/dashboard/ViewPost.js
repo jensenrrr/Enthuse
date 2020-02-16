@@ -31,6 +31,7 @@ class ViewPost extends Component {
       id: this.props.location.pathname.substring(6)
     });
     console.log(this.props.post);
+    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -124,36 +125,36 @@ class ViewPost extends Component {
   loadMoreComments = e => {
     this.props.loadRestComments(e);
   };
-
+  
   render() {
     return (
       <div
         style={{ marginTop: "15px", marginLeft: "15px", borderStyle: "solid" }}
       >
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <div>{this.state.post.content}</div>
           <span
             className="left-align"
             style={{ fontWeight: "bold", paddingRight: "30%" }}
           >
-            {this.props.username}
+            {this.state.post.username}
           </span>
           <span className="right-align">
-            {this.props.firstname} {this.props.lastname}
+            {this.state.post.firstname} {this.state.post.lastname}
           </span>
         </div>
-        {this.props.children}
+        {this.state.post.content}
         <div style={{ marginBottom: "15px", marginTop: "10px" }}>
           <span className="left-align" style={{ paddingRight: "20%" }}>
-            {this.props.category} | {this.props.county} County
+            {this.state.post.category} | {this.state.county} County
+            
           </span>
           <span className="right-align">
-            <Moment format="h:mm A" tz={this.state.zone}>
-              {this.props.date}
+            <Moment format="h:mm A" tz={this.state.post.zone}>
+              {this.state.post.date}
             </Moment>
             {" on "}
-            <Moment format="MMM D, YYYY" tz={this.state.zone}>
-              {this.props.date}
+            <Moment format="MMM D, YYYY" tz={this.state.post.zone}>
+              {this.state.post.date}
             </Moment>
           </span>
         </div>
@@ -166,10 +167,10 @@ class ViewPost extends Component {
             >
               <Icon> {this.state.colorIn} </Icon>
             </span>{" "}
-            {this.props.likes}
+            {this.state.post.likes}
           </span>
           <span>
-            Comments: {this.props.commentCount}
+            Comments: {this.state.post.commentCount}
             <Button
               style={{ marginLeft: "15px", marginBottom: "10px" }}
               small
@@ -201,7 +202,7 @@ class ViewPost extends Component {
           </span>
         </div>
         {/*<div>
-          {this.props.post.posts[this.props.index].comments.map(
+          {this.state.post.comments.map(
             (comment, i) => (
               <Comments
                 com={this.props.post.posts[this.props.index].comments[i]}
