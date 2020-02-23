@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import Profile from "../dashboard/Profile";
+//import Profile from "../dashboard/Profile";
 
 class Navbar extends Component {
   onLogoutClick = e => {

@@ -73,6 +73,7 @@ async function hRankUpdatePosts() {
 }
 // Passport middleware
 app.use(passport.initialize());
+app.use(passport.session());
 
 // Passport config
 require("./config/passport")(passport);
