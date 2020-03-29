@@ -84,15 +84,17 @@ router.post("/likeComment", (req, res) => {
 });
 
 router.post("/comment", (req, res) => {
+  console.log(req.body._postid);
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     content: req.body.content,
     _postID: mongoose.Types.ObjectId(req.body._postid)
   });
-
+  
   newComment.save().then(comment => {
     var userid = mongoose.Types.ObjectId(req.body._userid);
     var postid = mongoose.Types.ObjectId(req.body._postid);
+    
 
     User.findById(userid).then(user => {
       var liked = false;
@@ -128,6 +130,10 @@ router.post("/comment", (req, res) => {
       });
     });
     Post.findById(postid).then(post => {
+      if (!post) {
+        console.log("post not found");
+      }
+      else{
       post._commentIDs.push(comment._id);
       var x = post.commentCount;
       post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
@@ -135,9 +141,11 @@ router.post("/comment", (req, res) => {
       post.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
       });
+    }
     });
   });
 });
+
 
 router.post("/commentOnComment", (req, res) => {
   //console.log(req.body);
@@ -145,15 +153,18 @@ router.post("/commentOnComment", (req, res) => {
   const uid = req.body._userid;
   //console.log("comment:  " + cid + "  user: " + uid);
   //console.log(req.body._user])
+  
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     _parComment: cid,
     content: req.body.content,
     _postID: mongoose.Types.ObjectId(req.body._postid)
   });
-  // console.log("comment:  " + cid + "  user: " + uid);
+  console.log("comment:  " + cid + "  user: " + uid);
+      console.log("post id : " + req.body._postid)
   newComment.save().then(comment => {
     User.findById(uid).then(user => {
+      console.log("gets here");
       var liked = false;
       if (
         user._likedComments.some(function(arrVal) {
@@ -178,6 +189,7 @@ router.post("/commentOnComment", (req, res) => {
         liked: liked
       };
       res.json({ comment: returnComment, indices: req.body.indices });
+      res.end();
       user._commentIDs.push(comment._id);
       user.save(function(err) {
         if (err)
@@ -187,15 +199,23 @@ router.post("/commentOnComment", (req, res) => {
 
     const newcid = comment._id;
     Comment.findById(cid).then(comment => {
+      console.log("gets here");
       comment._commentIDs.push(newcid);
       comment.commentCount += 1;
-      incrementCommentCountonComments(comment._parComment);
+      incrementCommentCountonComments(cid);
       comment.save(function(err) {
         if (err) console.log("Adding comment._id to post failed. " + err);
       });
 
       function incrementCommentCountonComments(parid) {
+        //console.log(parid);
         Comment.findById(parid).then(comment => {
+          console.log("gets here 2");
+          if(!comment){
+            console.log("comment not found");
+            res.json({success: false});
+          }
+          else{
           comment.commentCount += 1;
           comment.hRank += Number(
             1 / (0.1 * Math.pow(Number(comment.commentCount), 1.2) + 1)
@@ -206,11 +226,17 @@ router.post("/commentOnComment", (req, res) => {
           comment.save(function(err) {
             if (err) console.log("Adding comment._id to post failed. " + err);
           });
+        }
         });
       }
     });
 
     Post.findById(mongoose.Types.ObjectId(req.body._postid)).then(post => {
+      console.log("gets here 3");
+      if (!post) {
+        console.log("post not found");
+      }
+      else{
       //console.log(post);
       post.hRank += 1 / (0.1 * Math.pow(post.commentCount, 1.2) + 1);
       post.commentCount += 1;
@@ -218,6 +244,7 @@ router.post("/commentOnComment", (req, res) => {
       post.save(function(err) {
         if (err) console.log("Adding commentcouint to post failed. " + err);
       });
+    }
     });
   });
 });
@@ -514,7 +541,8 @@ async function findPosts(set, catLabel, returnPosts) {
 }
 
 router.post("/getSinglePost", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
+  console.log("beforeCommentID");
   Post.findById(mongoose.Types.ObjectId(req.body.id)).then(async post => {
     if (!post) {
       console.log("Post not found." + req.body);
@@ -527,6 +555,7 @@ router.post("/getSinglePost", (req, res) => {
         console.log("error user not found get comments");
         resolve("error user not foudn");
       }
+      
       if (
         user._likedComments.some(function(arrVal) {
           return (
@@ -622,6 +651,7 @@ router.post("/getSinglePost", (req, res) => {
 
   async function getCommentsofComment(parid, returnComments, level) {
     level++;
+    
     await Comment.find({ _parComment: parid })
       .sort({ hRank: -1 })
       .limit(2)

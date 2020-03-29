@@ -276,6 +276,10 @@ router.post("/setsAndPosts", (req, res) => {
           return new Promise(function(resolve, reject) {
             //console.log(comment);
             User.findById({ _id: comment._userID }).then(async user => {
+              if (!user) {
+                console.log("error user not found findposts getCommentsofComment");
+                resolve("user not foound");
+              }
               var liked = false;
               if (
                 user._likedComments.some(function(arrVal) {

@@ -6,7 +6,9 @@ import {
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
   LOAD_COMMENT,
-  SINGLEPOST_GET
+  SINGLEPOST_GET,
+  SINGLEPOST_COMMENT_ON_COMMENT,
+  SINGLEPOST_LOAD_COMMENT
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -45,11 +47,17 @@ export default function(state = initialState, action) {
       action.payload.indices.forEach((element, i) => {
         if (i >= 1) meme = meme.comments[element];
       });
+    case SINGLEPOST_COMMENT_ON_COMMENT:
+      const upS = state.posts;
+      var memeS = upS[action.payload.indices[0]];
+      action.payload.indices.forEach((element, i) => {
+        if (i >= 1) memeS = memeS.comments[element];
+      });
 
-      meme.comments.push(action.payload.comment);
+      memeS.comments.push(action.payload.comment);
       return {
         ...state,
-        posts: up
+        posts: upS
       };
     case LIKE_COMMENT:
       const upCommentLikes = state.posts;
@@ -64,6 +72,8 @@ export default function(state = initialState, action) {
         posts: upCommentLikes
       };
     case LOAD_COMMENT:
+      return state;
+    case SINGLEPOST_LOAD_COMMENT:
       return state;
     case POST_UPVOTE:
       return update(state, {
