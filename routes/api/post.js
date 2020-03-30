@@ -163,8 +163,8 @@ router.post("/commentOnComment", (req, res) => {
     content: req.body.content,
     _postID: mongoose.Types.ObjectId(req.body._postid)
   });
-  console.log("comment:  " + cid + "  user: " + uid);
-      console.log("post id : " + req.body._postid)
+ //console.log("comment:  " + cid + "  user: " + uid);
+      //console.log("post id : " + req.body._postid)
   newComment.save().then(comment => {
     User.findById(uid).then(user => {
       console.log("gets here");
@@ -191,6 +191,7 @@ router.post("/commentOnComment", (req, res) => {
         comments: [],
         liked: liked
       };
+      console.log({ comment: returnComment, indices: req.body.indices });
       res.json({ comment: returnComment, indices: req.body.indices });
       res.end();
       user._commentIDs.push(comment._id);

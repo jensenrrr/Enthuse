@@ -141,12 +141,13 @@ class ViewPost extends Component {
   };
 
   loadMoreComments = e => {
-    this.props.loadRestComments(e);
+    console.log(e);
+    //this.props.singleLoadMoreComments(e);
   };
-  singleLoadMoreComments = e => {
-    this.props.singleloadMoreComments(e);
+  /*singleLoadMoreComments = e => {
+    this.props.singleLoadMoreComments(e);
   };
-  
+  */
   render() {
     return (
       
@@ -241,8 +242,8 @@ class ViewPost extends Component {
                 liked={comment.liked}
                 submit={this.singleCommentOnComment.bind(this)}
                 likeAComment={this.likeAComment.bind(this)}
-               // singleLoadMoreComments={this.singleLoadMoreComments.bind(this)}
-                index={i}
+                loadMoreComments={this.loadMoreComments.bind(this)}
+                
                 indices={[this.state.index, i]}
                 commentCount={comment.commentCount}
               >

@@ -9,7 +9,8 @@ import {
   POST_COMMENT_ON_COMMENT,
   LOAD_COMMENT,
   SINGLEPOST_GET,
-  SINGLEPOST_COMMENT_ON_COMMENT
+  SINGLEPOST_COMMENT_ON_COMMENT,
+  SINGLEPOST_LOAD_COMMENT
 } from "./types";
 
 export const createPost = newPost => dispatch => {
@@ -154,7 +155,7 @@ export const singleCommentOnComment = upIDs => dispatch => {
     .catch(err =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data
+        payload: err
       })
     );
 };
@@ -182,7 +183,7 @@ export const singleLoadMoreComments = data => dispatch => {
     .then(res => {
       console.log(res.data);
       dispatch({
-        type: LOAD_COMMENT,
+        type: SINGLEPOST_LOAD_COMMENT,
         payload: res.data
       });
     })

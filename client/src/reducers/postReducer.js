@@ -48,13 +48,13 @@ export default function(state = initialState, action) {
         if (i >= 1) meme = meme.comments[element];
       });
     case SINGLEPOST_COMMENT_ON_COMMENT:
-      const upS = state.posts;
-      var memeS = upS[action.payload.indices[0]];
+      var upS = state.singlepost;
+      
       action.payload.indices.forEach((element, i) => {
-        if (i >= 1) memeS = memeS.comments[element];
+        if (i >= 1) upS = upS.comments[element];
       });
 
-      memeS.comments.push(action.payload.comment);
+      upS.comments.push(action.payload.comment);
       return {
         ...state,
         posts: upS
