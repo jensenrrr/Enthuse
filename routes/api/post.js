@@ -4,6 +4,9 @@ const keys = require("../../config/keys");
 ObjectId = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 
+const passport = require("passport");
+require("../../config/passport")(passport);
+
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
@@ -304,41 +307,48 @@ router.post("/getComments", (req, res) => {
     });
   }
 });
+//passport.authenticate,
+router.post(
+  "/create",
+  passport.authenticate("jwt", {
+    session: false
+  }),
+  (req, res) => {
+    const newPost = new Post({
+      _userID: mongoose.Types.ObjectId(req.body._userid),
+      category: req.body.category,
+      hasImage: false,
+      location: {
+        country: req.body.location.country,
+        state: req.body.location.state,
+        city: req.body.location.city,
+        county: req.body.location.county,
+        nickname: ""
+      },
+      content: req.body.content
+    });
+    User.findById(mongoose.Types.ObjectId(req.body._userid)).then(user => {
+      if (!user) {
+        res.status(400).json("user does not exist");
+      } else {
+        newPost
+          .save()
+          .then(post => {
+            //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
+            res.json(post);
 
-router.post("/create", (req, res) => {
-  const newPost = new Post({
-    _userID: mongoose.Types.ObjectId(req.body._userid),
-    category: req.body.category,
-    hasImage: false,
-    location: {
-      country: req.body.location.country,
-      state: req.body.location.state,
-      city: req.body.location.city,
-      county: req.body.location.county,
-      nickname: ""
-    },
-    content: req.body.content
-  });
-  User.findById(mongoose.Types.ObjectId(req.body._userid)).then(user => {
-    if (!user) {
-      res.status(400).json("user does not exist");
-    } else {
-      newPost
-        .save()
-        .then(post => {
-          //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
-          res.json(post);
-
-          user._postIDs.push(post._id);
-          user.save(function(err) {
-            if (err) console.log("Adding post._id to _postIDs failed.  " + err);
-          });
-        })
-        .catch(err => console.log(err));
-    }
-  });
-  //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
-});
+            user._postIDs.push(post._id);
+            user.save(function(err) {
+              if (err)
+                console.log("Adding post._id to _postIDs failed.  " + err);
+            });
+          })
+          .catch(err => console.log(err));
+      }
+    });
+    //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
+  }
+);
 //upvote a post if it isnt already upvoted by a user
 //if it has already been upvoted then remove upvote
 //JSON.parse(JSON.stringify(data.currentSets)),
