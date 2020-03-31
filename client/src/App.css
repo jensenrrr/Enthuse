@@ -1,0 +1,157 @@
+.materialize-textarea {
+  border: none;
+  background-color: #00acc1;
+}
+.textarea {
+  border: none;
+  background-color: #00acc1;
+}
+.transparent {
+  background-color:transparent;
+}
+.collapsible-header {
+  font-size: medium;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bolder;
+  color: #00b8d4;
+
+  outline: none;
+
+  }
+  .collapsible {
+    box-shadow: none;
+    outline: none;
+
+  }
+.fuzzy-picker-background {
+   }
+    .fuzzy-picker-background .fuzzy-picker {
+     }
+      .fuzzy-picker-background .fuzzy-picker .fuzzy-picker-top-text {
+        color: transparent;
+       
+        user-select: none; }
+        .fuzzy-picker-background .fuzzy-picker .fuzzy-picker-top-text .fuzzy-picker-label {
+          float: left; }
+        .fuzzy-picker-background .fuzzy-picker .fuzzy-picker-top-text .fuzzy-picker-instructions {
+          float: right; }
+          .fuzzy-picker-background .fuzzy-picker .fuzzy-picker-top-text .fuzzy-picker-instructions span {
+            }
+      .fuzzy-picker-background .fuzzy-picker input[type=text] {
+        outline: none;
+    }
+      .fuzzy-picker-background .fuzzy-picker ul {
+        list-style-type: none;
+        padding-left: 0px;
+      
+        margin-bottom: 0.5em; }
+        .fuzzy-picker-background .fuzzy-picker ul li {
+          margin: 0.1em 0.5rem;
+          padding: 0.6em 0.5em;
+          border-radius: 4px;
+          cursor: pointer; }
+          .fuzzy-picker-background .fuzzy-picker ul li.selected {
+            background-color: #51c4c4;
+            color: #FFF; }
+.react-fuzzy-search{
+    background-color: white;
+    border: none;
+    border-radius: 20px;
+}
+.searchboxWrapper {
+    background-color: #64ffda;
+}
+.input-field {
+    background-color: white;
+}
+.nav-wrapper {
+    background: linear-gradient(to bottom right, #29b6f6 0%, #64ffda 100%);
+  } 
+.nav-button {
+    background-color: transparent;
+  -webkit-text-decoration-skip: objects;
+}
+.card {
+    border-radius: 10px;
+}
+.card-action {
+    border-radius: 0 0 10px 10px;
+}
+.card-content {
+    font-family: 'Roboto', sans-serif;
+}
+.logo {
+    margin-left: 10px;
+    font-size: 36px;
+    font-family: Cocogoose;
+}
+.nav-items {
+    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+    padding-right: 15px;
+}
+.btn {
+    text-transform: none;
+    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+}
+.btn-floating {
+  text-transform: none;
+  font-size: 18px;
+  font-family: 'Roboto', sans-serif;
+}
+.post-title {
+    font-size: large;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-right: 2px;
+    padding-top: 20px;
+    padding-bottom: 0px;
+}
+h1 {
+    font-size: large;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-top: 20px;
+    float: left;
+}
+h2 {
+    font-size: medium;
+    font-family: 'Roboto', sans-serif;
+    margin-left: 20px;
+    margin-top: 20px;
+    float: left;
+}
+h1, h2 {
+    display: inline;
+  }
+  h3 {
+    font-size: medium;
+    color:#00b8d4;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-top: 20px;
+    float: left;
+}
+h4 {
+    font-size: medium;
+    font-family: 'Roboto', sans-serif;
+    margin-right: 20px;
+    margin-top: 20px;
+    float: right;
+}
+h3, h4 {
+    display: inline;
+  }
+
+.post-sub {
+    font-size: medium;
+    font-family: 'Cocogoose';
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+}
+

@@ -8,10 +8,9 @@ import {
   goHome
 } from "../../actions/setActions";
 import classnames from "classnames";
-import { Button, Icon } from "react-materialize";
+import { Button, Icon, Collapsible, CollapsibleItem } from "react-materialize";
 
 import Post from "./Post";
-import PostCreate from "./PostCreate";
 import HobbyTree from "../set/HobbyTree";
 import Location from "../set/Location";
 
@@ -24,9 +23,9 @@ class Dashboard extends Component {
       location: {
         country: "",
         state: "",
-        city:"",
+        city: "",
         county: "",
-        nickname:""
+        nickname: ""
       },
       list: [],
       ready: false,
@@ -34,7 +33,6 @@ class Dashboard extends Component {
       posts: []
     };
   }
-
   componentDidMount() {
     //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
     /*
@@ -68,13 +66,13 @@ class Dashboard extends Component {
           category: nextProps.set.category,
           list: nextProps.set.list
         });
-        
+
         if (this.state.location) {
           this.setState({
             ready: true
           });
         }
-        
+
       }
 
       if (nextProps.set.currentSets !== this.props.set.currentSets) {
@@ -148,6 +146,9 @@ class Dashboard extends Component {
     //console.log(newPost);
     this.props.createPost(newPost, this.props.history);
   };
+  collapseAll() {
+
+  }
 
   goHome() {
     this.props.goHome({ id: this.props.auth.user.id });
@@ -157,7 +158,7 @@ class Dashboard extends Component {
     //var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
 
     var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
- //console.log(index);
+    //console.log(index);
     sendSets.splice(index, 1);
     //console.log(sendSets);
     var data = {
@@ -180,70 +181,101 @@ class Dashboard extends Component {
 
   render() {
     return (
-      <div style={{ height: "75vh" }}>
-        <div className="row">
-          <div className="col s3 center-align blue lighten-1">
-            Communities:
-            <br />
-            {this.props.set.currentSets.map((set, index) => (
-              <span
-                key={set.category + set.location.county + set.location.state}
-              >
-                {set.category} | {set.location.county}
-                <Button small onClick={() => this.remove(index)} waves="light">
-                  <Icon>remove</Icon>
+
+      <div className="row">
+        <div className="col s3">
+          <div className="card grey lighten-5">
+            <div className="card-content">
+              <h1>Communities:</h1>
+              <div style={{ clear: "left", textAlign: "left", paddingLeft: "20px" }}>
+                {this.props.set.currentSets.map((set, index) => (
+                  <span
+                    key={set.category + set.location.county + set.location.state}
+                  >
+
+                    <div className="left-align">
+                      <Button className="cyan lighten-1 waves-light" onClick={() => this.remove(index)}>
+                        {set.category} | {set.location.county}
+                        <i className="material-icons right">remove</i>
+                      </Button>
+                    </div>
+                    <br />
+                  </span>
+                ))}
+              </div>
+
+              <div className="center-align" style={{ marginBottom: "10px" }}>
+                <Button className="cyan lighten-1 waves-light" onClick={() => this.goHome()}>
+                  <Icon>home</Icon>
                 </Button>
-                <br />
-              </span>
-            ))}
-            <Button onClick={() => this.goHome()}>
-              <Icon>home</Icon>{" "}
-            </Button>
-            <div className="white left-align" style={{ marginTop: "30px" }}>
-              <Location />
-              <HobbyTree />
+              </div>
             </div>
-            <Button
-              floating
-              waves="light"
-              onClick={this.addSet.bind(this)}
-              className={classnames("", {
-                red: !this.state.ready,
-                blue: this.state.ready
-              })}
-            >
-              Add
-            </Button>
-          </div>
-
-          <div className="landing-copy col s6 center-align">
-            <PostCreate />
-            <br />
-
-            <div className="col s12">
-              {this.props.post.posts.map((post, index) => (
-                <Post
-                  key={post.postID}
-                  index={index}
-                  id={post.postID}
-                  county={post.location.county}
-                  category={post.category}
-                  date={post.date}
-                  username={post.username}
-                  firstname={post.firstname}
-                  lastname={post.lastname}
-                  likes={post.likes}
-                  liked={post.liked}
-                  commentCount={post.commentCount}
+            <div className="card-action">
+              <Collapsible >
+                <CollapsibleItem
+                  expanded={false}
+                  header="Add Set"
+                  node="div"
                 >
-                  {post.content}
-                  <br />
-                </Post>
-              ))}
+                  <div className="row">
+                    <div className="left-align">
+                      <div className="row">
+                        <h1>Location</h1>
+                        <Location />
+                        <h3>Selected Location: {this.state.location.city}</h3>
+                      </div>
+                      <div className="row">
+                        <h1>Categories</h1>
+                        <HobbyTree />
+                        <h3>Selected Category: {this.state.category}</h3>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="center-align">
+                        <Button
+                          waves="light"
+                          onClick={this.addSet.bind(this)}
+                          className={classnames("btn-floating btn-large waves-effect waves-light", {
+                            red: !this.state.ready,
+                            green: this.state.ready
+                          })}
+                        >
+                          <Icon>add</Icon>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CollapsibleItem>
+              </Collapsible>
+
             </div>
+            <div className="card"></div>
+          </div>
+        </div>
+        <div className="landing-copy col s6">
+          <div className="col s12">
+            {this.props.post.posts.map((post, index) => (
+              <Post
+                key={post.postID}
+                index={index}
+                id={post.postID}
+                county={post.location.county}
+                category={post.category}
+                date={post.date}
+                username={post.username}
+                firstname={post.firstname}
+                lastname={post.lastname}
+                likes={post.likes}
+                liked={post.liked}
+                commentCount={post.commentCount}
+              >
+                {post.content}
+              </Post>
+            ))}
           </div>
         </div>
       </div>
+
     );
   }
 }

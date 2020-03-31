@@ -9,7 +9,7 @@ import {
   likeComment,
   loadRestComments
 } from "../../actions/postActions";
-import { Button, Icon, Textarea } from "react-materialize";
+import { Button } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
 
@@ -109,105 +109,98 @@ class Post extends Component {
 
   render() {
     return (
-      <div style={{ marginTop: "15px", borderStyle: "solid" }}>
-        <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <span
-            className="left-align"
-            style={{ fontWeight: "bold", paddingRight: "30%" }}
-          >
-            {this.props.username}
-          </span>
-          <span className="right-align">
-            {this.props.firstname} {this.props.lastname}
-          </span>
-        </div>
-        {this.props.children}
-        <div style={{ marginBottom: "15px", marginTop: "10px" }}>
-          <span className="left-align" style={{ paddingRight: "20%" }}>
-            {this.props.category} | {this.props.county} County
-          </span>
-          <span className="right-align">
-            <Moment format="h:mm A" tz={this.state.zone}>
-              {this.props.date}
-            </Moment>
+      <div className="row">
+        <div className="card grey lighten-5 hoverable">
+          <div>
+            <h1> {this.props.username} </h1>
+            <h2> {this.props.firstname} {this.props.lastname}</h2>
+          </div>
+          <div className="card-content black-text" style={{ clear: "left" }}>
+            <p>{this.props.children}</p>
+          </div>
+
+          <h3> {this.props.category} | {this.props.county} County </h3>
+          <h4> <Moment format="h:mm A" tz={this.state.zone} >
+            {this.props.date}
+          </Moment>
             {" on "}
             <Moment format="MMM D, YYYY" tz={this.state.zone}>
               {this.props.date}
             </Moment>
-          </span>
-        </div>
-        <div className="center-align">
-          <span style={{ marginLeft: "15px", paddingRight: "20%" }}>
-            <span
+          </h4>
+
+
+          <p style={{ textAlign: "left", fontSize: "medium", fontFamily: "Roboto", clear: "left", marginLeft: "20px" }}>   Favorites: {this.props.likes}  Comments: {this.props.commentCount}</p>
+          <div className="card-action center-align">
+            <button className="btn-flat waves-effect waves-light "
               onClick={() => this.likePress()}
               onMouseEnter={() => this.changeIcon()}
               onMouseLeave={() => this.changeIcon()}
+
             >
-              <Icon> {this.state.colorIn} </Icon>
-            </span>{" "}
-            {this.props.likes}
-          </span>
-          <span>
-            Comments: {this.props.commentCount}
-            <Button
-              style={{ marginLeft: "15px", marginBottom: "10px" }}
-              small
+
+              <i className="material-icons left">{this.state.colorIn}</i>
+               Favorite
+            </button>
+            <button className="btn-flat waves-effect waves-light"
               onClick={() => this.openCommentBox()}
             >
-              Reply
-            </Button>
+              Comment
+            <i className="material-icons left">comment</i>
+
+            </button>
             {this.state.showReplyBox ? (
-              <div style={{ height: "70px" }}>
-                <Textarea
-                  label="Comment.."
-                  onChange={this.onChange.bind(this)}
-                  value={this.state.commentContent}
-                  id="commentContent"
-                  s={8}
-                  m={6}
-                  l={4}
-                  xl={8}
-                />
-                <Button
-                  style={{ marginLeft: "15px", marginBottom: "10px" }}
-                  small
-                  onClick={() => this.submit()}
-                >
-                  Submit
+              <div className="row">
+                <div className="col s9">
+                  <div className="input-field col s12" style={{ paddingBottom: "5px", backgroundColor: "transparent" }}>
+                    <textarea onChange={this.onChange.bind(this)}
+                      value={this.state.commentContent}
+                      id="commentContent" className="materialize-textarea grey lighten-5"></textarea>
+                    <label for="commentContent">Comment...</label>
+                  </div>
+                </div>
+                <div className="col s3">
+                  <Button
+                    className="cyan lighten-2 waves-light"
+                    onClick={() => this.submit()}
+                  >
+                    Submit
                 </Button>
+                </div>
               </div>
             ) : null}
-          </span>
-        </div>
-        {this.props.post.posts[this.props.index].comments != undefined && (
-          <div>
-            {this.props.post.posts[this.props.index].comments.map(
-              (comment, i) => (
-                <Comments
-                  com={this.props.post.posts[this.props.index].comments[i]}
-                  userid={this.props.auth.user.id}
-                  key={comment.commentID}
-                  id={comment.commentID}
-                  postid={this.props.id}
-                  date={comment.date}
-                  username={comment.username}
-                  firstname={comment.firstname}
-                  lastname={comment.lastname}
-                  likes={comment.likes}
-                  liked={comment.liked}
-                  submit={this.commentOnComment.bind(this)}
-                  likeAComment={this.likeAComment.bind(this)}
-                  loadMoreComments={this.loadMoreComments.bind(this)}
-                  index={i}
-                  indices={[this.props.index, i]}
-                  commentCount={comment.commentCount}
-                >
-                  {comment.content}
-                </Comments>
-              )
-            )}
           </div>
-        )}
+          {this.props.post.posts[this.props.index].comments != undefined && (
+            <div style={{ marginLeft: "30px" }}>
+              {this.props.post.posts[this.props.index].comments.map(
+                (comment, i) => (
+                  <Comments
+                    com={this.props.post.posts[this.props.index].comments[i]}
+                    userid={this.props.auth.user.id}
+                    key={comment.commentID}
+                    id={comment.commentID}
+                    postid={this.props.id}
+                    date={comment.date}
+                    username={comment.username}
+                    firstname={comment.firstname}
+                    lastname={comment.lastname}
+                    likes={comment.likes}
+                    liked={comment.liked}
+                    submit={this.commentOnComment.bind(this)}
+                    likeAComment={this.likeAComment.bind(this)}
+                    loadMoreComments={this.loadMoreComments.bind(this)}
+                    index={i}
+                    indices={[this.props.index, i]}
+                    commentCount={comment.commentCount}
+                  >
+                    {comment.content}
+                  </Comments>
+                )
+              )}
+            </div>
+          )}<div className="card"></div>
+        </div>
+
       </div>
     );
   }

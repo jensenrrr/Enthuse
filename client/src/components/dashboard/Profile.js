@@ -30,8 +30,9 @@ class Profile extends Component {
   }*/
   render() {
     return (
-      <div className="container col s8 center-align">
-        Your Posts:
+      <div className="landing-copy col s6">
+      <div style={{padding:"30px"}}>
+        <p>Your Posts:</p>
         {this.props.post.posts.map((post, index) => (
           <Post
             key={post.postID}
@@ -48,9 +49,9 @@ class Profile extends Component {
             commentCount={post.commentCount}
           >
             {post.content}
-            <br />
           </Post>
         ))}
+      </div>
       </div>
     );
   }

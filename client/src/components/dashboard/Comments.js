@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Comment, Form, Header } from "semantic-ui-react";
-import { Button, Textarea, Icon } from "react-materialize";
+import { Comment } from "semantic-ui-react";
+import { Button,  Icon } from "react-materialize";
 
 import Moment from "react-moment";
 import "moment-timezone";
@@ -114,35 +114,34 @@ class Comments extends Component {
             </Comment.Actions>
           </Comment.Content>
           {this.state.showReplyBox ? (
-            <div style={{ height: "70px" }}>
-              <Textarea
-                label="Comment.."
-                onChange={this.onChange.bind(this)}
-                value={this.state.commentContent}
-                id="commentContent"
-                s={8}
-                m={6}
-                l={4}
-                xl={8}
-              />
-              <Button
-                style={{ marginLeft: "15px", marginBottom: "10px" }}
-                small
-                onClick={() => {
-                  this.props.submit({
-                    content: this.state.commentContent,
-                    _commentid: this.props.id,
-                    _postid: this.props.postid,
-                    _userid: this.props.userid,
-                    index: this.props.index,
-                    indices: this.props.indices
-                  });
-                  this.openCommentBox();
-                }}
-              >
-                Submit
+            <div className="row">
+              <div className="col s9">
+                <div className="input-field col s12" style={{ paddingBottom: "5px", backgroundColor: "transparent" }}>
+                  <textarea onChange={this.onChange.bind(this)}
+                    value={this.state.commentContent}
+                    id="commentContent" className="materialize-textarea grey lighten-5"></textarea>
+                  <label for="commentContent">Comment...</label>
+                </div>  </div>
+              <div className="col s3">
+                <Button
+                  className="cyan lighten-2 waves-light"
+                  onClick={() => {
+                    this.props.submit({
+                      content: this.state.commentContent,
+                      _commentid: this.props.id,
+                      _postid: this.props.postid,
+                      _userid: this.props.userid,
+                      index: this.props.index,
+                      indices: this.props.indices
+                    });
+                    this.openCommentBox();
+                  }}
+                >
+                  Submit
               </Button>
+              </div>
             </div>
+
           ) : null}
           <Comment.Group>
             {this.props.com.comments &&

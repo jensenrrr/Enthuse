@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import PostCreate from "../dashboard/PostCreate";
 
 class Navbar extends Component {
   onLogoutClick = e => {
@@ -14,54 +15,48 @@ class Navbar extends Component {
     const loggedOrNot = auth => {
       return auth.isAuthenticated ? (
         <nav className="z-depth-0">
-          <div className="nav-wrapper white">
+          <div className="nav-wrapper">
             <Link
               to="/"
-              style={{
-                fontFamily: "monospace"
-              }}
-              className="col s4 brand-logo center black-text"
+              className="logo"
             >
-              <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
             <ul
               id="nav-mobile"
               className="right hide-on-med-and-down black-text "
             >
-              <li className="black-text" style={{ marginRight: "5px" }}>
-                <a
+              <li ><PostCreate /></li>
+              <li >
+                <a className="nav-items"
                   href="/profile"
-                  style={{ marginRight: "5px", color: "black" }}
                 >
                   {this.props.auth.user.username}
                 </a>
               </li>
-              <li className="blue lighten-1" onClick={this.onLogoutClick}>
-                Logout
+              <li >
+                <a className="nav-items" href="/#" onClick={this.onLogoutClick}>Logout</a>
+
               </li>
             </ul>
           </div>
         </nav>
+
       ) : (
-        <nav className="z-depth-0">
-          <div className="nav-wrapper white">
+          <nav className="z-depth-0">
+            <div className="nav-wrapper">
             <Link
               to="/landing"
-              style={{
-                fontFamily: "monospace"
-              }}
-              className="col s5 brand-logo center black-text"
+              className="logo"
             >
-              <i className="material-icons">code</i>
-              Statua
+              Enthuse
             </Link>
-          </div>
-        </nav>
-      );
+            </div>
+          </nav>
+        );
     };
 
-    return <div className="navbar-fixed">{loggedOrNot(this.props.auth)}</div>;
+    return <div className="navbar">{loggedOrNot(this.props.auth)}</div>;
   }
 }
 
