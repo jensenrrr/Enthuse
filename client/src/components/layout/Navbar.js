@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import PostCreate from "../dashboard/PostCreate";
+
 
 class Navbar extends Component {
   onLogoutClick = e => {
@@ -30,13 +31,14 @@ class Navbar extends Component {
               <li >
                 <a className="nav-items"
                   href="/profile"
+
                 >
                   {this.props.auth.user.username}
-                </a>
+                </Link>
               </li>
+
               <li >
                 <a className="nav-items" href="/#" onClick={this.onLogoutClick}>Logout</a>
-
               </li>
             </ul>
           </div>
@@ -69,7 +71,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(Navbar);
+export default connect(mapStateToProps, { logoutUser })(Navbar);

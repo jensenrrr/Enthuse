@@ -120,4 +120,51 @@ router.post("/login", (req, res) => {
   });
 });
 
+//change user information
+
+router.post("/changeHomepage", (req, res) => {
+  User.findById(mongoose.Types.ObjectID(req.body.id)).then(user => {
+    user.homePage = req.body.sets;
+    user.save().then(user => {
+      res.json(user.homePage);
+    });
+  });
+});
+
+router.post("/changeUsername", (req, res) => {
+  // Form validation
+
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const newUsername = req.body.newUsername;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // Find user by email
+  User.findOne({ email }).then(user => {
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ emailnotfound: "Email not found" });
+    }
+
+    // Check password
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        user.username = newUsername;
+        user.save();
+        return res.status(200).json({ success: true });
+      } else {
+        return res
+          .status(400)
+          .json({ passwordincorrect: "Password incorrect" });
+      }
+    });
+  });
+});
+
 module.exports = router;

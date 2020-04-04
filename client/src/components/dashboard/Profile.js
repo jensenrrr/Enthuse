@@ -5,19 +5,19 @@ import { getUserPosts } from "../../actions/postActions";
 import Post from "./Post";
 
 class Profile extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       posts: []
     };
   }
   componentDidMount() {
-    var send = {
-      username: this.props.auth.user.username
-    };
-    this.props.getUserPosts(send);
+    console.log(this.props.location.pathname.substring(9));
+    this.props.getUserPosts({
+      username: this.props.location.pathname.substring(9)
+    });
   }
-  /*
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.post) {
       if (nextProps.post.posts) {
@@ -27,7 +27,7 @@ class Profile extends Component {
         //console.log(nextProps.post.posts);
       }
     }
-  }*/
+  }
   render() {
     return (
       <div className="landing-copy col s6">
@@ -68,7 +68,4 @@ const mapStateToProps = state => ({
   post: state.post
 });
 
-export default connect(
-  mapStateToProps,
-  { getUserPosts }
-)(Profile);
+export default connect(mapStateToProps, { getUserPosts })(Profile);

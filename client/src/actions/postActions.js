@@ -47,6 +47,7 @@ export const getPosts = sets => dispatch => {
 };
 
 export const getUserPosts = username => dispatch => {
+  console.log(username);
   axios
     .post("/api/post/getuserposts", username)
     .then(res => {
@@ -59,7 +60,7 @@ export const getUserPosts = username => dispatch => {
     .catch(err =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data
+        payload: { meme: "bad" }
       })
     );
 };
