@@ -148,6 +148,7 @@ router.post("/likeComment", (req, res) => {
 });
 
 router.post("/comment", (req, res) => {
+  console.log(req.body._postid);
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     content: req.body.content,
@@ -157,6 +158,7 @@ router.post("/comment", (req, res) => {
   newComment.save().then((comment) => {
     var userid = mongoose.Types.ObjectId(req.body._userid);
     var postid = mongoose.Types.ObjectId(req.body._postid);
+    
 
     User.findById(userid).then((user) => {
       var liked = false;
@@ -203,12 +205,14 @@ router.post("/comment", (req, res) => {
   });
 });
 
+
 router.post("/commentOnComment", (req, res) => {
   //console.log(req.body);
   const cid = req.body._commentid;
   const uid = req.body._userid;
   //console.log("comment:  " + cid + "  user: " + uid);
   //console.log(req.body._user])
+  
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     _parComment: cid,
@@ -228,7 +232,6 @@ router.post("/commentOnComment", (req, res) => {
         })
       ) {
         liked = true;
-      }
       const returnComment = {
         content: comment.content,
         username: user.username,
@@ -241,7 +244,9 @@ router.post("/commentOnComment", (req, res) => {
         comments: [],
         liked: liked,
       };
+      console.log({ comment: returnComment, indices: req.body.indices });
       res.json({ comment: returnComment, indices: req.body.indices });
+      res.end();
       user._commentIDs.push(comment._id);
       user.save(function (err) {
         if (err)
@@ -499,155 +504,275 @@ router.post("/getposts", (req, res) => {
     //console.log(returnPosts);
     res.json(posts);
   });
-
-  async function processSets(sets, returnPosts) {
-    const setMap = sets.map((set) => {
-      const catLabels = set.list.map((catLabel) => {
-        return findPosts(set, catLabel, returnPosts);
-      });
-      return Promise.all(catLabels).then((returnPosts) => {
-        return returnPosts;
-      });
+});
+async function processSets(sets, returnPosts) {
+  const setMap = sets.map((set) => {
+    const catLabels = set.list.map((catLabel) => {
+      return findPosts(set, catLabel, returnPosts);
     });
-    await Promise.all(setMap);
-    return returnPosts;
-  }
+    return Promise.all(catLabels).then((returnPosts) => {
+      return returnPosts;
+    });
+  });
+  await Promise.all(setMap);
+  return returnPosts;
+}
 
-  async function findPosts(set, catLabel, returnPosts) {
-    //console.log(set.location.county);
-    await Post.find({
-      category: catLabel,
-      "location.county": set.location.county,
-      "location.country": set.location.country,
-      "location.state": set.location.state,
-    }).then((posts) => {
-      return Promise.all(
-        posts.map(async (post) => {
-          var dets = function (returnPosts, post) {
-            return new Promise(function (resolve, reject) {
-              User.findById({ _id: post._userID }).then(async (user) => {
-                if (!user) {
-                  console.log("error user not found findposts setsAndPosts");
+async function findPosts(set, catLabel, returnPosts) {
+  //console.log(set.location.county);
+  await Post.find({
+    category: catLabel,
+    "location.county": set.location.county,
+    "location.country": set.location.country,
+    "location.state": set.location.state
+  }).then((posts) => {
+    return Promise.all(
+      posts.map(async post => {
+        var dets = function(returnPosts, post) {
+          return new Promise(function(resolve, reject) {
+            User.findById({ _id: post._userID }).then(async user => {
+              if (!user) {
+                console.log("error user not found findposts setsAndPosts");
 
-                  resolve("user not foound");
-                } else {
-                  //console.log(user);
-                  var liked = false;
-                  if (
-                    user._likedPosts.some(function (arrVal) {
-                      //console.log("in user list " + arrVal);
-                      //console.log("postID" + post._id);
-                      return (
-                        JSON.parse(JSON.stringify(post._id)) ===
-                        JSON.parse(JSON.stringify(arrVal))
-                      );
-                    })
-                  ) {
-                    liked = true;
-                  }
-                  const returnComments = [];
-                  await Promise.all(
-                    post._commentIDs.map(async (commentID) => {
-                      const retC = await getComments(commentID, returnComments);
-                      return retC;
-                    })
-                  );
-
-                  const returnPost = {
-                    content: post.content,
-                    category: post.category,
-                    location: post.location,
-                    username: user.username,
-                    firstname: user.name.first,
-                    lastname: user.name.last,
-                    likes: post._likedUserIDs.length,
-                    commentCount: post.commentCount,
-                    date: parseInt(post.date),
-                    postID: post._id,
-                    liked: liked,
-                    comments: returnComments,
-                  };
-                  //console.log(returnPost);
-                  var alreadyExists = false;
-                  for (var i = 0; i < returnPosts.length; i++) {
-                    if (
-                      JSON.stringify(returnPost.postID) ==
-                      JSON.stringify(returnPosts[i].postID)
-                    ) {
-                      returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
-                      alreadyExists = true;
-                    }
-                  }
-
-                  if (!alreadyExists) {
-                    returnPosts.push(returnPost);
-                  }
-                  resolve(returnPosts);
+                resolve("user not foound");
+              } else {
+                //console.log(user);
+                var liked = false;
+                if (
+                  user._likedPosts.some(function(arrVal) {
+                    //console.log("in user list " + arrVal);
+                    //console.log("postID" + post._id);
+                    return (
+                      JSON.parse(JSON.stringify(post._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
                 }
-              });
-            });
-          };
+                const returnComments = [];
+                await Promise.all(
+                  post._commentIDs.map(async commentID => {
+                    //const retC = await getComments(commentID, returnComments);
+                    return retC;
+                  })
+                );
 
-          return dets(returnPosts, post);
+                const returnPost = {
+                  content: post.content,
+                  category: post.category,
+                  location: post.location,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: post._likedUserIDs.length,
+                  commentCount: post.commentCount,
+                  date: parseInt(post.date),
+                  postID: post._id,
+                  liked: liked,
+                  comments: returnComments
+                };
+                //console.log(returnPost);
+                var alreadyExists = false;
+                for (var i = 0; i < returnPosts.length; i++) {
+                  if (
+                    JSON.stringify(returnPost.postID) ==
+                    JSON.stringify(returnPosts[i].postID)
+                  ) {
+                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                    alreadyExists = true;
+                  }
+                }
+
+                if (!alreadyExists) {
+                  returnPosts.push(returnPost);
+                }
+                resolve(returnPosts);
+              }
+            });
+          });
+        };
+
+        return dets(returnPosts, post);
+      })
+    );
+  });
+  return returnPosts;
+}
+
+router.post("/getSinglePost", (req, res) => {
+  //console.log(req.body);
+  console.log("beforeCommentID");
+  Post.findById(mongoose.Types.ObjectId(req.body.id)).then(async post => {
+    if (!post) {
+      console.log("Post not found." + req.body);
+      res.status(400);
+      return;
+    }
+    await User.findById({ _id: post._userID }).then(async user => {
+      var liked = false;
+      if (!user) {
+        console.log("error user not found get comments");
+        resolve("error user not foudn");
+      }
+      
+      if (
+        user._likedComments.some(function(arrVal) {
+          return (
+            JSON.parse(JSON.stringify(comment._id)) ===
+            JSON.parse(JSON.stringify(arrVal))
+          );
         })
-      );
+      ) {
+        liked = true;
+      }
+      const returnComments = [];
+      await getComments(post._id, returnComments);
+      returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+      const returnPost = {
+        content: post.content,
+        category: post.category,
+        location: post.location,
+        username: user.username,
+        firstname: user.name.first,
+        lastname: user.name.last,
+        likes: post._likedUserIDs.length,
+        commentCount: post.commentCount,
+        date: parseInt(post.date),
+        postID: post._id,
+        liked: liked,
+        hRank: post.hRank,
+        comments: returnComments
+      };
+      console.log(returnPost);
+      res.json(returnPost);
     });
-    return returnPosts;
+  });
+  async function getComments(parid, returnComments) {
+    await Comment.find({ _parComment: null, _postID: parid })
+      .sort({ hRank: -1 })
+      .limit(3)
+      .then(async comments => {
+        //console.log(comments);
+        //console.log(comments.size);
+
+        var dets = function(returnComments, comment) {
+          return new Promise(function(resolve, reject) {
+            //console.log(comment);
+            User.findById({ _id: comment._userID }).then(async user => {
+              var liked = false;
+              if (
+                user._likedComments.some(function(arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                await getCommentsofComment(comment._id, nextComments, 1);
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank
+              };
+              //console.log(returnPost);
+              //console.log("dets:   " + returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            });
+          });
+        };
+
+        await Promise.all(
+          comments.map(async comment => {
+            return await dets(returnComments, comment);
+          })
+        );
+      });
+    return returnComments;
   }
 
-  async function getComments(commentID, returnComments) {
-    await Comment.findById(commentID).then((comment) => {
-      // console.log(comment);
-      var dets = function (returnComments, comment) {
-        return new Promise(function (resolve, reject) {
-          // console.log(comment);
-          User.findById({ _id: comment._userID }).then(async (user) => {
-            var liked = false;
-            if (!user) {
-              console.log("error user not found get comments");
-              resolve("error user not foudn");
-              return;
-            }
-            if (
-              user._likedComments.some(function (arrVal) {
-                return (
-                  JSON.parse(JSON.stringify(comment._id)) ===
-                  JSON.parse(JSON.stringify(arrVal))
-                );
-              })
-            ) {
-              liked = true;
-            }
-            const nextComments = [];
-            if (comment._commentIDs.length > 0) {
-              await Promise.all(
-                comment._commentIDs.map(async (commentID) => {
-                  const retC = await getComments(commentID, nextComments);
-                  return retC;
+  async function getCommentsofComment(parid, returnComments, level) {
+    level++;
+    
+    await Comment.find({ _parComment: parid })
+      .sort({ hRank: -1 })
+      .limit(2)
+      .then(async comments => {
+        //console.log(comments);
+        //console.log(comments.size);
+
+        var dets = function(returnComments, comment) {
+          return new Promise(function(resolve, reject) {
+            //console.log(comment);
+            User.findById({ _id: comment._userID }).then(async user => {
+              var liked = false;
+              if (
+                user._likedComments.some(function(arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
                 })
-              );
-            }
-            const returnComment = {
-              content: comment.content,
-              username: user.username,
-              firstname: user.name.first,
-              lastname: user.name.last,
-              likes: comment._likedUserIDs.length,
-              commentCount: comment._commentIDs.length,
-              date: parseInt(comment.date),
-              commentID: comment._id,
-              comments: nextComments,
-              liked: liked,
-            };
-            //console.log(returnPost);
-            returnComments.push(returnComment);
-            //console.log(returnComments);
-            resolve(returnComments);
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                if (level < 4)
+                  await await getCommentsofComment(
+                    comment._id,
+                    nextComments,
+                    level + 1
+                  );
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank
+              };
+              //console.log(returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            });
           });
-        });
-      };
-      return dets(returnComments, comment);
-    });
+        };
+
+        await Promise.all(
+          comments.map(async comment => {
+            return await dets(returnComments, comment);
+          })
+        );
+      });
     return returnComments;
   }
 });

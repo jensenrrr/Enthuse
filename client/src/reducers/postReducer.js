@@ -5,7 +5,10 @@ import {
   POST_UPVOTE,
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
-  LOAD_COMMENT
+  LOAD_COMMENT,
+  SINGLEPOST_GET,
+  SINGLEPOST_COMMENT_ON_COMMENT,
+  SINGLEPOST_LOAD_COMMENT
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -26,6 +29,11 @@ export default function(state = initialState, action) {
         posts: action.payload,
         ready: true
       };
+    case SINGLEPOST_GET:
+      return {
+        ...state,
+        singlepost: action.payload
+        };
     case POST_COMMENT:
       const updatedPosts = state.posts;
       updatedPosts[action.payload.index].comments.push(action.payload.comment);
@@ -39,11 +47,17 @@ export default function(state = initialState, action) {
       action.payload.indices.forEach((element, i) => {
         if (i >= 1) meme = meme.comments[element];
       });
+    case SINGLEPOST_COMMENT_ON_COMMENT:
+      var upS = state.singlepost;
+      
+      action.payload.indices.forEach((element, i) => {
+        if (i >= 1) upS = upS.comments[element];
+      });
 
-      meme.comments.push(action.payload.comment);
+      upS.comments.push(action.payload.comment);
       return {
         ...state,
-        posts: up
+        posts: upS
       };
     case LIKE_COMMENT:
       const upCommentLikes = state.posts;
@@ -58,6 +72,8 @@ export default function(state = initialState, action) {
         posts: upCommentLikes
       };
     case LOAD_COMMENT:
+      return state;
+    case SINGLEPOST_LOAD_COMMENT:
       return state;
     case POST_UPVOTE:
       return update(state, {

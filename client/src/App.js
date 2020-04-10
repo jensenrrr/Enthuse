@@ -14,6 +14,7 @@ import Login from "./components/auth/Login";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 import Profile from "./components/dashboard/Profile";
+import ViewPost from "./components/dashboard/ViewPost";
 //import Moment from "react-moment";
 //import "moment-timezone";
 import "./App.css";
@@ -47,6 +48,7 @@ class App extends Component {
             <Route exact path="/landing" component={Landing} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
+            <Route path="/post" component={ViewPost} />
             <Switch>
               <PrivateRoute exact path="/" component={Dashboard} />
             </Switch>

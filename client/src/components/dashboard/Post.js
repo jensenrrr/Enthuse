@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import Comments from "./Comments";
 import {
   upVotePost,
   comment,
   commentOnComment,
   likeComment,
-  loadRestComments
+  loadRestComments,
+  getSinglePost
 } from "../../actions/postActions";
 import { Button } from "react-materialize";
 import Moment from "react-moment";
@@ -106,11 +108,22 @@ class Post extends Component {
   loadMoreComments = e => {
     this.props.loadRestComments(e);
   };
+  getSinglePost = e => {
+    this.props.getSinglePost(e);
+  };
 
   render() {
     return (
       <div className="row">
         <div className="card grey lighten-5 hoverable">
+        <div>
+          <Link
+                  to={`/post/${this.props.id}`}
+                  style={{ marginRight: "5px", color: "black" }}
+                >
+                  {"View Post"}
+          </Link>
+          </div>
           <div>
             <h1> {this.props.username} </h1>
             <h2> {this.props.firstname} {this.props.lastname}</h2>
@@ -227,7 +240,8 @@ export default connect(mapStateToProps, {
   comment,
   commentOnComment,
   likeComment,
-  loadRestComments
+  loadRestComments,
+  getSinglePost
 
 })(Post);
 
