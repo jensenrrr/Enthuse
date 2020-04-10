@@ -11,10 +11,10 @@ import {
 } from "./types";
 
 export const createPost = newPost => dispatch => {
-  console.log(newPost);
-  console.log(newPost.imgArr);
+  //console.log(newPost);
+  //console.log(newPost.imgArr);
   axios
-    .post("/api/post/ups", newPost)
+    .post("/api/post/create/c", newPost)
     .then(res => {
       dispatch({
         type: POST_CREATE,

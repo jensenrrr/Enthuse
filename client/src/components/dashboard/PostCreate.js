@@ -75,9 +75,7 @@ class PostCreate extends Component {
     var imgArr = this.state.pictures;
     var image = this.state.pictures[0];
     var testing = testIMG;
-    const data = new FormData();
-    data.append("file", this.state.pictures[0]);
-    data.append("meme", "six");
+
     console.log("should be -> " + this.state.pictures[0]);
     var newPost = {
       content: this.state.content,
@@ -92,10 +90,22 @@ class PostCreate extends Component {
     };
     //console.log("newPost: " + newPost);
     console.log("images: " + newPost.imgArr);
+    var hasImage = false;
+    if (this.state.pictures.length > 0) hasImage = true;
+    var formData = new FormData();
+    formData.append("file", image);
+    formData.append("country", this.state.location.country);
+    formData.append("state", this.state.location.state);
+    formData.append("county", this.state.location.county);
+    formData.append("city", this.state.location.city);
+    formData.append("nickname", this.state.location.nickname);
+    formData.append("hasImage", hasImage);
+    formData.append("category", this.state.category);
 
-    //console.log(imgArr);
-    console.log(data);
-    this.props.createPost(data, this.props.history);
+    formData.append("content", this.state.content);
+    console.log(formData);
+
+    this.props.createPost(formData);
   };
 
   onChange = e => {
@@ -173,4 +183,7 @@ const mapStateToProps = state => ({
   set: state.set
 });
 
-export default connect(mapStateToProps, { createPost })(PostCreate);
+export default connect(
+  mapStateToProps,
+  { createPost }
+)(PostCreate);

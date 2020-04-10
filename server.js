@@ -17,7 +17,7 @@ const app = express();
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
-    extended: false
+    extended: true,
   })
 );
 app.use(bodyParser.json());
@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 const port = process.env.PORT || 5000;
 
 //initialize db connection
-init_db(function(err) {
+init_db(function (err) {
   if (err) throw err;
   app.listen(port, () =>
     console.log(`Server up and running on port ${port} !`)
@@ -53,7 +53,7 @@ setIntervalAsync(hRankUpdateComments, the_interval);
 async function hRankUpdateComments() {
   console.log("commup");
 
-  Comment.find().then(comments => {
+  Comment.find().then((comments) => {
     return new Promise((resolve, reject) => {
       comments.map((comment, i) => {
         if (comment.hRank > 0.001) {
@@ -71,7 +71,7 @@ async function hRankUpdateComments() {
 }
 async function hRankUpdatePosts() {
   console.log("postup");
-  Post.find().then(posts => {
+  Post.find().then((posts) => {
     return new Promise((resolve, reject) => {
       posts.map((post, i) => {
         if (post.hRank > 0.001) {
