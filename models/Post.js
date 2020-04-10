@@ -32,7 +32,7 @@ const PostSchema = new Schema({
   location: {
     country: { type: String, required: true },
     state: { type: String, required: true },
-    city: { type: String, required: true },
+    city: { type: String, default: "" },
     county: { type: String, required: true },
     nickname: { type: String, default: "" }
   },
