@@ -215,41 +215,46 @@ router.post("/setsAndPosts", (req, res) => {
             //console.log(comment);
             User.findById({ _id: comment._userID }).then(async user => {
               var liked = false;
-              if (
-                user._likedComments.some(function(arrVal) {
-                  return (
-                    JSON.parse(JSON.stringify(comment._id)) ===
-                    JSON.parse(JSON.stringify(arrVal))
-                  );
-                })
-              ) {
-                liked = true;
+              if (!user) {
+                console.log("user not found");
+                resolve();
+              } else {
+                if (
+                  user._likedComments.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
+
+                if (comment._commentIDs.length > 0) {
+                  await getCommentsofComment(comment._id, nextComments, 1);
+                }
+
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank
+                };
+                //console.log(returnPost);
+                //console.log("dets:   " + returnComment.content);
+
+                returnComments.push(returnComment);
+                //console.log(returnComments);
+                resolve(returnComments);
               }
-              const nextComments = [];
-
-              if (comment._commentIDs.length > 0) {
-                await getCommentsofComment(comment._id, nextComments, 1);
-              }
-
-              const returnComment = {
-                content: comment.content,
-                username: user.username,
-                firstname: user.name.first,
-                lastname: user.name.last,
-                likes: comment._likedUserIDs.length,
-                commentCount: comment._commentIDs.length,
-                date: parseInt(comment.date),
-                commentID: comment._id,
-                comments: nextComments,
-                liked: liked,
-                hRank: comment.hRank
-              };
-              //console.log(returnPost);
-              //console.log("dets:   " + returnComment.content);
-
-              returnComments.push(returnComment);
-              //console.log(returnComments);
-              resolve(returnComments);
             });
           });
         };
@@ -277,45 +282,51 @@ router.post("/setsAndPosts", (req, res) => {
             //console.log(comment);
             User.findById({ _id: comment._userID }).then(async user => {
               var liked = false;
-              if (
-                user._likedComments.some(function(arrVal) {
-                  return (
-                    JSON.parse(JSON.stringify(comment._id)) ===
-                    JSON.parse(JSON.stringify(arrVal))
-                  );
-                })
-              ) {
-                liked = true;
+              if (!user) {
+                console.log("user not found, comment id - " + parid);
+
+                resolve();
+              } else {
+                if (
+                  user._likedComments.some(function(arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
+
+                if (comment._commentIDs.length > 0) {
+                  if (level < 4)
+                    await await getCommentsofComment(
+                      comment._id,
+                      nextComments,
+                      level + 1
+                    );
+                }
+
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank
+                };
+                //console.log(returnComment.content);
+
+                returnComments.push(returnComment);
+                //console.log(returnComments);
+                resolve(returnComments);
               }
-              const nextComments = [];
-
-              if (comment._commentIDs.length > 0) {
-                if (level < 4)
-                  await await getCommentsofComment(
-                    comment._id,
-                    nextComments,
-                    level + 1
-                  );
-              }
-
-              const returnComment = {
-                content: comment.content,
-                username: user.username,
-                firstname: user.name.first,
-                lastname: user.name.last,
-                likes: comment._likedUserIDs.length,
-                commentCount: comment._commentIDs.length,
-                date: parseInt(comment.date),
-                commentID: comment._id,
-                comments: nextComments,
-                liked: liked,
-                hRank: comment.hRank
-              };
-              //console.log(returnComment.content);
-
-              returnComments.push(returnComment);
-              //console.log(returnComments);
-              resolve(returnComments);
             });
           });
         };

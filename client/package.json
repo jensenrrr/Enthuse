@@ -15,6 +15,7 @@
     "react-fuzzy": "^1.0.0",
     "react-fuzzy-picker": "^1.2.1",
     "react-fuzzy-reskin": "^0.5.2",
+    "react-images-upload": "^1.2.8",
     "react-materialize": "^3.3.1",
     "react-moment": "^0.9.2",
     "react-redux": "^5.1.1",
@@ -23,6 +24,7 @@
     "react-select": "^3.1.0",
     "react-simple-tree-menu": "^1.1.0",
     "react-use-fuzzy": "^1.0.4",
+
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "semantic-ui-react": "^0.87.2"
