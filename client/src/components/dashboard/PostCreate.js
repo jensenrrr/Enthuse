@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createPost } from "../../actions/postActions";
-import { Modal, Button } from "react-materialize";
+import { Modal } from "react-materialize";
 import HobbyTree from "../set/HobbyTree";
 import Location from "../set/Location";
 import testIMG from "../../data/Lab1.PNG";
@@ -114,28 +114,32 @@ class PostCreate extends Component {
 
   render() {
     return (
-      <Modal trigger={<Button waves="light">Create a Post.</Button>}>
+      <Modal trigger={<a className="nav-items" href="/#"
+      >
+        Post
+      </a>}>
         <form noValidate onSubmit={this.onSubmit}>
-          <div className="input-field col s12">
-            <input
-              onChange={this.onChange}
-              value={this.state.content}
-              id="content"
-              type="text"
-            />
-            <label htmlFor="Thoughts">Thoughts</label>
-          </div>
+        <div className="input-field col s12" style={{ paddingBottom: "5px", backgroundColor: "transparent" }}>
+                    <textarea onChange={this.onChange}
+                      value={this.state.content}
+                      id="content" className="materialize-textarea grey lighten-5"></textarea>
+                    <label for="commentContent">Thoughts...</label>
+                  </div>
+
           <br />
           <div className="row">
-            <div className="col s6">
-              Location
-              <Location /> {this.state.location.county}
-            </div>
-            <div className="col s6">
-              Categories
-              <HobbyTree />
-              {this.state.category}
-            </div>
+          <div className="left-align">
+                      <div className="col s6">
+                        <h1>Location</h1>
+                        <Location />
+                        <h3>Selected Location: {this.state.location.city}</h3>
+                      </div>
+                      <div className="col s6">
+                        <h1>Categories</h1>
+                        <HobbyTree />
+                        <h3>Selected Category: {this.state.category}</h3>
+                      </div>
+                    </div>
           </div>
           <div>
             <ImageUploader
@@ -152,14 +156,8 @@ class PostCreate extends Component {
             style={{ paddingLeft: "11.250px" }}
           >
             <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
               type="submit"
-              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+              className="btn btn-large waves-effect waves-light hoverable cyan lighten-3"
             >
               Post
             </button>

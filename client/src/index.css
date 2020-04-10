@@ -1,3 +1,9 @@
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@font-face {
+  font-family: 'Cocogoose';
+  src: local('Cocogoose'), url(./fonts/Cocogoose.ttf) format('truetype');
+}
 body {
   margin: 0;
   padding: 0;

@@ -41,7 +41,9 @@ class HobbyTree extends Component {
           });
           this.props.setCat({ category: label, list: list });
         }}
+  
       />
+   
     );
   }
 }
