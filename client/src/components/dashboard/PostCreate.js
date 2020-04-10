@@ -5,23 +5,57 @@ import { createPost } from "../../actions/postActions";
 import { Modal, Button } from "react-materialize";
 import HobbyTree from "../set/HobbyTree";
 import Location from "../set/Location";
+import testIMG from "../../data/Lab1.PNG";
+import ImageUploader from "react-images-upload";
 
 class PostCreate extends Component {
   constructor() {
     super();
     this.state = {
+      pictures: [],
+      label: "Upload Images!",
       content: "",
       category: "",
       location: {
         country: "",
         state: "",
-        city:"",
+        city: "",
         county: "",
-        nickname:""
+        nickname: ""
       }
     };
+    this.onDrop = this.onDrop.bind(this);
   }
 
+  onDrop(picture) {
+    if (this.state.pictures.length < 1) {
+      this.setState({
+        label: "Uploaded Images: "
+      });
+    }
+    this.setState(
+      {
+        pictures: this.state.pictures.concat(picture)
+      },
+      () => {
+        this.changeLabel();
+      }
+    );
+  }
+
+  changeLabel() {
+    this.state.pictures.map((img, index) => {
+      if (index == 0) {
+        this.setState({
+          label: this.state.label.concat(img.name)
+        });
+      } else {
+        this.setState({
+          label: this.state.label.concat(", " + img.name)
+        });
+      }
+    });
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.set) {
       if (nextProps.set.category) {
@@ -30,23 +64,38 @@ class PostCreate extends Component {
         });
       }
       if (nextProps.set.location) {
-          this.setState({
-            location: nextProps.set.location
-          });
+        this.setState({
+          location: nextProps.set.location
+        });
       }
     }
   }
   onSubmit = e => {
     e.preventDefault();
-
-    const newPost = {
+    var imgArr = this.state.pictures;
+    var image = this.state.pictures[0];
+    var testing = testIMG;
+    const data = new FormData();
+    data.append("file", this.state.pictures[0]);
+    data.append("meme", "six");
+    console.log("should be -> " + this.state.pictures[0]);
+    var newPost = {
       content: this.state.content,
       category: this.state.category,
       location: this.state.location,
-      _userid: this.props.auth.user.id
+      _userid: this.props.auth.user.id,
+      hasImage: this.state.pictures.length > 0,
+      imgArr: imgArr,
+      file: imgArr[0],
+      image: image,
+      testing: testing
     };
-    console.log(newPost);
-    this.props.createPost(newPost, this.props.history);
+    //console.log("newPost: " + newPost);
+    console.log("images: " + newPost.imgArr);
+
+    //console.log(imgArr);
+    console.log(data);
+    this.props.createPost(data, this.props.history);
   };
 
   onChange = e => {
@@ -70,8 +119,7 @@ class PostCreate extends Component {
           <div className="row">
             <div className="col s6">
               Location
-              <Location />{" "}
-              {this.state.location.county}
+              <Location /> {this.state.location.county}
             </div>
             <div className="col s6">
               Categories
@@ -79,7 +127,16 @@ class PostCreate extends Component {
               {this.state.category}
             </div>
           </div>
-
+          <div>
+            <ImageUploader
+              withIcon={true}
+              buttonText="Choose images"
+              label={this.state.label}
+              onChange={this.onDrop}
+              imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+              maxFileSize={5242880}
+            />
+          </div>
           <div
             className="col s12  center-align"
             style={{ paddingLeft: "11.250px" }}
@@ -116,7 +173,4 @@ const mapStateToProps = state => ({
   set: state.set
 });
 
-export default connect(
-  mapStateToProps,
-  { createPost }
-)(PostCreate);
+export default connect(mapStateToProps, { createPost })(PostCreate);

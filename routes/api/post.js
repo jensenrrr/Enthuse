@@ -11,6 +11,70 @@ const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
 
+const get_db = require("../../db").get_db;
+
+const db_inst = get_db();
+const path = require("path");
+
+const multer = require("multer");
+const GridFsStorage = require("multer-gridfs-storage");
+const Grid = require("gridfs-stream");
+let gfs;
+
+gfs = Grid(db_inst, mongoose.mongo);
+gfs.collection("uploads");
+
+// Create storage engine
+const storage = new GridFsStorage({
+  db: db_inst,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      const filename = file.originalname;
+      const fileInfo = {
+        filename: filename,
+        bucketName: "uploads"
+      };
+      //req.imageInfo.push(fileInfo);
+      //console.log(file);
+      resolve(fileInfo);
+    });
+  }
+});
+const uploadImages = multer({ storage }).fields([
+  { name: "imgArr", maxCount: 8 }
+]);
+
+const old = multer({ storage });
+const up = multer({ storage }).any("files");
+const single = multer({ storage }).single("img");
+
+router.post("/up", (req, res) => {
+  //req.imageInfo = [];
+  up(req, res, function(err) {
+    console.log("okay");
+    console.log(err);
+  });
+
+  console.log(req);
+  res.sendStatus(200);
+  res.end();
+});
+
+router.post("/ups", old.single("file"), (req, res) => {
+  console.log("ups");
+  console.log(req.body);
+  res.sendStatus(200);
+  res.end();
+});
+/*
+router.post(
+  "/uploadMultiple",
+  upload.fields([{ name: "pictures", maxCount: 5 }]),
+  (req, res) => {
+    console.log(req);
+  }
+);
+*/
 router.post("/likeComment", (req, res) => {
   console.log("likecomment");
   console.log(req.body);
@@ -282,14 +346,18 @@ router.post("/getComments", (req, res) => {
 });
 //passport.authenticate,
 router.post(
-  "/create",
+  "/create/c",
+  old.single("file"),
   passport.authenticate("jwt", {
     session: false
   }),
   (req, res) => {
+    console.log(req.body);
+
     const newPost = new Post({
       _userID: mongoose.Types.ObjectId(req.body._userid),
       category: req.body.category,
+      images: [],
       hasImage: false,
       location: {
         country: req.body.location.country,
@@ -300,10 +368,18 @@ router.post(
       },
       content: req.body.content
     });
+
     User.findById(mongoose.Types.ObjectId(req.body._userid)).then(user => {
       if (!user) {
         res.status(400).json("user does not exist");
       } else {
+        single(req, res, function(err) {
+          if (req.file) {
+            console.log(req.file);
+          } else {
+            console.log("fail");
+          }
+        });
         newPost
           .save()
           .then(post => {
@@ -578,4 +654,75 @@ router.post("/getposts", (req, res) => {
     return returnComments;
   }
 });
+
+/*create testing
+no auth */
+router.post("/c", (req, res) => {
+  console.log(req.body);
+  const newPost = new Post({
+    _userID: mongoose.Types.ObjectId(req.body._userid),
+    category: req.body.category,
+    images: [],
+    hasImage: false,
+    location: {
+      country: "United States",
+      state: "Washington",
+      city: "Pierce",
+      county: "Alder",
+      nickname: ""
+    },
+    content: "s"
+  });
+  console.log(req.body.imgArr);
+  User.findById(mongoose.Types.ObjectId(req.body._userid)).then(user => {
+    if (!user) {
+      res.status(400).json("user does not exist");
+    } else {
+      uploadImages(req, res, function(err) {
+        console.log("upload attempt");
+        if (err) {
+          console.log("failed image upload");
+          res.json({ success: false, message: "Could not upload images" });
+          res.end();
+        } else {
+          /*
+            Hotel.findOne({ _id: req.body._id })
+              .populate("users")
+              .exec(function(err, hotel) {
+                if (err) {
+                  res.json({
+                    success: false,
+                    message: "Could not save uploaded images to database"
+                  });
+                  res.end();
+                } else {
+                  for (var x = 0; x < uplodedImages.length; x++)
+                    hotel.images.push(uplodedImages[x]);
+                  hotel.save();
+                  res.json({
+                    success: true,
+                    message: "Gallery image uploaded"
+                  });
+                  res.end();
+                }
+              });*/
+        }
+      });
+      newPost
+        .save()
+        .then(post => {
+          //updateUserPostList(mongoose.Types.ObjectId(req.body._userid), post._id);
+          res.json(post);
+
+          user._postIDs.push(post._id);
+          user.save(function(err) {
+            if (err) console.log("Adding post._id to _postIDs failed.  " + err);
+          });
+        })
+        .catch(err => console.log(err));
+    }
+  });
+  //updateUserPostList(mongoose.Types.ObjectId(req.body._userid));
+});
+
 module.exports = router;
