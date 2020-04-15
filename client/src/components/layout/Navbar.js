@@ -31,10 +31,9 @@ class Navbar extends Component {
               <li >
                 <a className="nav-items"
                   href="/profile"
-
                 >
                   {this.props.auth.user.username}
-                </Link>
+                  </a>
               </li>
 
               <li >

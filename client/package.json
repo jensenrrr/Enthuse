@@ -24,7 +24,6 @@
     "react-select": "^3.1.0",
     "react-simple-tree-menu": "^1.1.0",
     "react-use-fuzzy": "^1.0.4",
-
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "semantic-ui-react": "^0.87.2"

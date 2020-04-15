@@ -103,7 +103,7 @@ export const upVotePost = upIDs => dispatch => {
     .catch(err =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data
+        payload: "err"
       })
     );
 };
@@ -175,7 +175,7 @@ export const likeComment = data => dispatch => {
     .catch(err =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data
+        payload: "err"
       })
     );
 };

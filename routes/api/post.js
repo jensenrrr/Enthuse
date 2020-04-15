@@ -96,7 +96,7 @@ router.post("/likeComment", (req, res) => {
           comment.hRank -= Number(
             1 /
               (Math.pow(comment._likedUserIDs.length - 1, 1.2) * 0.1 +
-                Math.pow(comment.commentCount.length, 1.2) * 0.05 +
+                Math.pow(comment.commentCount, 1.2) * 0.05 +
                 1)
           );
         }
@@ -122,7 +122,7 @@ router.post("/likeComment", (req, res) => {
         comment.hRank += Number(
           1 /
             (Math.pow(Number(comment._likedUserIDs.length) - 1, 1.2) * 0.1 +
-              Math.pow(Number(comment.commentCount.length), 1.2) * 0.05 +
+              Math.pow(Number(comment.commentCount), 1.2) * 0.05 +
               1)
         );
         /*
@@ -220,8 +220,8 @@ router.post("/commentOnComment", (req, res) => {
     _postID: mongoose.Types.ObjectId(req.body._postid),
   });
   // console.log("comment:  " + cid + "  user: " + uid);
-  newComment.save().then((comment) => {
-    User.findById(uid).then((user) => {
+  newComment.save().then(comment => {
+    User.findById(uid).then(user => {
       var liked = false;
       if (
         user._likedComments.some(function (arrVal) {
@@ -232,6 +232,7 @@ router.post("/commentOnComment", (req, res) => {
         })
       ) {
         liked = true;
+      };
       const returnComment = {
         content: comment.content,
         username: user.username,
@@ -418,16 +419,29 @@ router.post("/upvote", (req, res) => {
       })
     ) {
       //console.log("dislike\\n\n\n\n");
+      //console.log(post._likedUserIDs.length);
       Post.findOne(postID).then((post) => {
-        // console.log(post);
+        //console.log(post._likedUserIDs.length);
         user._likedPosts.pull(post._id);
-        // console.log(req.body.userid);
+         
         post._likedUserIDs.pull(user._id);
-        post.hRank -=
+        //console.log( Math.pow(-1, 1.2));
+        if(Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN)
+        {
+          post.hRank -=
           1 /
           (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
-            Math.pow(post.commentCount.length, 1.2) * 0.05 +
+            Math.pow(post.commentCount, 1.2) * 0.05 +
             1);
+        }
+        else{
+          post.hRank -=
+          1 /
+          (1 * 0.1 +
+            Math.pow(post.commentCount, 1.2) * 0.05 +
+            1);
+        }
+       
 
         post.save().then((post) => {
           user.save().then((user) =>
@@ -445,11 +459,21 @@ router.post("/upvote", (req, res) => {
         user._likedPosts.push(post._id);
         //console.log(req.body.userid);
         post._likedUserIDs.push(user._id);
-        post.hRank +=
+        if(Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN)
+        {
+          post.hRank +=
           1 /
-          (Math.pow(post._likedUserIDs.length, 1.2) * 0.1 +
-            Math.pow(post.commentCount.length, 1.2) * 0.05 +
+          (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
+            Math.pow(post.commentCount, 1.2) * 0.05 +
             1);
+        }
+        else{
+          post.hRank +=
+          1 /
+          (1 * 0.1 +
+            Math.pow(post.commentCount, 1.2) * 0.05 +
+            1);
+        }
         post.save().then((post) => {
           user.save().then((user) =>
             res.json({
