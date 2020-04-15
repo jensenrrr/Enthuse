@@ -5,7 +5,8 @@ import {
   POST_UPVOTE,
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
-  LOAD_COMMENT
+  LOAD_COMMENT,
+  LOAD_IMAGE
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -33,6 +34,9 @@ export default function(state = initialState, action) {
         ...state,
         posts: updatedPosts
       };
+    case LOAD_IMAGE:
+      const upPosts = state.posts;
+      upPosts[action.payload.index].images[0] = action.payload.image;
     case POST_COMMENT_ON_COMMENT:
       const up = state.posts;
       var meme = up[action.payload.indices[0]];

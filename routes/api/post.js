@@ -146,6 +146,7 @@ router.post("/likeComment", (req, res) => {
     }
   });
 });
+router.post("/getimage", (req, res) => {});
 
 router.post("/comment", (req, res) => {
   const newComment = new Comment({
@@ -492,7 +493,7 @@ router.post("/getuserposts", (req, res) => {
 });
 
 router.post("/getposts", (req, res) => {
-  // console.log(req.body);
+  console.log("get posts w/ images");
   const returnPosts = [];
   processSets(req.body, returnPosts).then((posts) => {
     returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
@@ -566,7 +567,12 @@ router.post("/getposts", (req, res) => {
                     postID: post._id,
                     liked: liked,
                     comments: returnComments,
+                    hasImage: post.hasImage,
+                    images: [],
                   };
+                  if (post.hasImage) {
+                    await getImage(post._imageIDs[0], returnPost);
+                  }
                   //console.log(returnPost);
                   var alreadyExists = false;
                   for (var i = 0; i < returnPosts.length; i++) {
@@ -594,7 +600,55 @@ router.post("/getposts", (req, res) => {
     });
     return returnPosts;
   }
+  async function getImage(imageID, returnPost) {
+    console.log("get image");
+    gfs.collection("uploads").findOne(
+      {
+        _id: imageID,
+      },
+      (err, file) => {
+        console.log("finding file");
+        if (file) {
+          if (
+            file.contentType == "image/png" ||
+            file.contentType == "image/jpeg"
+          ) {
+            var mime = file.contentType;
+            res.set("Content-Type", mime);
+            let readStream = gfs.createReadStream({
+              filename: file.filename,
+              root: "uploads",
+            });
+            return readStream;
+          }
+        }
+      }
+    );
 
+    var mime = file.contentType;
+    var filename = file.filename;
+    res.set("Content-Type", mime);
+    //res.set('Content-Disposition', "inline; filename=" + filename);
+    var read_stream = gfs.createReadStream({ _id: file_id });
+    read_stream.pipe(res);
+    /*
+    gfs.files.find({ _id: imageID }).toArray(function (err, files) {
+      if (!files || files.length === 0) {
+        console.log("not found");
+        return 0;
+      }
+
+      var readstream = gfs.createReadStream({
+        filename: files[0].filename,
+      });
+      res.set("Content-Type", files[0].contentType);
+      var image = readstream.pipe(res);
+      console.log(image);
+      returnPost.images.push(image);
+      return;
+    });
+    */
+  }
   async function getComments(commentID, returnComments) {
     await Comment.findById(commentID).then((comment) => {
       // console.log(comment);

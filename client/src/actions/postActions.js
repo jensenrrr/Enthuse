@@ -7,8 +7,26 @@ import {
   POST_ERRORS,
   LIKE_COMMENT,
   POST_COMMENT_ON_COMMENT,
-  LOAD_COMMENT
+  LOAD_COMMENT,
+  LOAD_IMAGE
 } from "./types";
+
+export const getImage = data => dispatch => {
+  axios
+    .post("/api/post/getimage", data)
+    .then(res => {
+      dispatch({
+        type: LOAD_IMAGE,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: POST_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
 
 export const createPost = newPost => dispatch => {
   //console.log(newPost);
