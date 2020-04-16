@@ -15,13 +15,14 @@ const get_db = require("../../db").get_db;
 
 const db_inst = get_db();
 const path = require("path");
+var stringify = require("json-stringify-safe");
 
 const multer = require("multer");
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 let gfs;
 
-gfs = Grid(db_inst, mongoose.mongo);
+gfs = Grid(db_inst.db, mongoose.mongo);
 gfs.collection("uploads");
 
 // Create storage engine
@@ -158,7 +159,6 @@ router.post("/comment", (req, res) => {
   newComment.save().then((comment) => {
     var userid = mongoose.Types.ObjectId(req.body._userid);
     var postid = mongoose.Types.ObjectId(req.body._postid);
-    
 
     User.findById(userid).then((user) => {
       var liked = false;
@@ -205,14 +205,13 @@ router.post("/comment", (req, res) => {
   });
 });
 
-
 router.post("/commentOnComment", (req, res) => {
   //console.log(req.body);
   const cid = req.body._commentid;
   const uid = req.body._userid;
   //console.log("comment:  " + cid + "  user: " + uid);
   //console.log(req.body._user])
-  
+
   const newComment = new Comment({
     _userID: mongoose.Types.ObjectId(req.body._userid),
     _parComment: cid,
@@ -220,8 +219,8 @@ router.post("/commentOnComment", (req, res) => {
     _postID: mongoose.Types.ObjectId(req.body._postid),
   });
   // console.log("comment:  " + cid + "  user: " + uid);
-  newComment.save().then(comment => {
-    User.findById(uid).then(user => {
+  newComment.save().then((comment) => {
+    User.findById(uid).then((user) => {
       var liked = false;
       if (
         user._likedComments.some(function (arrVal) {
@@ -232,7 +231,7 @@ router.post("/commentOnComment", (req, res) => {
         })
       ) {
         liked = true;
-      };
+      }
       const returnComment = {
         content: comment.content,
         username: user.username,
@@ -347,6 +346,44 @@ router.post("/getComments", (req, res) => {
     });
   }
 });
+router.post("/getimage", (req, res) => {
+  Post.findById(mongoose.Types.ObjectId(req.body.postid)).then((post) => {
+    if (post == null) {
+      console.log("not found");
+      res.status(400).json("Post not found.");
+    }
+    //console.log("get image for: " + post);
+    var imgId = mongoose.Types.ObjectId(post._imageIDs[0]);
+    console.log(post.content + "   " + imgId);
+    gfs.files.findOne(
+      {
+        filename: "grubChange.PNG",
+      },
+      (err, file) => {
+        console.log(file._id);
+        if (!file || file.length === 0) {
+          return res.status(404).json({
+            err: "No file exists",
+          });
+        }
+        // Check if image
+        if (
+          file.contentType === "image/jpeg" ||
+          file.contentType === "image/png"
+        ) {
+          // Read output to browser
+          const readstream = gfs.createReadStream(file.filename);
+          readstream.pipe(res);
+        } else {
+          res.status(404).json({
+            err: "Not an image",
+          });
+        }
+      }
+    );
+  });
+});
+
 //passport.authenticate,
 router.post(
   "/create/c",
@@ -423,25 +460,19 @@ router.post("/upvote", (req, res) => {
       Post.findOne(postID).then((post) => {
         //console.log(post._likedUserIDs.length);
         user._likedPosts.pull(post._id);
-         
+
         post._likedUserIDs.pull(user._id);
         //console.log( Math.pow(-1, 1.2));
-        if(Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN)
-        {
+        if (Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN) {
           post.hRank -=
-          1 /
-          (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
-            Math.pow(post.commentCount, 1.2) * 0.05 +
-            1);
-        }
-        else{
+            1 /
+            (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
+              Math.pow(post.commentCount, 1.2) * 0.05 +
+              1);
+        } else {
           post.hRank -=
-          1 /
-          (1 * 0.1 +
-            Math.pow(post.commentCount, 1.2) * 0.05 +
-            1);
+            1 / (1 * 0.1 + Math.pow(post.commentCount, 1.2) * 0.05 + 1);
         }
-       
 
         post.save().then((post) => {
           user.save().then((user) =>
@@ -459,20 +490,15 @@ router.post("/upvote", (req, res) => {
         user._likedPosts.push(post._id);
         //console.log(req.body.userid);
         post._likedUserIDs.push(user._id);
-        if(Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN)
-        {
+        if (Math.pow(post._likedUserIDs.length - 1, 1.2) == NaN) {
           post.hRank +=
-          1 /
-          (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
-            Math.pow(post.commentCount, 1.2) * 0.05 +
-            1);
-        }
-        else{
+            1 /
+            (Math.pow(post._likedUserIDs.length - 1, 1.2) * 0.1 +
+              Math.pow(post.commentCount, 1.2) * 0.05 +
+              1);
+        } else {
           post.hRank +=
-          1 /
-          (1 * 0.1 +
-            Math.pow(post.commentCount, 1.2) * 0.05 +
-            1);
+            1 / (1 * 0.1 + Math.pow(post.commentCount, 1.2) * 0.05 + 1);
         }
         post.save().then((post) => {
           user.save().then((user) =>
@@ -506,6 +532,7 @@ router.post("/getuserposts", (req, res) => {
             category: post.category,
             location: post.location,
             username: user.username,
+            hasImage: post.hasImage,
             firstname: user.name.first,
             likes: post._likedUserIDs.length,
             commentCount: post._commentIDs.length,
@@ -548,13 +575,13 @@ async function findPosts(set, catLabel, returnPosts) {
     category: catLabel,
     "location.county": set.location.county,
     "location.country": set.location.country,
-    "location.state": set.location.state
+    "location.state": set.location.state,
   }).then((posts) => {
     return Promise.all(
-      posts.map(async post => {
-        var dets = function(returnPosts, post) {
-          return new Promise(function(resolve, reject) {
-            User.findById({ _id: post._userID }).then(async user => {
+      posts.map(async (post) => {
+        var dets = function (returnPosts, post) {
+          return new Promise(function (resolve, reject) {
+            User.findById({ _id: post._userID }).then(async (user) => {
               if (!user) {
                 console.log("error user not found findposts setsAndPosts");
 
@@ -563,7 +590,7 @@ async function findPosts(set, catLabel, returnPosts) {
                 //console.log(user);
                 var liked = false;
                 if (
-                  user._likedPosts.some(function(arrVal) {
+                  user._likedPosts.some(function (arrVal) {
                     //console.log("in user list " + arrVal);
                     //console.log("postID" + post._id);
                     return (
@@ -576,7 +603,7 @@ async function findPosts(set, catLabel, returnPosts) {
                 }
                 const returnComments = [];
                 await Promise.all(
-                  post._commentIDs.map(async commentID => {
+                  post._commentIDs.map(async (commentID) => {
                     //const retC = await getComments(commentID, returnComments);
                     return retC;
                   })
@@ -587,6 +614,7 @@ async function findPosts(set, catLabel, returnPosts) {
                   category: post.category,
                   location: post.location,
                   username: user.username,
+                  hasImage: post.hasImage,
                   firstname: user.name.first,
                   lastname: user.name.last,
                   likes: post._likedUserIDs.length,
@@ -594,7 +622,7 @@ async function findPosts(set, catLabel, returnPosts) {
                   date: parseInt(post.date),
                   postID: post._id,
                   liked: liked,
-                  comments: returnComments
+                  comments: returnComments,
                 };
                 //console.log(returnPost);
                 var alreadyExists = false;
@@ -627,21 +655,21 @@ async function findPosts(set, catLabel, returnPosts) {
 router.post("/getSinglePost", (req, res) => {
   //console.log(req.body);
   console.log("beforeCommentID");
-  Post.findById(mongoose.Types.ObjectId(req.body.id)).then(async post => {
+  Post.findById(mongoose.Types.ObjectId(req.body.id)).then(async (post) => {
     if (!post) {
       console.log("Post not found." + req.body);
       res.status(400);
       return;
     }
-    await User.findById({ _id: post._userID }).then(async user => {
+    await User.findById({ _id: post._userID }).then(async (user) => {
       var liked = false;
       if (!user) {
         console.log("error user not found get comments");
         resolve("error user not foudn");
       }
-      
+
       if (
-        user._likedComments.some(function(arrVal) {
+        user._likedComments.some(function (arrVal) {
           return (
             JSON.parse(JSON.stringify(comment._id)) ===
             JSON.parse(JSON.stringify(arrVal))
@@ -655,6 +683,8 @@ router.post("/getSinglePost", (req, res) => {
       returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
       const returnPost = {
         content: post.content,
+        hasImage: post.hasImage,
+
         category: post.category,
         location: post.location,
         username: user.username,
@@ -666,7 +696,7 @@ router.post("/getSinglePost", (req, res) => {
         postID: post._id,
         liked: liked,
         hRank: post.hRank,
-        comments: returnComments
+        comments: returnComments,
       };
       console.log(returnPost);
       res.json(returnPost);
@@ -676,17 +706,17 @@ router.post("/getSinglePost", (req, res) => {
     await Comment.find({ _parComment: null, _postID: parid })
       .sort({ hRank: -1 })
       .limit(3)
-      .then(async comments => {
+      .then(async (comments) => {
         //console.log(comments);
         //console.log(comments.size);
 
-        var dets = function(returnComments, comment) {
-          return new Promise(function(resolve, reject) {
+        var dets = function (returnComments, comment) {
+          return new Promise(function (resolve, reject) {
             //console.log(comment);
-            User.findById({ _id: comment._userID }).then(async user => {
+            User.findById({ _id: comment._userID }).then(async (user) => {
               var liked = false;
               if (
-                user._likedComments.some(function(arrVal) {
+                user._likedComments.some(function (arrVal) {
                   return (
                     JSON.parse(JSON.stringify(comment._id)) ===
                     JSON.parse(JSON.stringify(arrVal))
@@ -712,7 +742,7 @@ router.post("/getSinglePost", (req, res) => {
                 commentID: comment._id,
                 comments: nextComments,
                 liked: liked,
-                hRank: comment.hRank
+                hRank: comment.hRank,
               };
               //console.log(returnPost);
               //console.log("dets:   " + returnComment.content);
@@ -725,7 +755,7 @@ router.post("/getSinglePost", (req, res) => {
         };
 
         await Promise.all(
-          comments.map(async comment => {
+          comments.map(async (comment) => {
             return await dets(returnComments, comment);
           })
         );
@@ -735,21 +765,21 @@ router.post("/getSinglePost", (req, res) => {
 
   async function getCommentsofComment(parid, returnComments, level) {
     level++;
-    
+
     await Comment.find({ _parComment: parid })
       .sort({ hRank: -1 })
       .limit(2)
-      .then(async comments => {
+      .then(async (comments) => {
         //console.log(comments);
         //console.log(comments.size);
 
-        var dets = function(returnComments, comment) {
-          return new Promise(function(resolve, reject) {
+        var dets = function (returnComments, comment) {
+          return new Promise(function (resolve, reject) {
             //console.log(comment);
-            User.findById({ _id: comment._userID }).then(async user => {
+            User.findById({ _id: comment._userID }).then(async (user) => {
               var liked = false;
               if (
-                user._likedComments.some(function(arrVal) {
+                user._likedComments.some(function (arrVal) {
                   return (
                     JSON.parse(JSON.stringify(comment._id)) ===
                     JSON.parse(JSON.stringify(arrVal))
@@ -780,7 +810,7 @@ router.post("/getSinglePost", (req, res) => {
                 commentID: comment._id,
                 comments: nextComments,
                 liked: liked,
-                hRank: comment.hRank
+                hRank: comment.hRank,
               };
               //console.log(returnComment.content);
 
@@ -792,7 +822,7 @@ router.post("/getSinglePost", (req, res) => {
         };
 
         await Promise.all(
-          comments.map(async comment => {
+          comments.map(async (comment) => {
             return await dets(returnComments, comment);
           })
         );

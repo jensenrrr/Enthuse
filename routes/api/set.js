@@ -8,18 +8,18 @@ const mongoose = require("mongoose");
 const Comment = require("../../models/Comment");
 
 router.post("/changeCurrent", (req, res) => {
-  User.findById(mongoose.Types.ObjectId(req.body.id)).then(user => {
+  User.findById(mongoose.Types.ObjectId(req.body.id)).then((user) => {
     user.currentSets = req.body.sets;
-    user.save().then(user => {
+    user.save().then((user) => {
       res.json(user.currentSets);
     });
   });
 });
 
 router.post("/currentToHome", (req, res) => {
-  User.findById(mongoose.Types.ObjectId(req.body.id)).then(user => {
+  User.findById(mongoose.Types.ObjectId(req.body.id)).then((user) => {
     user.currentSets = user.homePage;
-    user.save().then(user => {
+    user.save().then((user) => {
       res.json(user.currentSets);
     });
   });
@@ -28,7 +28,7 @@ router.post("/currentToHome", (req, res) => {
 router.post("/loadMoreComments", (req, res) => {
   //need req.alreadyloadedcomments (ids) and req.parentID
   const returnComments = [];
-  processComments(req, returnComments).then(meme => {
+  processComments(req, returnComments).then((meme) => {
     returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
     //console.log(returnComments);
     console.log("ressing");
@@ -36,9 +36,9 @@ router.post("/loadMoreComments", (req, res) => {
   });
 
   function processComments(req, returnComments) {
-    return new Promise(function(resolve, reject) {
-      Comment.find({ _parComment: req.body.parentID }).then(comments => {
-        comments.forEach(async comment => {
+    return new Promise(function (resolve, reject) {
+      Comment.find({ _parComment: req.body.parentID }).then((comments) => {
+        comments.forEach(async (comment) => {
           //alreadyExists not currently working
           var alreadyExists = false;
           for (var i = 0; i < req.body.alreadyLoadedComments.length; i++) {
@@ -50,10 +50,10 @@ router.post("/loadMoreComments", (req, res) => {
           }
           if (!alreadyExists) {
             let promise = new Promise((resolve, reject) => {
-              User.findById({ _id: comment._userID }).then(async user => {
+              User.findById({ _id: comment._userID }).then(async (user) => {
                 var liked = false;
                 if (
-                  user._likedComments.some(function(arrVal) {
+                  user._likedComments.some(function (arrVal) {
                     return (
                       JSON.parse(JSON.stringify(comment._id)) ===
                       JSON.parse(JSON.stringify(arrVal))
@@ -75,7 +75,7 @@ router.post("/loadMoreComments", (req, res) => {
                   commentID: comment._id,
                   comments: nextComments,
                   liked: liked,
-                  hRank: comment.hRank
+                  hRank: comment.hRank,
                 };
                 returnComments.push(returnComment);
                 console.log(returnComment.content + "\n");
@@ -96,17 +96,17 @@ router.post("/loadMoreComments", (req, res) => {
 
 router.post("/setsAndPosts", (req, res) => {
   //console.log(req.body);
-  User.findById(mongoose.Types.ObjectId(req.body.id)).then(async user => {
+  User.findById(mongoose.Types.ObjectId(req.body.id)).then(async (user) => {
     var data = {
       currentSets: user.currentSets,
       favoriteSets: user.favoriteSets,
       homePage: user.homePage,
-      returnPosts: []
+      returnPosts: [],
     };
     processSets(
       JSON.parse(JSON.stringify(data.currentSets)),
       data.returnPosts
-    ).then(posts => {
+    ).then((posts) => {
       data.returnPosts.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
       //console.log(data.returnPosts);
       res.json(data);
@@ -114,11 +114,11 @@ router.post("/setsAndPosts", (req, res) => {
   });
 
   async function processSets(sets, returnPosts) {
-    const setMap = sets.map(set => {
-      const catLabels = set.list.map(catLabel => {
+    const setMap = sets.map((set) => {
+      const catLabels = set.list.map((catLabel) => {
         return findPosts(set, catLabel, returnPosts);
       });
-      return Promise.all(catLabels).then(returnPosts => {
+      return Promise.all(catLabels).then((returnPosts) => {
         return returnPosts;
       });
     });
@@ -131,13 +131,13 @@ router.post("/setsAndPosts", (req, res) => {
       category: catLabel,
       "location.county": set.location.county,
       "location.country": set.location.country,
-      "location.state": set.location.state
-    }).then(posts => {
+      "location.state": set.location.state,
+    }).then((posts) => {
       return Promise.all(
-        posts.map(async post => {
-          var dets = function(returnPosts, post) {
-            return new Promise(function(resolve, reject) {
-              User.findById({ _id: post._userID }).then(async user => {
+        posts.map(async (post) => {
+          var dets = function (returnPosts, post) {
+            return new Promise(function (resolve, reject) {
+              User.findById({ _id: post._userID }).then(async (user) => {
                 if (!user) {
                   console.log("error user not found findposts setsAndPosts");
                   resolve("user not foound");
@@ -145,7 +145,7 @@ router.post("/setsAndPosts", (req, res) => {
 
                 var liked = false;
                 if (
-                  user._likedPosts.some(function(arrVal) {
+                  user._likedPosts.some(function (arrVal) {
                     //console.log("in user list " + arrVal);
                     //console.log("postID" + post._id);
                     return (
@@ -161,6 +161,7 @@ router.post("/setsAndPosts", (req, res) => {
                 returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
                 const returnPost = {
                   content: post.content,
+                  hasImage: post.hasImage,
                   category: post.category,
                   location: post.location,
                   username: user.username,
@@ -172,7 +173,7 @@ router.post("/setsAndPosts", (req, res) => {
                   postID: post._id,
                   liked: liked,
                   hRank: post.hRank,
-                  comments: returnComments
+                  comments: returnComments,
                 };
                 //console.log(returnPost);
                 var alreadyExists = false;
@@ -206,21 +207,21 @@ router.post("/setsAndPosts", (req, res) => {
     await Comment.find({ _parComment: null, _postID: parid })
       .sort({ hRank: -1 })
       .limit(3)
-      .then(async comments => {
+      .then(async (comments) => {
         //console.log(comments);
         //console.log(comments.size);
 
-        var dets = function(returnComments, comment) {
-          return new Promise(function(resolve, reject) {
+        var dets = function (returnComments, comment) {
+          return new Promise(function (resolve, reject) {
             //console.log(comment);
-            User.findById({ _id: comment._userID }).then(async user => {
+            User.findById({ _id: comment._userID }).then(async (user) => {
               var liked = false;
               if (!user) {
                 console.log("user not found");
                 resolve();
               } else {
                 if (
-                  user._likedComments.some(function(arrVal) {
+                  user._likedComments.some(function (arrVal) {
                     return (
                       JSON.parse(JSON.stringify(comment._id)) ===
                       JSON.parse(JSON.stringify(arrVal))
@@ -246,7 +247,7 @@ router.post("/setsAndPosts", (req, res) => {
                   commentID: comment._id,
                   comments: nextComments,
                   liked: liked,
-                  hRank: comment.hRank
+                  hRank: comment.hRank,
                 };
                 //console.log(returnPost);
                 //console.log("dets:   " + returnComment.content);
@@ -260,7 +261,7 @@ router.post("/setsAndPosts", (req, res) => {
         };
 
         await Promise.all(
-          comments.map(async comment => {
+          comments.map(async (comment) => {
             return await dets(returnComments, comment);
           })
         );
@@ -273,16 +274,18 @@ router.post("/setsAndPosts", (req, res) => {
     await Comment.find({ _parComment: parid })
       .sort({ hRank: -1 })
       .limit(2)
-      .then(async comments => {
+      .then(async (comments) => {
         //console.log(comments);
         //console.log(comments.size);
 
-        var dets = function(returnComments, comment) {
-          return new Promise(function(resolve, reject) {
+        var dets = function (returnComments, comment) {
+          return new Promise(function (resolve, reject) {
             //console.log(comment);
-            User.findById({ _id: comment._userID }).then(async user => {
+            User.findById({ _id: comment._userID }).then(async (user) => {
               if (!user) {
-                console.log("error user not found findposts getCommentsofComment");
+                console.log(
+                  "error user not found findposts getCommentsofComment"
+                );
                 resolve("user not foound");
               }
               var liked = false;
@@ -292,7 +295,7 @@ router.post("/setsAndPosts", (req, res) => {
                 resolve();
               } else {
                 if (
-                  user._likedComments.some(function(arrVal) {
+                  user._likedComments.some(function (arrVal) {
                     return (
                       JSON.parse(JSON.stringify(comment._id)) ===
                       JSON.parse(JSON.stringify(arrVal))
@@ -323,7 +326,7 @@ router.post("/setsAndPosts", (req, res) => {
                   commentID: comment._id,
                   comments: nextComments,
                   liked: liked,
-                  hRank: comment.hRank
+                  hRank: comment.hRank,
                 };
                 //console.log(returnComment.content);
 
@@ -336,7 +339,7 @@ router.post("/setsAndPosts", (req, res) => {
         };
 
         await Promise.all(
-          comments.map(async comment => {
+          comments.map(async (comment) => {
             return await dets(returnComments, comment);
           })
         );
@@ -422,7 +425,7 @@ function update(set) {
   });
 */
 router.post("/changeHome", (req, res) => {
-  User.findById(req.user.id).then(user => {});
+  User.findById(req.user.id).then((user) => {});
 });
 
 module.exports = router;

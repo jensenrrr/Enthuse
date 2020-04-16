@@ -9,7 +9,8 @@ import {
   commentOnComment,
   likeComment,
   loadRestComments,
-  getSinglePost
+  getSinglePost,
+  getImage,
 } from "../../actions/postActions";
 import { Button } from "react-materialize";
 import Moment from "react-moment";
@@ -21,12 +22,18 @@ class Post extends Component {
     this.state = {
       zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       colorIn: "favorite_border",
-      showReplyBox: false
+      showReplyBox: false,
     };
   }
   componentDidMount() {
+    if (this.props.post.posts[this.props.index].hasImage) {
+      this.props.getImage({
+        postid: this.props.id,
+        index: this.props.index,
+      });
+    }
     this.setState({
-      colorIn: this.props.liked ? "favorite" : "favorite_border"
+      colorIn: this.props.liked ? "favorite" : "favorite_border",
     });
   }
 
@@ -54,11 +61,11 @@ class Post extends Component {
     //console.log(this.props.index);
     if (this.state.colorIn === "favorite_border") {
       this.setState({
-        colorIn: "favorite"
+        colorIn: "favorite",
       });
     } else {
       this.setState({
-        colorIn: "favorite_border"
+        colorIn: "favorite_border",
       });
     }
   }
@@ -67,7 +74,7 @@ class Post extends Component {
     this.props.upVotePost({
       postid: this.props.id,
       userid: this.props.auth.user.id,
-      index: this.props.index
+      index: this.props.index,
     });
     //this.changeIcon();
     //console.log("liked");
@@ -75,10 +82,10 @@ class Post extends Component {
 
   openCommentBox() {
     this.setState({
-      showReplyBox: !this.state.showReplyBox
+      showReplyBox: !this.state.showReplyBox,
     });
   }
-  onChange = e => {
+  onChange = (e) => {
     //var fieldName = e.target.name;
     //const fieldValue = event.target.value;
     //console.log(this.state.commentContent);
@@ -91,24 +98,24 @@ class Post extends Component {
       _userid: this.props.auth.user.id,
       _postid: this.props.id,
       content: this.state.commentContent,
-      index: this.props.index
+      index: this.props.index,
     };
     this.props.comment(data);
     this.openCommentBox();
   }
 
-  commentOnComment = e => {
+  commentOnComment = (e) => {
     this.props.commentOnComment(e);
   };
 
-  likeAComment = e => {
+  likeAComment = (e) => {
     this.props.likeComment(e);
   };
 
-  loadMoreComments = e => {
+  loadMoreComments = (e) => {
     this.props.loadRestComments(e);
   };
-  getSinglePost = e => {
+  getSinglePost = (e) => {
     this.props.getSinglePost(e);
   };
 
@@ -116,59 +123,85 @@ class Post extends Component {
     return (
       <div className="row">
         <div className="card grey lighten-5 hoverable">
-        <div>
-          <Link
-                  to={`/post/${this.props.id}`}
-                  style={{ marginRight: "5px", color: "black" }}
-                >
-                  {"View Post"}
-          </Link>
+          <div>
+            <Link
+              to={`/post/${this.props.id}`}
+              style={{ marginRight: "5px", color: "black" }}
+            >
+              {"View Post"}
+            </Link>
           </div>
           <div>
             <h1> {this.props.username} </h1>
-            <h2> {this.props.firstname} {this.props.lastname}</h2>
+            <h2>
+              {" "}
+              {this.props.firstname} {this.props.lastname}
+            </h2>
           </div>
           <div className="card-content black-text" style={{ clear: "left" }}>
             <p>{this.props.children}</p>
           </div>
 
-          <h3> {this.props.category} | {this.props.county} County </h3>
-          <h4> <Moment format="h:mm A" tz={this.state.zone} >
-            {this.props.date}
-          </Moment>
+          <h3>
+            {" "}
+            {this.props.category} | {this.props.county} County{" "}
+          </h3>
+          <h4>
+            {" "}
+            <Moment format="h:mm A" tz={this.state.zone}>
+              {this.props.date}
+            </Moment>
             {" on "}
             <Moment format="MMM D, YYYY" tz={this.state.zone}>
               {this.props.date}
             </Moment>
           </h4>
 
-
-          <p style={{ textAlign: "left", fontSize: "medium", fontFamily: "Roboto", clear: "left", marginLeft: "20px" }}>   Favorites: {this.props.likes}  Comments: {this.props.commentCount}</p>
+          <p
+            style={{
+              textAlign: "left",
+              fontSize: "medium",
+              fontFamily: "Roboto",
+              clear: "left",
+              marginLeft: "20px",
+            }}
+          >
+            {" "}
+            Favorites: {this.props.likes} Comments: {this.props.commentCount}
+          </p>
           <div className="card-action center-align">
-            <button className="btn-flat waves-effect waves-light "
+            <button
+              className="btn-flat waves-effect waves-light "
               onClick={() => this.likePress()}
               onMouseEnter={() => this.changeIcon()}
               onMouseLeave={() => this.changeIcon()}
-
             >
-
               <i className="material-icons left">{this.state.colorIn}</i>
-               Favorite
+              Favorite
             </button>
-            <button className="btn-flat waves-effect waves-light"
+            <button
+              className="btn-flat waves-effect waves-light"
               onClick={() => this.openCommentBox()}
             >
               Comment
-            <i className="material-icons left">comment</i>
-
+              <i className="material-icons left">comment</i>
             </button>
             {this.state.showReplyBox ? (
               <div className="row">
                 <div className="col s9">
-                  <div className="input-field col s12" style={{ paddingBottom: "5px", backgroundColor: "transparent" }}>
-                    <textarea onChange={this.onChange.bind(this)}
+                  <div
+                    className="input-field col s12"
+                    style={{
+                      paddingBottom: "5px",
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    <textarea
+                      onChange={this.onChange.bind(this)}
                       value={this.state.commentContent}
-                      id="commentContent" className="materialize-textarea grey lighten-5"></textarea>
+                      id="commentContent"
+                      className="materialize-textarea grey lighten-5"
+                    ></textarea>
                     <label for="commentContent">Comment...</label>
                   </div>
                 </div>
@@ -178,7 +211,7 @@ class Post extends Component {
                     onClick={() => this.submit()}
                   >
                     Submit
-                </Button>
+                  </Button>
                 </div>
               </div>
             ) : null}
@@ -211,9 +244,9 @@ class Post extends Component {
                 )
               )}
             </div>
-          )}<div className="card"></div>
+          )}
+          <div className="card"></div>
         </div>
-
       </div>
     );
   }
@@ -221,27 +254,30 @@ class Post extends Component {
 
 Post.propTypes = {
   upVotePost: PropTypes.func.isRequired,
+  getImage: PropTypes.func.isRequired,
   comment: PropTypes.func.isRequired,
   commentOnComment: PropTypes.func.isRequired,
   likeComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   post: state.post,
   errors: state.errors,
-  auth: state.auth
+  auth: state.auth,
 });
 
-export default connect(mapStateToProps, {
-  upVotePost,
-  comment,
-  commentOnComment,
-  likeComment,
-  loadRestComments,
-  getSinglePost
-
-})(Post);
-
+export default connect(
+  mapStateToProps,
+  {
+    upVotePost,
+    comment,
+    commentOnComment,
+    likeComment,
+    loadRestComments,
+    getSinglePost,
+    getImage,
+  }
+)(Post);
