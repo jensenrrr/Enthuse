@@ -22,7 +22,9 @@ export default function(state = initialState, action) {
   switch (action.type) {
     case LOAD_IMAGE:
       const upPosts = state.posts;
-      upPosts[action.payload.index].imag = action.payload.img;
+      if (upPosts[action.payload.index]) {
+        upPosts[action.payload.index].img = action.payload.img;
+      }
       return {
         ...state,
         posts: upPosts,

@@ -516,12 +516,14 @@ router.post("/upvote", (req, res) => {
 
 router.post("/getuserposts", (req, res) => {
   const returnPosts = [];
+  console.log(req.body);
   findUser(req.body.username, returnPosts).then((posts) => res.json(posts));
 
   async function findUser(username, returnPosts) {
     await User.findOne({ username: username }).then(async (user) => {
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        console.log("User not found" + username);
+        return; //res.json({ error: "User not found" });
       }
       await Post.find({
         _userID: user._id,
