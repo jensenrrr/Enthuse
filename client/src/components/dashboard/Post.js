@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Comments from "./Comments";
 import axios from "axios";
+import Img from "react-image";
 
 import {
   upVotePost,
@@ -148,7 +149,9 @@ class Post extends Component {
             </Link>
           </div>
           <div>
-            <h1> {this.props.username} </h1>
+            <Link to={`/profile/${this.props.username}`}>
+              <h1> {this.props.username} </h1>
+            </Link>
             <h2>
               {" "}
               {this.props.firstname} {this.props.lastname}
@@ -157,7 +160,19 @@ class Post extends Component {
           <div className="card-content black-text" style={{ clear: "left" }}>
             <p>{this.props.children}</p>
           </div>
-
+          {this.props.post.posts[this.props.index].hasImage &
+          (this.state.img != "") ? (
+            <img
+              style={{
+                flex: 1,
+                width: null,
+                height: null,
+                resizeMode: "contain",
+              }}
+              src={this.state.img}
+              alt="helpful alt text"
+            />
+          ) : null}
           <h3>
             {" "}
             {this.props.category} | {this.props.county} County{" "}
@@ -172,9 +187,6 @@ class Post extends Component {
               {this.props.date}
             </Moment>
           </h4>
-          {this.props.post.posts[this.props.index].hasImage ? (
-            <img src={this.state.img} alt="helpful alt text" />
-          ) : null}
 
           <p
             style={{
@@ -221,6 +233,7 @@ class Post extends Component {
                       id="commentContent"
                       className="materialize-textarea grey lighten-5"
                     ></textarea>
+
                     <label for="commentContent">Comment...</label>
                   </div>
                 </div>
