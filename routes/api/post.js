@@ -10,6 +10,7 @@ require("../../config/passport")(passport);
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const Comment = require("../../models/Comment");
+const Img = require("../../models/Img");
 
 const get_db = require("../../db").get_db;
 
@@ -18,6 +19,8 @@ const path = require("path");
 var stringify = require("json-stringify-safe");
 
 const multer = require("multer");
+const fs = require("fs");
+
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 let gfs;
@@ -25,30 +28,12 @@ let gfs;
 gfs = Grid(db_inst.db, mongoose.mongo);
 gfs.collection("uploads");
 
-// Create storage engine
-const storage = new GridFsStorage({
-  db: db_inst,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      const filename = file.originalname;
-      const fileInfo = {
-        filename: filename,
-        bucketName: "uploads",
-      };
-      //req.body.push(fileInfo);
-      req.body.meme = "hello";
-      console.log("storage");
-      resolve(fileInfo);
-    });
+const storage = multer.diskStorage({
+  destination: function (req, res, cb) {
+    cb(null, "uploads/");
   },
 });
-const uploadImages = multer({ storage }).fields([
-  { name: "imgArr", maxCount: 8 },
-]);
-
-const old = multer({ storage });
-const up = multer({ storage }).any("files");
-const single = multer({ storage }).single("img");
+const upload = multer({ storage: storage });
 
 router.post("/test", (req, res) => {
   //req.imageInfo = [];
@@ -56,14 +41,14 @@ router.post("/test", (req, res) => {
   res.sendStatus(200);
   res.end();
 });
-
+/*
 router.post("/ups", old.single("file"), (req, res) => {
   console.log("ups");
   console.log(req.file);
   console.log(req.body);
   res.sendStatus(200);
   res.end();
-});
+});*/
 /*
 router.post(
   "/uploadMultiple",
@@ -347,6 +332,14 @@ router.post("/getComments", (req, res) => {
   }
 });
 router.post("/getimage", (req, res) => {
+  console.log("getimage");
+  /*
+  Img.findOne({}, "img createdAt", function (err, img) {
+    if (err) res.send(err);
+    res.contentType("json");
+    res.send(img);
+  }).sort({ createdAt: "desc" });
+  return;*/
   Post.findById(mongoose.Types.ObjectId(req.body.postid)).then((post) => {
     if (post == null) {
       console.log("not found");
@@ -355,48 +348,37 @@ router.post("/getimage", (req, res) => {
     //console.log("get image for: " + post);
     var imgId = mongoose.Types.ObjectId(post._imageIDs[0]);
     console.log(post.content + "   " + imgId);
-    gfs.files.findOne(
-      {
-        filename: "grubChange.PNG",
-      },
-      (err, file) => {
-        console.log(file._id);
-        if (!file || file.length === 0) {
-          return res.status(404).json({
-            err: "No file exists",
-          });
-        }
-        // Check if image
-        if (
-          file.contentType === "image/jpeg" ||
-          file.contentType === "image/png"
-        ) {
-          // Read output to browser
-          const readstream = gfs.createReadStream(file.filename);
-          readstream.pipe(res);
-        } else {
-          res.status(404).json({
-            err: "Not an image",
-          });
-        }
+    Img.findById(imgId).then((img) => {
+      if (!img) {
+        console.log("no image found");
+        res.json("bad");
+        return;
       }
-    );
+      res.contentType("json");
+      res.send(img);
+    });
   });
 });
 
 //passport.authenticate,
 router.post(
   "/create/c",
-  old.single("file"),
+  upload.single("file"),
   passport.authenticate("jwt", {
     session: false,
   }),
   (req, res) => {
     console.log("-------- Create called ----------");
-    console.log(req.body);
-    console.log(req.file);
-    console.log();
-
+    if (req.body.hasImage) {
+      var new_img = new Img();
+      new_img.img.data = fs.readFileSync(req.file.path);
+      new_img.img.contentType = "image/jpeg"; // or 'image/png'
+      new_img.save();
+      console.log(new_img);
+      console.log(req.body);
+      console.log(req.file);
+      console.log();
+    }
     const newPost = new Post({
       _userID: mongoose.Types.ObjectId(req.user._id),
       category: req.body.category,
@@ -417,7 +399,8 @@ router.post(
         res.status(400).json("user does not exist");
       } else {
         if (req.body.hasImage) {
-          newPost._imageIDs.push(mongoose.Types.ObjectId(req.user._id));
+          console.log(new_img._id);
+          newPost._imageIDs.push(new_img._id);
         }
         newPost
           .save()

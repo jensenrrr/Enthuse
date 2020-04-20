@@ -1,8 +1,10 @@
-import React, { Component } from "react";
+import React, { Component, Image } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Comments from "./Comments";
+import axios from "axios";
+
 import {
   upVotePost,
   comment,
@@ -23,6 +25,7 @@ class Post extends Component {
       zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       colorIn: "favorite_border",
       showReplyBox: false,
+      img: "",
     };
   }
   componentDidMount() {
@@ -35,6 +38,7 @@ class Post extends Component {
     this.setState({
       colorIn: this.props.liked ? "favorite" : "favorite_border",
     });
+    console.log(this.props.post.posts[this.props.index].img);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -48,6 +52,17 @@ class Post extends Component {
         this.changeIcon();
       }
     }
+    //console.log(nextProps.post.posts[this.props.index].img);
+    if (nextProps.post.posts[this.props.index]) {
+      console.log("checking " + this.state.img);
+
+      if (nextProps.post.posts[this.props.index].img != undefined) {
+        console.log("img change");
+        this.setState({
+          img: nextProps.post.posts[this.props.index].img,
+        });
+      }
+    }
     /*
     if (
       this.nextProps.post.posts[this.props.index].liked !=
@@ -58,6 +73,7 @@ class Post extends Component {
   }
 
   changeIcon() {
+    console.log(this.state.img);
     //console.log(this.props.index);
     if (this.state.colorIn === "favorite_border") {
       this.setState({
@@ -156,6 +172,9 @@ class Post extends Component {
               {this.props.date}
             </Moment>
           </h4>
+          {this.props.post.posts[this.props.index].hasImage ? (
+            <img src={this.state.img} alt="helpful alt text" />
+          ) : null}
 
           <p
             style={{

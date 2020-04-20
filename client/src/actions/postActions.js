@@ -13,23 +13,36 @@ import {
   SINGLEPOST_LOAD_COMMENT,
   LOAD_IMAGE,
 } from "./types";
-
-export const getImage = (data) => (dispatch) => {
+function arrayBufferToBase64(buffer) {
+  var binary = "";
+  var bytes = [].slice.call(new Uint8Array(buffer));
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return window.btoa(binary);
+}
+export const getImage = (up) => (dispatch) => {
   console.log("calling get image");
   axios
-    .post("/api/post/getimage", data)
-    .then((res) => {
-      console.log("image?: " + res + " at: " + data.index);
+    .post("/api/post/getimage", up)
+    .then((data) => {
+      console.log(data);
+      var meme = "";
+      if (data.data.img) {
+        var base64Flag = "data:image/jpeg;base64,";
+        console.log(data.data.img.data.data);
+        var imageStr = arrayBufferToBase64(data.data.img.data.data);
+        meme = base64Flag + imageStr;
+      }
+
       dispatch({
         type: LOAD_IMAGE,
-        payload: { img: res.data, index: data.index },
+        payload: { img: meme, index: up.index },
       });
     })
     .catch((err) => {
       console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
+        payload: "error",
       });
     });
 };
