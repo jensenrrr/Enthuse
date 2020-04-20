@@ -62,6 +62,8 @@ export default function(state = initialState, action) {
     case CLEAR_SET:
       return {
         ...state,
+        category: "",
+        list: [],
         location: {
           country: "",
           state: "",

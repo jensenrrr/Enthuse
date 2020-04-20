@@ -99,6 +99,7 @@ export const setCat = (category) => (dispatch) => {
 };
 
 export const clearSet = (category) => (dispatch) => {
+  console.log("clear set");
   dispatch({
     type: CLEAR_SET,
     payload: category,

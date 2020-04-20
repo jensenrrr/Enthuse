@@ -25,6 +25,7 @@ class PostCreate extends Component {
         county: "",
         nickname: "",
       },
+      locationKey: "1",
     };
     this.onDrop = this.onDrop.bind(this);
     this.onModalChange = this.onModalChange.bind(this);
@@ -36,6 +37,7 @@ class PostCreate extends Component {
     });
   };
   clearState = () => {
+    var newKey = String(parseInt(this.state.locationKey) + 1);
     this.setState({
       pictures: [],
       label: "Upload Images!",
@@ -48,6 +50,7 @@ class PostCreate extends Component {
         county: "",
         nickname: "",
       },
+      locationKey: newKey,
     });
   };
   onDrop(picture) {
@@ -186,7 +189,7 @@ class PostCreate extends Component {
               <div className="left-align">
                 <div className="col s6">
                   <h1>Location</h1>
-                  <Location />
+                  <Location key={this.state.locationKey} />
                   <h3>Selected Location: {this.state.location.city}</h3>
                 </div>
                 <div className="col s6">
