@@ -14,6 +14,8 @@ export const DATA_TREE = "DATA_TREE";
 export const SET_CAT = "SET_CAT";
 export const SET_LOCATION = "SET_LOCATION";
 export const PUSH_SET = "PUSH_SET";
+export const CLEAR_SET = "CLEAR_SET";
+
 //posts
 export const POST_CREATE = "POST_CREATE";
 export const POST_UPVOTE = "POST_UPVOTE";

@@ -20,11 +20,11 @@ class SetModal extends Component {
         state: "",
         county: "",
         city: "",
-        nickname: ""
+        nickname: "",
       },
       list: [],
       sets: [],
-      ready: false
+      ready: false,
     };
   }
 
@@ -33,20 +33,18 @@ class SetModal extends Component {
     //console.log(nextProps);
     if (nextProps.set) {
       if (nextProps.set.location) {
-       
-          this.setState({
-            location: nextProps.set.location
-          });
-        
+        this.setState({
+          location: nextProps.set.location,
+        });
       }
       if (nextProps.set.category) {
         this.setState({
           category: nextProps.set.category,
-          list: nextProps.set.list
+          list: nextProps.set.list,
         });
         if (this.state.location) {
           this.setState({
-            ready: true
+            ready: true,
           });
         }
       }
@@ -59,11 +57,11 @@ class SetModal extends Component {
         const set = {
           category: this.state.category,
           location: this.state.location,
-          list: this.state.list
+          list: this.state.list,
         };
         if (
           !this.state.sets.some(
-            e =>
+            (e) =>
               e.category === set.category &&
               (e.location.county === set.location.county &&
                 e.location.country === set.location.country &&
@@ -74,8 +72,17 @@ class SetModal extends Component {
           //console.log("non duplicate");
           //console.log(this.state.sets);
           this.setState({
-            sets: this.state.sets.concat(set)
+            sets: this.state.sets.concat(set),
+            category: "",
+            location: {
+              country: "",
+              state: "",
+              county: "",
+              city: "",
+              nickname: "",
+            },
           });
+
           this.props.pushSet(set);
         } else {
           console.log("duplicate set");
@@ -116,7 +123,7 @@ class SetModal extends Component {
               onClick={this.addSet.bind(this)}
               className={classnames("", {
                 red: !this.state.ready,
-                blue: this.state.ready
+                blue: this.state.ready,
               })}
             >
               Add
@@ -131,12 +138,12 @@ class SetModal extends Component {
 SetModal.propTypes = {
   pushSet: PropTypes.func.isRequired,
   set: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   set: state.set,
-  errors: state.errors
+  errors: state.errors,
 });
 
 export default connect(

@@ -39,7 +39,7 @@ class Post extends Component {
     this.setState({
       colorIn: this.props.liked ? "favorite" : "favorite_border",
     });
-    console.log(this.props.post.posts[this.props.index].img);
+    //console.log(this.props.post.posts[this.props.index].img);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -55,10 +55,10 @@ class Post extends Component {
     }
     //console.log(nextProps.post.posts[this.props.index].img);
     if (nextProps.post.posts[this.props.index]) {
-      console.log("checking " + this.state.img);
+      //console.log("checking " + this.state.img);
 
       if (nextProps.post.posts[this.props.index].img != undefined) {
-        console.log("img change");
+        //console.log("img change");
         this.setState({
           img: nextProps.post.posts[this.props.index].img,
         });
@@ -74,7 +74,7 @@ class Post extends Component {
   }
 
   changeIcon() {
-    console.log(this.state.img);
+    //console.log(this.state.img);
     //console.log(this.props.index);
     if (this.state.colorIn === "favorite_border") {
       this.setState({

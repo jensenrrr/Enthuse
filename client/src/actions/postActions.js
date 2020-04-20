@@ -20,15 +20,15 @@ function arrayBufferToBase64(buffer) {
   return window.btoa(binary);
 }
 export const getImage = (up) => (dispatch) => {
-  console.log("calling get image");
+  //console.log("calling get image");
   axios
     .post("/api/post/getimage", up)
     .then((data) => {
-      console.log(data);
+      //console.log(data);
       var meme = "";
       if (data.data.img) {
         var base64Flag = "data:image/jpeg;base64,";
-        console.log(data.data.img.data.data);
+        //console.log(data.data.img.data.data);
         var imageStr = arrayBufferToBase64(data.data.img.data.data);
         meme = base64Flag + imageStr;
       }
