@@ -30,7 +30,7 @@ class Navbar extends Component {
               <li>
                 <Link
                   to={`/profile/${this.props.auth.user.username}`}
-                  style={{ marginRight: "5px", color: "black" }}
+                  style={{ marginRight: "5px", color: "white" }}
                   className="nav-items"
                 >
                   {this.props.auth.user.username}

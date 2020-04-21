@@ -98,7 +98,7 @@ export const getPosts = (sets) => (dispatch) => {
     .catch((err) =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
+        payload: "err",
       })
     );
 };
@@ -171,7 +171,7 @@ export const commentOnComment = (upIDs) => (dispatch) => {
     .catch((err) =>
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
+        payload: "err",
       })
     );
 };
