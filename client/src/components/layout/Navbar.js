@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import PostCreate from "../dashboard/PostCreate";
+import Settings from "../dashboard/Settings";
 
 class Navbar extends Component {
   onLogoutClick = (e) => {
@@ -35,7 +36,9 @@ class Navbar extends Component {
                   {this.props.auth.user.username}
                 </Link>
               </li>
-
+              <li>
+                <Settings />
+              </li>
               <li>
                 <a className="nav-items" href="/#" onClick={this.onLogoutClick}>
                   Logout

@@ -369,15 +369,20 @@ router.post(
   }),
   (req, res) => {
     console.log("-------- Create called ----------");
-    if (req.body.hasImage) {
-      var new_img = new Img();
-      new_img.img.data = fs.readFileSync(req.file.path);
-      new_img.img.contentType = "image/jpeg"; // or 'image/png'
-      new_img.save();
-      console.log(new_img);
-      console.log(req.body);
-      console.log(req.file);
-      console.log();
+    ///console.log(req.body);
+    //console.log(req.body.hasImage);
+    if (req.body.hasImage == true) {
+      console.log("Has image");
+      if (req.file) {
+        var new_img = new Img();
+        new_img.img.data = fs.readFileSync(req.file.path);
+        new_img.img.contentType = "image/jpeg"; // or 'image/png'
+        new_img.save();
+        console.log(new_img);
+        console.log(req.body);
+        console.log(req.file);
+        console.log();
+      }
     }
     const newPost = new Post({
       _userID: mongoose.Types.ObjectId(req.user._id),
@@ -398,9 +403,11 @@ router.post(
       if (!user) {
         res.status(400).json("user does not exist");
       } else {
-        if (req.body.hasImage) {
-          console.log(new_img._id);
-          newPost._imageIDs.push(new_img._id);
+        if (req.body.hasImage == true) {
+          if (req.file) {
+            console.log(new_img._id);
+            newPost._imageIDs.push(new_img._id);
+          }
         }
         newPost
           .save()
@@ -544,7 +551,12 @@ router.post("/getposts", (req, res) => {
 async function processSets(sets, returnPosts) {
   const setMap = sets.map((set) => {
     const catLabels = set.list.map((catLabel) => {
-      return findPosts(set, catLabel, returnPosts);
+      console.log(set.location);
+      return set.location.county
+        ? findPosts(set, catLabel, returnPosts)
+        : set.location.state
+        ? findPostsForState(set, catLabel, returnPosts)
+        : findPostsForCountry(set, catLabel, returnPosts);
     });
     return Promise.all(catLabels).then((returnPosts) => {
       return returnPosts;
@@ -553,7 +565,168 @@ async function processSets(sets, returnPosts) {
   await Promise.all(setMap);
   return returnPosts;
 }
+async function findPostsForState(set, catLabel, returnPosts) {
+  //console.log(set.location.county);
+  await Post.find({
+    category: catLabel,
+    "location.county": set.location.county,
+    "location.country": set.location.country,
+    "location.state": set.location.state,
+  }).then((posts) => {
+    return Promise.all(
+      posts.map(async (post) => {
+        var dets = function (returnPosts, post) {
+          return new Promise(function (resolve, reject) {
+            User.findById({ _id: post._userID }).then(async (user) => {
+              if (!user) {
+                console.log("error user not found findposts setsAndPosts");
 
+                resolve("user not foound");
+              } else {
+                //console.log(user);
+                var liked = false;
+                if (
+                  user._likedPosts.some(function (arrVal) {
+                    //console.log("in user list " + arrVal);
+                    //console.log("postID" + post._id);
+                    return (
+                      JSON.parse(JSON.stringify(post._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const returnComments = [];
+                await Promise.all(
+                  post._commentIDs.map(async (commentID) => {
+                    //const retC = await getComments(commentID, returnComments);
+                    return retC;
+                  })
+                );
+
+                const returnPost = {
+                  content: post.content,
+                  category: post.category,
+                  location: post.location,
+                  username: user.username,
+                  hasImage: post.hasImage,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: post._likedUserIDs.length,
+                  commentCount: post.commentCount,
+                  date: parseInt(post.date),
+                  postID: post._id,
+                  liked: liked,
+                  comments: returnComments,
+                };
+                //console.log(returnPost);
+                var alreadyExists = false;
+                for (var i = 0; i < returnPosts.length; i++) {
+                  if (
+                    JSON.stringify(returnPost.postID) ==
+                    JSON.stringify(returnPosts[i].postID)
+                  ) {
+                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                    alreadyExists = true;
+                  }
+                }
+
+                if (!alreadyExists) {
+                  returnPosts.push(returnPost);
+                }
+                resolve(returnPosts);
+              }
+            });
+          });
+        };
+
+        return dets(returnPosts, post);
+      })
+    );
+  });
+  return returnPosts;
+}
+async function findPostsForCountry(set, catLabel, returnPosts) {
+  //console.log(set.location.county);
+  await Post.find({
+    category: catLabel,
+    "location.country": set.location.country,
+  }).then((posts) => {
+    return Promise.all(
+      posts.map(async (post) => {
+        var dets = function (returnPosts, post) {
+          return new Promise(function (resolve, reject) {
+            User.findById({ _id: post._userID }).then(async (user) => {
+              if (!user) {
+                console.log("error user not found findposts setsAndPosts");
+
+                resolve("user not foound");
+              } else {
+                //console.log(user);
+                var liked = false;
+                if (
+                  user._likedPosts.some(function (arrVal) {
+                    //console.log("in user list " + arrVal);
+                    //console.log("postID" + post._id);
+                    return (
+                      JSON.parse(JSON.stringify(post._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const returnComments = [];
+                await Promise.all(
+                  post._commentIDs.map(async (commentID) => {
+                    //const retC = await getComments(commentID, returnComments);
+                    return retC;
+                  })
+                );
+
+                const returnPost = {
+                  content: post.content,
+                  category: post.category,
+                  location: post.location,
+                  username: user.username,
+                  hasImage: post.hasImage,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: post._likedUserIDs.length,
+                  commentCount: post.commentCount,
+                  date: parseInt(post.date),
+                  postID: post._id,
+                  liked: liked,
+                  comments: returnComments,
+                };
+                //console.log(returnPost);
+                var alreadyExists = false;
+                for (var i = 0; i < returnPosts.length; i++) {
+                  if (
+                    JSON.stringify(returnPost.postID) ==
+                    JSON.stringify(returnPosts[i].postID)
+                  ) {
+                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                    alreadyExists = true;
+                  }
+                }
+
+                if (!alreadyExists) {
+                  returnPosts.push(returnPost);
+                }
+                resolve(returnPosts);
+              }
+            });
+          });
+        };
+
+        return dets(returnPosts, post);
+      })
+    );
+  });
+  return returnPosts;
+}
 async function findPosts(set, catLabel, returnPosts) {
   //console.log(set.location.county);
   await Post.find({

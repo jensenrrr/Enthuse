@@ -8,27 +8,46 @@ import {
   USER_LOADING,
   DATA_TREE,
   TRIVIAL_ERRORS,
-  SET_SETS
+  SET_SETS,
 } from "./types";
 
 // Register User
-export const registerUser = (userData, history) => dispatch => {
+export const registerUser = (userData, history) => (dispatch) => {
   axios
     .post("/api/users/register", userData)
-    .then(res => history.push("/login"))
-    .catch(err =>
+    .then((res) => {
+      dispatch({
+        type: DATA_TREE,
+        payload: res.data,
+      });
+    })
+    .catch((err) =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data
+        payload: err.response.data,
+      })
+    );
+};
+
+export const usernameChange = (userData) => (dispatch) => {
+  axios
+    .post("/api/users/changeUsername", userData)
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data,
       })
     );
 };
 
 // Login - get user token
-export const loginUser = userData => dispatch => {
+export const loginUser = (userData) => (dispatch) => {
   axios
     .post("/api/users/login", userData)
-    .then(res => {
+    .then((res) => {
       // Save to localStorage
 
       // Set token to localStorage
@@ -42,55 +61,55 @@ export const loginUser = userData => dispatch => {
       dispatch(setCurrentUser(decoded));
       dispatch(setSets(decoded));
     })
-    .catch(err =>
+    .catch((err) =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data
+        payload: err.response.data,
       })
     );
 };
 
 // Set logged in user
-export const setCurrentUser = decoded => {
+export const setCurrentUser = (decoded) => {
   return {
     type: SET_CURRENT_USER,
-    payload: decoded
+    payload: decoded,
   };
 };
 
-export const setSets = decoded => {
+export const setSets = (decoded) => {
   return {
     type: SET_SETS,
-    payload: decoded
+    payload: decoded,
   };
 };
 
 // User loading
 export const setUserLoading = () => {
   return {
-    type: USER_LOADING
+    type: USER_LOADING,
   };
 };
 
-export const callTree = () => dispatch => {
+export const callTree = () => (dispatch) => {
   axios
     .get("/api/tree/tree")
-    .then(res => {
+    .then((res) => {
       dispatch({
         type: DATA_TREE,
-        payload: res.data
+        payload: res.data,
       });
     })
-    .catch(err =>
+    .catch((err) =>
       dispatch({
         type: TRIVIAL_ERRORS,
-        payload: err.response.data
+        payload: err.response.data,
       })
     );
 };
 
 // Log user out
-export const logoutUser = () => dispatch => {
+export const logoutUser = () => (dispatch) => {
   // Remove token from local storage
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
