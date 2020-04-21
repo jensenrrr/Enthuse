@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Comments from "./Comments";
+import { Link } from "react-router-dom";
 import {
   upVotePost,
   comment,
@@ -10,7 +11,8 @@ import {
   loadRestComments,
   getSinglePost,
   singleCommentOnComment,
-  singleLoadMoreComments
+  singleLoadMoreComments,
+  getImage
 } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
@@ -59,14 +61,24 @@ class ViewPost extends Component {
         //console.log(nextProps.post.posts);
       }
     }
-    //console.log(this.state.post);
-
-    if (nextProps.post.singlepost[this.props.index]) {
+    console.log("index");
+    console.log(this.props.index);
+    if (nextProps.post.singlepost[this.props.index] != undefined) {
       if (
-        nextProps.post.posts[this.props.index].liked !==
-        this.props.post.posts[this.props.index].liked
+        nextProps.post.singlepost[this.props.index].liked !==
+        this.props.post.singlepost[this.props.index].liked
       ) {
         this.changeIcon();
+      }
+    }
+    if (nextProps.post.singlepost[this.props.index]) {
+      //console.log("checking " + this.state.img);
+
+      if (nextProps.post.singlepost[this.props.index].img != undefined) {
+        //console.log("img change");
+        this.setState({
+          img: nextProps.post.singlepost[this.props.index].img,
+        });
       }
     }
     /*
@@ -152,27 +164,28 @@ class ViewPost extends Component {
     return (
       
       <div
-        style={{ marginTop: "15px", marginLeft: "15px", borderStyle: "solid" }}
+      style= {{backgroundColor:"#ffffff"}}
       >
-        <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <span
-            className="left-align"
-            style={{ fontWeight: "bold", paddingRight: "30%" }}
-          >
-            {this.state.post.username}
-          </span>
-          <span className="right-align">
+        <div >
+            <Link to={`/profile/${this.props.username}`}>
+              <h1> {this.state.post.username} </h1>
+            </Link>
+          <h2>
+            {" "}
             {this.state.post.firstname} {this.state.post.lastname}
-          </span>
+          </h2>
+            
+          
         </div>
-        {this.state.post.content}
-        <div style={{ marginBottom: "15px", marginTop: "10px" }}>
-          <span className="left-align" style={{ paddingRight: "20%" }}>
-            {this.state.post.category} | {this.state.post.location.county} County
-            {console.log(this.state.post.location.county)}
-
-          </span>
-          <span className="right-align">
+        <div className="card-content black-text" style={{ clear: "left" }}>
+            <p style = {{marginLeft: "30px"}}>{this.state.post.content}</p>
+          </div>
+        {/*image stuff here*/}
+        <h3>
+            {this.state.post.category} | {this.state.post.location.county} County{" "}
+            
+            </h3>
+          <h4>
             <Moment format="h:mm A" tz={this.state.post.zone}>
               {this.state.post.date}
             </Moment>
@@ -180,53 +193,73 @@ class ViewPost extends Component {
             <Moment format="MMM D, YYYY" tz={this.state.post.zone}>
               {this.state.post.date}
             </Moment>
-          </span>
-        </div>
-        <div className="center-align">
-          <span style={{ marginLeft: "15px", paddingRight: "20%" }}>
-            <span
+            </h4>
+            <p
+            style={{
+              textAlign: "left",
+              fontSize: "medium",
+              fontFamily: "Roboto",
+              clear: "left",
+              marginLeft: "20px",
+            }}
+          >
+            {" "}
+            Favorites: {this.state.post.likes} Comments: {this.state.post.commentCount}
+          </p>
+          <div className="card-action center-align">
+            <button
+              className="btn-flat waves-effect waves-light "
               onClick={() => this.likePress()}
               onMouseEnter={() => this.changeIcon()}
               onMouseLeave={() => this.changeIcon()}
             >
-              <Icon> {this.state.colorIn} </Icon>
-            </span>{" "}
-            {this.state.post.likes}
-          </span>
-          <span>
-            Comments: {this.state.post.commentCount}
-            <Button
-              style={{ marginLeft: "15px", marginBottom: "10px" }}
-              small
+              <i className="material-icons left">{this.state.post.colorIn}</i>
+              Favorite
+            </button>
+            <button
+              className="btn-flat waves-effect waves-light"
               onClick={() => this.openCommentBox()}
             >
-              Reply
-            </Button>
+              Comment
+              <i className="material-icons left">comment</i>
+            </button>
             {this.state.showReplyBox ? (
-              <div style={{ height: "60px" }}>
-                <Textarea
-                  label="Comment.."
-                  onChange={this.onChange.bind(this)}
-                  value={this.state.commentContent}
-                  id="commentContent"
-                  s={8}
-                  m={6}
-                  l={4}
-                  xl={8}
-                />
-                <Button
-                  style={{ marginLeft: "15px", marginBottom: "10px" }}
-                  small
-                  onClick={() => this.submit()}
-                >
-                  Submit
-                </Button>
+              <div className="row">
+                <div className="col s9">
+                  <div
+                    className="input-field col s12"
+                    style={{
+                      paddingBottom: "5px",
+                      backgroundColor: "transparent",
+                    }}
+                  >
+        
+        <textarea
+                      onChange={this.onChange.bind(this)}
+                      value={this.state.commentContent}
+                      id="commentContent"
+                      className="materialize-textarea grey lighten-5"
+                    ></textarea>
+
+                    <label for="commentContent">Comment...</label>
+                  </div>
+                </div>
+                <div className="col s3">
+                  <Button
+                    className="cyan lighten-2 waves-light"
+                    onClick={() => this.submit()}
+                  >
+                    Submit
+                  </Button>
+                </div>
               </div>
             ) : null}
-          </span>
-        </div>
+          </div>
+          
          <div>
+         <div style={{ marginLeft: "30px"}}>
          {this.state.post.comments.map(
+           
             (comment, i) => (
               <Comments
                 com={this.state.post.comments[i]}
@@ -251,9 +284,12 @@ class ViewPost extends Component {
                 {comment.commentID}
               </Comments>
             )
+            
           )}
+          </div>
             </div> 
       </div>
+      
     );
   }
 }

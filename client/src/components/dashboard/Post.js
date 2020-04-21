@@ -139,15 +139,17 @@ class Post extends Component {
   render() {
     return (
       <div className="row">
+        
         <div className="card grey lighten-5 hoverable">
-          <div>
+        
+          {/*<div>
             <Link
               to={`/post/${this.props.id}`}
               style={{ marginRight: "5px", color: "black" }}
             >
               {"View Post"}
-            </Link>
-          </div>
+            </Link>*/}
+            
           <div>
             <Link to={`/profile/${this.props.username}`}>
               <h1> {this.props.username} </h1>
@@ -157,9 +159,11 @@ class Post extends Component {
               {this.props.firstname} {this.props.lastname}
             </h2>
           </div>
+          <Link to={`/post/${this.props.id}`}> 
           <div className="card-content black-text" style={{ clear: "left" }}>
             <p>{this.props.children}</p>
           </div>
+          </Link>
           {this.props.post.posts[this.props.index].hasImage &
           (this.state.img != "") ? (
             <img
@@ -277,9 +281,14 @@ class Post extends Component {
               )}
             </div>
           )}
-          <div className="card"></div>
+          <div className="card">
+          
+          </div>
+          
         </div>
+        
       </div>
+      
     );
   }
 }
