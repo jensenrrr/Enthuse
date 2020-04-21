@@ -159,7 +159,6 @@ class Post extends Component {
               <p>{this.props.children}</p>
 
             </div>
-          </Link>
             <div class="card-image">
               {this.props.post.posts[this.props.index].hasImage &
                 (this.state.img != "") ? (
