@@ -139,6 +139,7 @@ class Post extends Component {
   render() {
     return (
       <div className="row">
+        
         <div className="card grey lighten-5 hoverable">
           <div>
             <Link to={`/profile/${this.props.username}`}>
@@ -149,6 +150,7 @@ class Post extends Component {
               {this.props.firstname} {this.props.lastname}
             </h2>
           </div>
+
           <Link
             to={`/post/${this.props.id}`}
 
@@ -157,7 +159,7 @@ class Post extends Component {
               <p>{this.props.children}</p>
 
             </div>
-
+          </Link>
             <div class="card-image">
               {this.props.post.posts[this.props.index].hasImage &
                 (this.state.img != "") ? (
@@ -276,9 +278,14 @@ class Post extends Component {
               )}
             </div>
           )}
-          <div className="card"></div>
+          <div className="card">
+          
+          </div>
+          
         </div>
+        
       </div>
+      
     );
   }
 }
