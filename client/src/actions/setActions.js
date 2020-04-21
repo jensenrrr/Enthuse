@@ -86,7 +86,7 @@ export const callTree = () => (dispatch) => {
     .catch((err) =>
       dispatch({
         type: TRIVIAL_ERRORS,
-        payload: err.response.data,
+        payload: "err",
       })
     );
 };

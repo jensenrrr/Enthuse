@@ -141,14 +141,6 @@ class Post extends Component {
       <div className="row">
         <div className="card grey lighten-5 hoverable">
           <div>
-            <Link
-              to={`/post/${this.props.id}`}
-              style={{ marginRight: "5px", color: "black" }}
-            >
-              {"View Post"}
-            </Link>
-          </div>
-          <div>
             <Link to={`/profile/${this.props.username}`}>
               <h1> {this.props.username} </h1>
             </Link>
@@ -157,22 +149,28 @@ class Post extends Component {
               {this.props.firstname} {this.props.lastname}
             </h2>
           </div>
-          <div className="card-content black-text" style={{ clear: "left" }}>
-            <p>{this.props.children}</p>
-          </div>
-          {this.props.post.posts[this.props.index].hasImage &
-          (this.state.img != "") ? (
-            <img
-              style={{
-                flex: 1,
-                width: null,
-                height: null,
-                resizeMode: "contain",
-              }}
-              src={this.state.img}
-              alt="helpful alt text"
-            />
-          ) : null}
+          <Link
+            to={`/post/${this.props.id}`}
+
+          >
+            <div className="card-content black-text" style={{ clear: "left" }}>
+              <p>{this.props.children}</p>
+
+            </div>
+
+            <div class="card-image">
+              {this.props.post.posts[this.props.index].hasImage &
+                (this.state.img != "") ? (
+                  <img
+                    style={{
+
+                    }}
+                    src={this.state.img}
+                    alt="helpful alt text"
+                  />
+                ) : null}
+            </div>
+          
           <h3>
             {" "}
             {this.props.category} | {this.props.county} County{" "}
@@ -200,6 +198,7 @@ class Post extends Component {
             {" "}
             Favorites: {this.props.likes} Comments: {this.props.commentCount}
           </p>
+          </Link>
           <div className="card-action center-align">
             <button
               className="btn-flat waves-effect waves-light "
