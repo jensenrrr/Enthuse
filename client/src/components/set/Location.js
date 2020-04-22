@@ -45,7 +45,7 @@ class Location extends Component {
   }
   render() {
     return (
-      <Tabs className="tab-demo z-depth-1 tabs-fixed-width">
+      <Tabs className="tab-demo tabs-fixed-width">
         <Tab
           active
           options={{
@@ -62,9 +62,9 @@ class Location extends Component {
             onChange={choice => { this.clickHandler(choice.country, choice.state,"" , choice.county) }}
             autoCloseOnEnter={true}
             items={PlacesData}
-            displayCount={4}
-            itemValue={item => item.county}
-            renderItem={item => <span>{item.county}</span>}
+            displayCount={5}
+            itemValue={item => item.county+item.city}
+            renderItem={item => <span>{item.county}, {item.state}</span>}
           />
         </Tab>
         <Tab
@@ -84,8 +84,8 @@ class Location extends Component {
             onChange={choice => { this.clickHandler(choice.country, choice.state, "", "") }}
             autoCloseOnEnter={true}
             items={PlacesData}
-            displayCount={1}
-            itemValue={item => item.state}
+            displayCount={5}
+            itemValue={item => item.state+item.city}
             renderItem={item => <span>{item.state}</span>}
           />
         </Tab>
@@ -104,8 +104,8 @@ class Location extends Component {
             onChange={choice => { this.clickHandler(choice.country, "", "", "") }}
             autoCloseOnEnter={true}
             items={PlacesData}
-            displayCount={1}
-            itemValue={item => item.country}
+            displayCount={5}
+            itemValue={item => item.country+item.city}
             renderItem={item => <span>{item.country}</span>}
           />
         </Tab>
