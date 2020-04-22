@@ -25,6 +25,13 @@ class ChangeUsername extends Component {
   onChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({
+        errors: nextProps.errors,
+      });
+    }
+  }
   onSubmit = (e) => {
     e.preventDefault();
 
