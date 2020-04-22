@@ -33,12 +33,13 @@ class ChangeUsername extends Component {
       password: this.state.password,
       newUsername: this.state.username,
     };
+    console.log(userData);
     this.props.usernameChange(userData);
   };
 
   render() {
     const { errors } = this.state;
-
+    console.log(errors);
     return (
       <div>
         <form noValidate onSubmit={this.onSubmit}>
