@@ -139,7 +139,6 @@ class Post extends Component {
   render() {
     return (
       <div className="row">
-        
         <div className="card grey lighten-5 hoverable">
           <div>
             <Link to={`/profile/${this.props.username}`}>
@@ -151,54 +150,44 @@ class Post extends Component {
             </h2>
           </div>
 
-          <Link
-            to={`/post/${this.props.id}`}
-
-          >
+          <Link to={`/post/${this.props.id}`}>
             <div className="card-content black-text" style={{ clear: "left" }}>
               <p>{this.props.children}</p>
-
             </div>
-            <div class="card-image">
+            <div className="card-image">
               {this.props.post.posts[this.props.index].hasImage &
-                (this.state.img != "") ? (
-                  <img
-                    style={{
-
-                    }}
-                    src={this.state.img}
-                    alt="helpful alt text"
-                  />
-                ) : null}
+              (this.state.img != "") ? (
+                <img style={{}} src={this.state.img} alt="helpful alt text" />
+              ) : null}
             </div>
-          
-          <h3>
-            {" "}
-            {this.props.category} | {this.props.county} County{" "}
-          </h3>
-          <h4>
-            {" "}
-            <Moment format="h:mm A" tz={this.state.zone}>
-              {this.props.date}
-            </Moment>
-            {" on "}
-            <Moment format="MMM D, YYYY" tz={this.state.zone}>
-              {this.props.date}
-            </Moment>
-          </h4>
 
-          <p
-            style={{
-              textAlign: "left",
-              fontSize: "medium",
-              fontFamily: "Roboto",
-              clear: "left",
-              marginLeft: "20px",
-            }}
-          >
-            {" "}
-            Favorites: {this.props.likes} Comments: {this.props.commentCount}
-          </p>
+            <h3>
+              {" "}
+              {this.props.category} | {this.props.county} County{" "}
+            </h3>
+            <h4>
+              {" "}
+              <Moment format="h:mm A" tz={this.state.zone}>
+                {this.props.date}
+              </Moment>
+              {" on "}
+              <Moment format="MMM D, YYYY" tz={this.state.zone}>
+                {this.props.date}
+              </Moment>
+            </h4>
+
+            <p
+              style={{
+                textAlign: "left",
+                fontSize: "medium",
+                fontFamily: "Roboto",
+                clear: "left",
+                marginLeft: "20px",
+              }}
+            >
+              {" "}
+              Favorites: {this.props.likes} Comments: {this.props.commentCount}
+            </p>
           </Link>
           <div className="card-action center-align">
             <button
@@ -277,14 +266,9 @@ class Post extends Component {
               )}
             </div>
           )}
-          <div className="card">
-          
-          </div>
-          
+          <div className="card"></div>
         </div>
-        
       </div>
-      
     );
   }
 }

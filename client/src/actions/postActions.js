@@ -42,7 +42,7 @@ export const getImage = (up) => (dispatch) => {
       console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: "error",
+        payload: err,
       });
     });
 };
@@ -57,12 +57,13 @@ export const createPost = (newPost) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const getSinglePost = (sets) => (dispatch) => {
@@ -76,31 +77,33 @@ export const getSinglePost = (sets) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const getPosts = (sets) => (dispatch) => {
   axios
     .post("/api/post/getposts", sets)
     .then((res) => {
-      console.log(res.data);
-      console.log("getposts");
+      //console.log(res.data);
+      //console.log("getposts");
       dispatch({
         type: POST_GET,
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: "err",
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const getUserPosts = (username) => (dispatch) => {
@@ -114,12 +117,13 @@ export const getUserPosts = (username) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: { meme: "bad" },
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const upVotePost = (upIDs) => (dispatch) => {
@@ -132,12 +136,13 @@ export const upVotePost = (upIDs) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: "err",
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const comment = (comment) => (dispatch) => {
@@ -151,12 +156,13 @@ export const comment = (comment) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: "err",
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const commentOnComment = (upIDs) => (dispatch) => {
@@ -168,12 +174,13 @@ export const commentOnComment = (upIDs) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: "err",
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const singleCommentOnComment = (upIDs) => (dispatch) => {
@@ -186,12 +193,13 @@ export const singleCommentOnComment = (upIDs) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
         payload: err,
-      })
-    );
+      });
+    });
 };
 
 export const likeComment = (data) => (dispatch) => {
@@ -221,17 +229,18 @@ export const singleLoadMoreComments = (data) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
-      })
-    );
+        payload: err,
+      });
+    });
 };
 
 export const loadRestComments = (data) => (dispatch) => {
   axios
-    .post("/api/set/loadMoreComments", data)
+    .post("/api/post/loadMoreComments", data)
     .then((res) => {
       console.log(res.data);
       dispatch({
@@ -239,10 +248,11 @@ export const loadRestComments = (data) => (dispatch) => {
         payload: res.data,
       });
     })
-    .catch((err) =>
+    .catch((err) => {
+      console.log(err);
       dispatch({
         type: POST_ERRORS,
-        payload: err.response.data,
-      })
-    );
+        payload: err,
+      });
+    });
 };

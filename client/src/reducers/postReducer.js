@@ -54,21 +54,30 @@ export default function(state = initialState, action) {
     case POST_COMMENT_ON_COMMENT:
       const up = state.posts;
       var meme = up[action.payload.indices[0]];
+      console.log(action.payload + "pushing this");
       action.payload.indices.forEach((element, i) => {
         if (i >= 1) meme = meme.comments[element];
       });
-    case SINGLEPOST_COMMENT_ON_COMMENT:
-      var upS = state.singlepost;
-
-      action.payload.indices.forEach((element, i) => {
-        if (i >= 1) upS = upS.comments[element];
-      });
-
-      upS.comments.push(action.payload.comment);
+      meme.comments.push(action.payload.comment);
       return {
         ...state,
-        posts: upS,
+        posts: up,
       };
+    case SINGLEPOST_COMMENT_ON_COMMENT:
+      var upS = state.singlepost;
+      if (upS) {
+        action.payload.indices.forEach((element, i) => {
+          if (i >= 1) upS = upS.comments[element];
+        });
+
+        upS.comments.push(action.payload.comment);
+        return {
+          ...state,
+          posts: upS,
+        };
+      } else {
+        return state;
+      }
     case LIKE_COMMENT:
       const upCommentLikes = state.posts;
       var dream = upCommentLikes[action.payload.indices[0]];
@@ -82,7 +91,16 @@ export default function(state = initialState, action) {
         posts: upCommentLikes,
       };
     case LOAD_COMMENT:
-      return state;
+      const loadMoreComments = state.posts;
+      var dream = loadMoreComments[action.payload.indices[0]];
+      action.payload.indices.forEach((element, i) => {
+        if (i >= 1) dream = dream.comments[element];
+      });
+      dream.comments.push(action.payload.comments);
+      return {
+        ...state,
+        posts: loadMoreComments,
+      };
     case SINGLEPOST_LOAD_COMMENT:
       return state;
     case POST_UPVOTE:

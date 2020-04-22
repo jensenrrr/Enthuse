@@ -5,7 +5,10 @@ export const POST_ERRORS = "POST_ERRORS";
 export const SET_ERRORS = "SET_ERRORS";
 //user
 export const USER_LOADING = "USER_LOADING";
+export const USERNAME_CHANGE = "USERNAME_CHANGE";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
+export const UPDATE_USER = "UPDATE_USER";
+
 //sets
 export const REMOVE_A_CURRENT_SET = "REMOVE_A_CURRENT_SET";
 export const CHANGE_CURRENT_SET = "CHANGE_CURRENT_SET";

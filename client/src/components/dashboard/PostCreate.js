@@ -105,10 +105,7 @@ class PostCreate extends Component {
       alert("Post needs content.");
       return;
     }
-    if (
-      this.state.location.country == undefined ||
-      this.state.location.country == ""
-    ) {
+    if (!this.state.county && !this.state.state && !this.state.country) {
       alert("Post needs a location.");
       return;
     }
@@ -181,7 +178,7 @@ class PostCreate extends Component {
                 id="content"
                 className="materialize-textarea grey lighten-5"
               ></textarea>
-              <label for="commentContent">Thoughts...</label>
+              <label htmlFor="commentContent">Thoughts...</label>
             </div>
 
             <br />

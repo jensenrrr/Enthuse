@@ -11,6 +11,9 @@ class Navbar extends Component {
     e.preventDefault();
     this.props.logoutUser();
   };
+  stopNav = (e) => {
+    e.preventDefault();
+  };
 
   render() {
     const loggedOrNot = (auth) => {
@@ -36,7 +39,7 @@ class Navbar extends Component {
                   {this.props.auth.user.username}
                 </Link>
               </li>
-              <li>
+              <li onClick={this.stopNav}>
                 <Settings />
               </li>
               <li>

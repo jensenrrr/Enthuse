@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Button } from "react-materialize";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { usernameChange } from "../../actions/authActions";
@@ -25,6 +26,8 @@ class ChangeUsername extends Component {
     this.setState({ [e.target.id]: e.target.value });
   };
   onSubmit = (e) => {
+    e.preventDefault();
+
     var userData = {
       email: this.state.email,
       password: this.state.password,
@@ -32,6 +35,7 @@ class ChangeUsername extends Component {
     };
     this.props.usernameChange(userData);
   };
+
   render() {
     const { errors } = this.state;
 
@@ -78,7 +82,7 @@ class ChangeUsername extends Component {
               value={this.state.newUsername}
               error={errors.newUsername}
               id="username"
-              type="text"
+              type="email"
               className={classnames("", {
                 invalid: errors.newUsername,
               })}
@@ -96,6 +100,7 @@ class ChangeUsername extends Component {
               }}
               type="submit"
               className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+              onClick={this.onSubmit}
             >
               Change Username
             </button>
@@ -106,8 +111,8 @@ class ChangeUsername extends Component {
   }
 }
 ChangeUsername.propTypes = {
-  usernameChange: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  usernameChange: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
   set: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };

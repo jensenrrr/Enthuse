@@ -1,12 +1,24 @@
-import { SET_CURRENT_USER, USER_LOADING, DATA_TREE } from "../actions/types";
+import {
+  SET_CURRENT_USER,
+  USER_LOADING,
+  DATA_TREE,
+  USERNAME_CHANGE,
+  UPDATE_USER,
+} from "../actions/types";
+//const fs = require("fs");
 
 const isEmpty = require("is-empty");
 
 const initialState = {
   isAuthenticated: false,
-  user: {},
+  user: {
+    id: "",
+    username: "",
+    homepage: "",
+  },
   loading: false,
-  tree: []
+  tree: [],
+  meme: false,
 };
 
 export default function(state = initialState, action) {
@@ -15,18 +27,36 @@ export default function(state = initialState, action) {
       return {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
-        user: action.payload
+        user: action.payload,
       };
     case USER_LOADING:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
-      case DATA_TREE:
-        return {
-          ...state,
-          tree: action.payload
-        };
+    case DATA_TREE:
+      return {
+        ...state,
+        tree: action.payload,
+      };
+    case USERNAME_CHANGE:
+      const cUser = state.user;
+      cUser.username = action.payload.username;
+      //fs.writeFile("meme.txt", JSON.stringify(cUser));
+      return {
+        ...state,
+        user: cUser,
+      };
+    case UPDATE_USER:
+      const uUser = state.user;
+      uUser.username = action.payload.username;
+      uUser.homepage = action.payload.homepage;
+      uUser.favs = action.payload.favs;
+      uUser.sets = action.payload.sets;
+      return {
+        ...state,
+        user: uUser,
+      };
     default:
       return state;
   }

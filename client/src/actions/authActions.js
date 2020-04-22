@@ -9,6 +9,8 @@ import {
   DATA_TREE,
   TRIVIAL_ERRORS,
   SET_SETS,
+  USERNAME_CHANGE,
+  UPDATE_USER,
 } from "./types";
 
 // Register User
@@ -33,7 +35,11 @@ export const usernameChange = (userData) => (dispatch) => {
   axios
     .post("/api/users/changeUsername", userData)
     .then((res) => {
-      console.log(res);
+      console.log(res.data);
+      dispatch({
+        type: USERNAME_CHANGE,
+        payload: res.data,
+      });
     })
     .catch((err) =>
       dispatch({
@@ -68,7 +74,19 @@ export const loginUser = (userData) => (dispatch) => {
       })
     );
 };
-
+export const getCurrentUser = (userData) => (dispatch) => {
+  console.log("get user");
+  dispatch(setCurrentUser(userData));
+  axios
+    .post("/api/users/getUser", { id: userData.id })
+    .then((res) => {
+      dispatch({
+        type: UPDATE_USER,
+        payload: res.data,
+      });
+    })
+    .catch((err) => console.log("get curr user err"));
+};
 // Set logged in user
 export const setCurrentUser = (decoded) => {
   return {
