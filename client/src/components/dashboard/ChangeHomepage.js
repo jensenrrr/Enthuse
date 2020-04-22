@@ -26,9 +26,10 @@ class ChangeHomepage extends Component {
       sets: [],
       currentSets:[],
       errors: {},
-      username: ""
+      homePage: [],
     };
     this.onModalChange = this.onModalChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
   onModalChange = () => {
     this.setState({
@@ -38,14 +39,18 @@ class ChangeHomepage extends Component {
   onChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  onSubmit = (e) => {
-    e.preventDefault();
+  onSubmit(index) {
 
-    var userData = {
-      currentSets: this.state.currentSets,
+    var sendSets = JSON.parse(JSON.stringify(this.props.set.homePage));
+  console.log(index);
+    sendSets.splice(index, 1);
+    console.log(sendSets);
+    var data = {
+      sets: sendSets,
       id: this.props.auth.user.id
     };
-    this.props.homepageChange(userData);
+    
+    this.props.homepageChange(data);
   };
   addSet() {
     if (this.state) {
@@ -56,7 +61,7 @@ class ChangeHomepage extends Component {
           list: this.state.list
         };
         if (
-          !this.props.set.currentSets.some(
+          !this.props.set.homePage.some(
             e =>
               e.category === set.category &&
               (e.location.county === set.location.county &&
@@ -66,14 +71,15 @@ class ChangeHomepage extends Component {
           )
         ) {
           //console.log("non duplicate");
-          var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
+          var sendSets = JSON.parse(JSON.stringify(this.props.set.homePage));
           sendSets.push(set);
+          console.log(set);
           var data = {
             sets: sendSets,
             id: this.props.auth.user.id
           };
           console.log(data);
-          this.props.changeCurrentSet(data);
+          this.props.homepageChange(data);
         } else {
           console.log("duplicate set");
         }
@@ -93,28 +99,7 @@ class ChangeHomepage extends Component {
   goHome() {
     this.props.goHome({ id: this.props.auth.user.id });
   }
-  remove(index) {
-    //var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
-
-    var sendSets = JSON.parse(JSON.stringify(this.props.set.currentSets));
-    //console.log(index);
-    sendSets.splice(index, 1);
-    //console.log(sendSets);
-    var data = {
-      sets: sendSets,
-      id: this.props.auth.user.id
-    };
-    //console.log(data);
-
-    this.props.changeCurrentSet(data);
-    /*
-    this.props.removeCurrSet(
-      this.props.set.currentSets.findIndex(
-        i => i.category === set.category && i.location === set.location
-      )
-    );*/
-  }
-
+  
   render() {
     const { errors } = this.state;
 
@@ -123,16 +108,17 @@ class ChangeHomepage extends Component {
       <div className="card-content">
               <h1>Homepage:</h1>
               <div style={{ clear: "left", textAlign: "left", paddingLeft: "20px" }}>
-                {this.props.set.currentSets.map((set, index) => (
+                {this.props.set.homePage.map((set, index) => (
                   <span
                     key={set.category + set.location.county + set.location.state}
                   >
 
                     <div className="left-align">
-                      <p className="cyan lighten-1 waves-light">
+                      <Button className="cyan lighten-1 waves-light"
+                      onClick={this.onSubmit}>
                         {set.category} | {set.location.county}
                         <i className="material-icons right">remove</i>
-                      </p>
+                      </Button>
                     </div>
                     <br />
                   </span>
@@ -141,34 +127,17 @@ class ChangeHomepage extends Component {
               </div>
       <div>
         <div className="row">
-        <div style={{ clear: "left", textAlign: "left", paddingLeft: "20px" }}>
-                {this.props.set.currentSets.map((set, index) => (
-                  
-                    <div className="left-align">
-                      <Button
-                      onClick={this.remove(index)}
-            floating
-            waves="light"
-            onClick={this.onSubmit}
-            >
-              Reset
-          </Button>
-                      </div>
-                      
-                ))}
           
-          </div>
-          </div>
-            <div className="col s6">
-              Location
-              <Location />{" "}
-            </div>
-            <div className="col s6">
-              Categories
-              <HobbyTree />
-              {this.state.category}
-            </div>
-          </div>
+                        <h1>Location</h1>
+                        <Location />
+                        <h3>Selected Location: {this.state.location.city}</h3>
+                      </div>
+                      <div className="row">
+                        <h1>Categories</h1>
+                        <HobbyTree />
+                        <h3>Selected Category: {this.state.category}</h3>
+                      </div>
+                      </div>
           <div className="row">
             <Button
               floating
@@ -179,7 +148,7 @@ class ChangeHomepage extends Component {
                 blue: this.state.ready,
               })}
             >
-              Add
+              Add Homepage Set
             </Button>
           </div>
           </div>

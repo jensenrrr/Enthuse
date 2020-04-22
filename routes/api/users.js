@@ -123,7 +123,7 @@ router.post("/login", (req, res) => {
 //change user information
 
 router.post("/changeHomepage", (req, res) => {
-  User.findById(mongoose.Types.ObjectID(req.body.id)).then(user => {
+  User.findById(req.body.id).then(user => {
     user.homePage = req.body.sets;
     user.save().then(user => {
       res.json(user.homePage);

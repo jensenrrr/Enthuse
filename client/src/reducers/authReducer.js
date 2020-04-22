@@ -56,7 +56,7 @@ export default function(state = initialState, action) {
         return{
           ...state,
           user: hUser,
-          crruentSets: action.payload
+          homePage: action.payload
         };
     case UPDATE_USER:
       const uUser = state.user;
