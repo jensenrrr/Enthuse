@@ -25,6 +25,13 @@ class ChangeUsername extends Component {
   onChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({
+        errors: nextProps.errors,
+      });
+    }
+  }
   onSubmit = (e) => {
     e.preventDefault();
 
@@ -33,12 +40,12 @@ class ChangeUsername extends Component {
       password: this.state.password,
       newUsername: this.state.username,
     };
+    console.log(userData);
     this.props.usernameChange(userData);
   };
 
   render() {
     const { errors } = this.state;
-
     return (
       <div>
         <form noValidate onSubmit={this.onSubmit}>

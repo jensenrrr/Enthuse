@@ -15,7 +15,7 @@ class PostCreate extends Component {
     this.state = {
       pictures: [],
       isModalOpen: false,
-      label: "Upload Images!",
+      label: "Upload an Image!",
       content: "",
       category: "",
       location: {
@@ -187,7 +187,17 @@ class PostCreate extends Component {
                 <div className="col s6">
                   <h1>Location</h1>
                   <Location key={this.state.locationKey} />
-                  <h3>Selected Location: {this.state.location.city} {this.state.location.state} {this.state.location.country}</h3>
+                  <h3>
+                    Selected Location:{" "}
+                    {this.state.location.county
+                      ? this.state.location.county + "County"
+                      : this.state.location.state
+                      ? this.state.location.state
+                      : this.state.location.country
+                      ? this.state.location.country
+                      : ""}
+                  </h3>
+
                 </div>
                 <div className="col s6">
                   <h1>Categories</h1>
@@ -199,11 +209,12 @@ class PostCreate extends Component {
             <div>
               <ImageUploader
                 withIcon={true}
-                buttonText="Choose images"
+                buttonText="Choose an Image"
                 label={this.state.label}
                 onChange={this.onDrop}
                 imgExtension={[".jpg", ".gif", ".png", ".gif"]}
                 maxFileSize={5242880}
+                singleImage={true}
               />
             </div>
             <div

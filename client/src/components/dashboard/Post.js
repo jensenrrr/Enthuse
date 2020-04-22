@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Comments from "./Comments";
 import axios from "axios";
-import Img from "react-image";
 
 import {
   upVotePost,
