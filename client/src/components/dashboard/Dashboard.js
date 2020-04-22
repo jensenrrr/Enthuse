@@ -118,9 +118,9 @@ class Dashboard extends Component {
           !this.props.set.currentSets.some(
             e =>
               e.category === set.category &&
-              (e.location.county === set.location.county ||
-                e.location.country === set.location.country ||
-                e.location.state === set.location.state ||
+              (e.location.county === set.location.county  &&
+                e.location.country === set.location.country  &&
+                e.location.state === set.location.state  &&
                 e.location.city === set.location.city)
           )
         ) {
@@ -212,7 +212,7 @@ class Dashboard extends Component {
               <div style={{ clear: "left", textAlign: "left", paddingLeft: "20px" }}>
                 {this.props.set.currentSets.map((set, index) => (
                   <span
-                    key={set.category + set.location.city + set.location.state + set.location.country}
+                    key={set.category + set.location.county + set.location.state + set.location.country}
                   >
 
                     <div className="left-align">
@@ -244,7 +244,7 @@ class Dashboard extends Component {
                       <div className="row">
                         <h1>Location</h1>
                         <Location />
-                        <h3>Selected Location: {this.state.meme}</h3>
+                        <h3>Selected Location:{(this.state.location.county !="") ? (this.state.location.county) : ((this.state.location.state !="") ? this.state.location.state : this.state.location.country)}</h3>
                       </div>
                       <div className="row">
                         <h1>Categories</h1>
