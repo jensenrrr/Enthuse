@@ -50,9 +50,9 @@ class ViewPost extends Component {
   componentWillReceiveProps(nextProps) {
     //console.log(nextProps.post.posts[this.props.index].liked);
     //console.log(this.props.post.posts[this.props.index].liked);
-
+    console.log(nextProps.post);
     if (nextProps.post) {
-      //console.log(nextProps.post);
+      console.log(nextProps.post);
       if (nextProps.post.singlepost) {
         this.setState({
           post: nextProps.post.singlepost,
@@ -168,11 +168,13 @@ class ViewPost extends Component {
   };
   */
   render() {
+    console.log(this.state);
     return (
+      
       <div style={{ backgroundColor: "#ffffff" }}>
         <div>
           <Link to={`/profile/${this.props.username}`}>
-            <h1> {this.state.post.username} </h1>
+            <h1> {this.props.username} </h1>
           </Link>
           <h2>
             {" "}
@@ -192,7 +194,7 @@ class ViewPost extends Component {
           ""
         )}{" "}
         <h3>
-          {this.state.post.category} | {this.state.post.location.county} County{" "}
+          {this.state.post.category} | {(this.state.post.location.county != "") ? (this.state.post.location.county) : ((this.state.post.location.state != "") ? this.state.post.location.state : this.state.post.location.country)}
         </h3>
         <h4>
           <Moment format="h:mm A" tz={this.state.post.zone}>

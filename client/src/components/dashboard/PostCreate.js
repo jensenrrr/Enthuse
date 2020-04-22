@@ -190,7 +190,7 @@ class PostCreate extends Component {
                   <h3>
                     Selected Location:{" "}
                     {this.state.location.county
-                      ? this.state.location.county + "County"
+                      ? this.state.location.county + " County"
                       : this.state.location.state
                       ? this.state.location.state
                       : this.state.location.country
