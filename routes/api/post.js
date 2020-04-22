@@ -232,6 +232,7 @@ router.post("/commentOnComment", (req, res) => {
       console.log({ comment: returnComment, indices: req.body.indices });
       res.json({ comment: returnComment, indices: req.body.indices });
       res.end();
+      console.log("sent back");
       user._commentIDs.push(comment._id);
       user.save(function (err) {
         if (err)
@@ -250,6 +251,10 @@ router.post("/commentOnComment", (req, res) => {
 
       function incrementCommentCountonComments(parid) {
         Comment.findById(parid).then((comment) => {
+          if (!comment) {
+            console.log("no comment for " + parid);
+            return;
+          }
           comment.commentCount += 1;
           comment.hRank += Number(
             1 / (0.1 * Math.pow(Number(comment.commentCount), 1.2) + 1)
@@ -538,7 +543,75 @@ router.post("/getuserposts", (req, res) => {
     return returnPosts;
   }
 });
+router.post("/loadMoreComments", (req, res) => {
+  //console.log(req.body);
+  //need req.alreadyloadedcomments (ids) and req.parentID
+  const returnComments = [];
+  processComments(req, returnComments).then((meme) => {
+    returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+    //console.log(returnComments);
+    //console.log("ressing");
+    res.json({ comments: returnComments, indices: req.body.indices });
+  });
 
+  function processComments(req, returnComments) {
+    return new Promise(function (resolve, reject) {
+      Comment.find({ _parComment: req.body.parentID }).then((comments) => {
+        comments.forEach(async (comment) => {
+          //alreadyExists not currently working
+          var alreadyExists = false;
+          for (var i = 0; i < req.body.alreadyLoadedComments.length; i++) {
+            if (comment._id == req.body.alreadyLoadedComments[i]) {
+              console.log("one already existing");
+              alreadyExists = true;
+              break;
+            }
+          }
+          if (!alreadyExists) {
+            let promise = new Promise((resolve, reject) => {
+              User.findById({ _id: comment._userID }).then(async (user) => {
+                var liked = false;
+                if (
+                  user._likedComments.some(function (arrVal) {
+                    return (
+                      JSON.parse(JSON.stringify(comment._id)) ===
+                      JSON.parse(JSON.stringify(arrVal))
+                    );
+                  })
+                ) {
+                  liked = true;
+                }
+                const nextComments = [];
+
+                const returnComment = {
+                  content: comment.content,
+                  username: user.username,
+                  firstname: user.name.first,
+                  lastname: user.name.last,
+                  likes: comment._likedUserIDs.length,
+                  commentCount: comment._commentIDs.length,
+                  date: parseInt(comment.date),
+                  commentID: comment._id,
+                  comments: nextComments,
+                  liked: liked,
+                  hRank: comment.hRank,
+                };
+                returnComments.push(returnComment);
+                console.log(returnComment.content + "\n");
+                resolve("done");
+                //console.log(returnComments);
+              });
+            });
+
+            let result = await promise;
+            console.log(result);
+            resolve("e");
+          }
+        });
+      });
+    });
+  }
+});
 router.post("/getposts", (req, res) => {
   // console.log(req.body);
   const returnPosts = [];
@@ -551,7 +624,6 @@ router.post("/getposts", (req, res) => {
 async function processSets(sets, returnPosts) {
   const setMap = sets.map((set) => {
     const catLabels = set.list.map((catLabel) => {
-      console.log(set.location);
       return set.location.county
         ? findPosts(set, catLabel, returnPosts)
         : set.location.state
@@ -578,63 +650,57 @@ async function findPostsForState(set, catLabel, returnPosts) {
             User.findById({ _id: post._userID }).then(async (user) => {
               if (!user) {
                 console.log("error user not found findposts setsAndPosts");
-
                 resolve("user not foound");
-              } else {
-                //console.log(user);
-                var liked = false;
-                if (
-                  user._likedPosts.some(function (arrVal) {
-                    //console.log("in user list " + arrVal);
-                    //console.log("postID" + post._id);
-                    return (
-                      JSON.parse(JSON.stringify(post._id)) ===
-                      JSON.parse(JSON.stringify(arrVal))
-                    );
-                  })
-                ) {
-                  liked = true;
-                }
-                const returnComments = [];
-                await Promise.all(
-                  post._commentIDs.map(async (commentID) => {
-                    //const retC = await getComments(commentID, returnComments);
-                    return retC;
-                  })
-                );
-
-                const returnPost = {
-                  content: post.content,
-                  category: post.category,
-                  location: post.location,
-                  username: user.username,
-                  hasImage: post.hasImage,
-                  firstname: user.name.first,
-                  lastname: user.name.last,
-                  likes: post._likedUserIDs.length,
-                  commentCount: post.commentCount,
-                  date: parseInt(post.date),
-                  postID: post._id,
-                  liked: liked,
-                  comments: returnComments,
-                };
-                //console.log(returnPost);
-                var alreadyExists = false;
-                for (var i = 0; i < returnPosts.length; i++) {
-                  if (
-                    JSON.stringify(returnPost.postID) ==
-                    JSON.stringify(returnPosts[i].postID)
-                  ) {
-                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
-                    alreadyExists = true;
-                  }
-                }
-
-                if (!alreadyExists) {
-                  returnPosts.push(returnPost);
-                }
-                resolve(returnPosts);
               }
+
+              var liked = false;
+              if (
+                user._likedPosts.some(function (arrVal) {
+                  //console.log("in user list " + arrVal);
+                  //console.log("postID" + post._id);
+                  return (
+                    JSON.parse(JSON.stringify(post._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const returnComments = [];
+              await getComments(post._id, returnComments);
+              returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+              const returnPost = {
+                content: post.content,
+                hasImage: post.hasImage,
+                category: post.category,
+                location: post.location,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: post._likedUserIDs.length,
+                commentCount: post.commentCount,
+                date: parseInt(post.date),
+                postID: post._id,
+                liked: liked,
+                hRank: post.hRank,
+                comments: returnComments,
+              };
+              //console.log(returnPost);
+              var alreadyExists = false;
+              for (var i = 0; i < returnPosts.length; i++) {
+                if (
+                  JSON.stringify(returnPost.postID) ==
+                  JSON.stringify(returnPosts[i].postID)
+                ) {
+                  returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                  alreadyExists = true;
+                }
+              }
+
+              if (!alreadyExists) {
+                returnPosts.push(returnPost);
+              }
+              resolve(returnPosts);
             });
           });
         };
@@ -658,63 +724,57 @@ async function findPostsForCountry(set, catLabel, returnPosts) {
             User.findById({ _id: post._userID }).then(async (user) => {
               if (!user) {
                 console.log("error user not found findposts setsAndPosts");
-
                 resolve("user not foound");
-              } else {
-                //console.log(user);
-                var liked = false;
-                if (
-                  user._likedPosts.some(function (arrVal) {
-                    //console.log("in user list " + arrVal);
-                    //console.log("postID" + post._id);
-                    return (
-                      JSON.parse(JSON.stringify(post._id)) ===
-                      JSON.parse(JSON.stringify(arrVal))
-                    );
-                  })
-                ) {
-                  liked = true;
-                }
-                const returnComments = [];
-                await Promise.all(
-                  post._commentIDs.map(async (commentID) => {
-                    //const retC = await getComments(commentID, returnComments);
-                    return retC;
-                  })
-                );
-
-                const returnPost = {
-                  content: post.content,
-                  category: post.category,
-                  location: post.location,
-                  username: user.username,
-                  hasImage: post.hasImage,
-                  firstname: user.name.first,
-                  lastname: user.name.last,
-                  likes: post._likedUserIDs.length,
-                  commentCount: post.commentCount,
-                  date: parseInt(post.date),
-                  postID: post._id,
-                  liked: liked,
-                  comments: returnComments,
-                };
-                //console.log(returnPost);
-                var alreadyExists = false;
-                for (var i = 0; i < returnPosts.length; i++) {
-                  if (
-                    JSON.stringify(returnPost.postID) ==
-                    JSON.stringify(returnPosts[i].postID)
-                  ) {
-                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
-                    alreadyExists = true;
-                  }
-                }
-
-                if (!alreadyExists) {
-                  returnPosts.push(returnPost);
-                }
-                resolve(returnPosts);
               }
+
+              var liked = false;
+              if (
+                user._likedPosts.some(function (arrVal) {
+                  //console.log("in user list " + arrVal);
+                  //console.log("postID" + post._id);
+                  return (
+                    JSON.parse(JSON.stringify(post._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const returnComments = [];
+              await getComments(post._id, returnComments);
+              returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+              const returnPost = {
+                content: post.content,
+                hasImage: post.hasImage,
+                category: post.category,
+                location: post.location,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: post._likedUserIDs.length,
+                commentCount: post.commentCount,
+                date: parseInt(post.date),
+                postID: post._id,
+                liked: liked,
+                hRank: post.hRank,
+                comments: returnComments,
+              };
+              //console.log(returnPost);
+              var alreadyExists = false;
+              for (var i = 0; i < returnPosts.length; i++) {
+                if (
+                  JSON.stringify(returnPost.postID) ==
+                  JSON.stringify(returnPosts[i].postID)
+                ) {
+                  returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                  alreadyExists = true;
+                }
+              }
+
+              if (!alreadyExists) {
+                returnPosts.push(returnPost);
+              }
+              resolve(returnPosts);
             });
           });
         };
@@ -726,7 +786,6 @@ async function findPostsForCountry(set, catLabel, returnPosts) {
   return returnPosts;
 }
 async function findPosts(set, catLabel, returnPosts) {
-  //console.log(set.location.county);
   await Post.find({
     category: catLabel,
     "location.county": set.location.county,
@@ -740,63 +799,57 @@ async function findPosts(set, catLabel, returnPosts) {
             User.findById({ _id: post._userID }).then(async (user) => {
               if (!user) {
                 console.log("error user not found findposts setsAndPosts");
-
                 resolve("user not foound");
-              } else {
-                //console.log(user);
-                var liked = false;
-                if (
-                  user._likedPosts.some(function (arrVal) {
-                    //console.log("in user list " + arrVal);
-                    //console.log("postID" + post._id);
-                    return (
-                      JSON.parse(JSON.stringify(post._id)) ===
-                      JSON.parse(JSON.stringify(arrVal))
-                    );
-                  })
-                ) {
-                  liked = true;
-                }
-                const returnComments = [];
-                await Promise.all(
-                  post._commentIDs.map(async (commentID) => {
-                    const retC = await getComments(commentID, returnComments);
-                    return retC;
-                  })
-                );
-
-                const returnPost = {
-                  content: post.content,
-                  category: post.category,
-                  location: post.location,
-                  username: user.username,
-                  hasImage: post.hasImage,
-                  firstname: user.name.first,
-                  lastname: user.name.last,
-                  likes: post._likedUserIDs.length,
-                  commentCount: post.commentCount,
-                  date: parseInt(post.date),
-                  postID: post._id,
-                  liked: liked,
-                  comments: returnComments,
-                };
-                //console.log(returnPost);
-                var alreadyExists = false;
-                for (var i = 0; i < returnPosts.length; i++) {
-                  if (
-                    JSON.stringify(returnPost.postID) ==
-                    JSON.stringify(returnPosts[i].postID)
-                  ) {
-                    returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
-                    alreadyExists = true;
-                  }
-                }
-
-                if (!alreadyExists) {
-                  returnPosts.push(returnPost);
-                }
-                resolve(returnPosts);
               }
+
+              var liked = false;
+              if (
+                user._likedPosts.some(function (arrVal) {
+                  //console.log("in user list " + arrVal);
+                  //console.log("postID" + post._id);
+                  return (
+                    JSON.parse(JSON.stringify(post._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const returnComments = [];
+              await getComments(post._id, returnComments);
+              returnComments.sort((a, b) => (a.hRank > b.hRank ? -1 : 1));
+              const returnPost = {
+                content: post.content,
+                hasImage: post.hasImage,
+                category: post.category,
+                location: post.location,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: post._likedUserIDs.length,
+                commentCount: post.commentCount,
+                date: parseInt(post.date),
+                postID: post._id,
+                liked: liked,
+                hRank: post.hRank,
+                comments: returnComments,
+              };
+              //console.log(returnPost);
+              var alreadyExists = false;
+              for (var i = 0; i < returnPosts.length; i++) {
+                if (
+                  JSON.stringify(returnPost.postID) ==
+                  JSON.stringify(returnPosts[i].postID)
+                ) {
+                  returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
+                  alreadyExists = true;
+                }
+              }
+
+              if (!alreadyExists) {
+                returnPosts.push(returnPost);
+              }
+              resolve(returnPosts);
             });
           });
         };
@@ -808,9 +861,152 @@ async function findPosts(set, catLabel, returnPosts) {
   return returnPosts;
 }
 
+//db.collection.find({_parComment: null}).sort({hRank:-1}).limit(3) // for MAX
+async function getComments(parid, returnComments) {
+  await Comment.find({ _parComment: null, _postID: parid })
+    .sort({ hRank: -1 })
+    .limit(3)
+    .then(async (comments) => {
+      //console.log(comments);
+      //console.log(comments.size);
+
+      var dets = function (returnComments, comment) {
+        return new Promise(function (resolve, reject) {
+          //console.log(comment);
+          User.findById({ _id: comment._userID }).then(async (user) => {
+            var liked = false;
+            if (!user) {
+              console.log("user not found");
+              resolve();
+            } else {
+              if (
+                user._likedComments.some(function (arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                await getCommentsofComment(comment._id, nextComments, 1);
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank,
+              };
+              //console.log(returnPost);
+              //console.log("dets:   " + returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            }
+          });
+        });
+      };
+
+      await Promise.all(
+        comments.map(async (comment) => {
+          return await dets(returnComments, comment);
+        })
+      );
+    });
+  return returnComments;
+}
+async function getCommentsofComment(parid, returnComments, level) {
+  level++;
+  await Comment.find({ _parComment: parid })
+    .sort({ hRank: -1 })
+    .limit(2)
+    .then(async (comments) => {
+      //console.log(comments);
+      //console.log(comments.size);
+
+      var dets = function (returnComments, comment) {
+        return new Promise(function (resolve, reject) {
+          //console.log(comment);
+          User.findById({ _id: comment._userID }).then(async (user) => {
+            if (!user) {
+              console.log(
+                "error user not found findposts getCommentsofComment"
+              );
+              resolve("user not foound");
+            }
+            var liked = false;
+            if (!user) {
+              console.log("user not found, comment id - " + parid);
+
+              resolve();
+            } else {
+              if (
+                user._likedComments.some(function (arrVal) {
+                  return (
+                    JSON.parse(JSON.stringify(comment._id)) ===
+                    JSON.parse(JSON.stringify(arrVal))
+                  );
+                })
+              ) {
+                liked = true;
+              }
+              const nextComments = [];
+
+              if (comment._commentIDs.length > 0) {
+                if (level < 4)
+                  await await getCommentsofComment(
+                    comment._id,
+                    nextComments,
+                    level + 1
+                  );
+              }
+
+              const returnComment = {
+                content: comment.content,
+                username: user.username,
+                firstname: user.name.first,
+                lastname: user.name.last,
+                likes: comment._likedUserIDs.length,
+                commentCount: comment._commentIDs.length,
+                date: parseInt(comment.date),
+                commentID: comment._id,
+                comments: nextComments,
+                liked: liked,
+                hRank: comment.hRank,
+              };
+              //console.log(returnComment.content);
+
+              returnComments.push(returnComment);
+              //console.log(returnComments);
+              resolve(returnComments);
+            }
+          });
+        });
+      };
+
+      await Promise.all(
+        comments.map(async (comment) => {
+          return await dets(returnComments, comment);
+        })
+      );
+    });
+  return returnComments;
+}
+
 router.post("/getSinglePost", (req, res) => {
   //console.log(req.body);
-  console.log("beforeCommentID");
   Post.findById(mongoose.Types.ObjectId(req.body.id)).then(async (post) => {
     if (!post) {
       console.log("Post not found." + req.body);
@@ -854,7 +1050,6 @@ router.post("/getSinglePost", (req, res) => {
         hRank: post.hRank,
         comments: returnComments,
       };
-      console.log(returnPost);
       res.json(returnPost);
     });
   });
