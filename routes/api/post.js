@@ -376,7 +376,7 @@ router.post(
     console.log("-------- Create called ----------");
     console.log(req.file);
     console.log("does the post have an image? " + req.body.hasImage);
-    if (req.body.hasImage) {
+    if (req.body.hasImage == "true") {
       console.log("Has image");
       var new_img = new Img();
       new_img.img.data = fs.readFileSync(req.file.path);
@@ -403,7 +403,7 @@ router.post(
       if (!user) {
         res.status(400).json("user does not exist");
       } else {
-        if (req.body.hasImage) {
+        if (req.body.hasImage == "true") {
           console.log(new_img._id);
           newPost._imageIDs.push(new_img._id);
         }
