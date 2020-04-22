@@ -11,6 +11,7 @@ import {
   SET_SETS,
   USERNAME_CHANGE,
   UPDATE_USER,
+  HOMEPAGE_CHANGE
 } from "./types";
 
 // Register User
@@ -47,6 +48,25 @@ export const usernameChange = (userData) => (dispatch) => {
         payload: err.response.data,
       })
     );
+};
+
+export const homepageChange = (userData) => (dispatch) => {
+  axios
+  .post("/api/users/changeHomepage", userData)
+  .then((res) => {
+    console.log(res.data);
+      dispatch({
+        type: HOMEPAGE_CHANGE,
+        payload: res.data,
+      });
+    })
+    .catch((err) =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data,
+      })
+    );
+
 };
 
 // Login - get user token

@@ -8,6 +8,7 @@ export const USER_LOADING = "USER_LOADING";
 export const USERNAME_CHANGE = "USERNAME_CHANGE";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const UPDATE_USER = "UPDATE_USER";
+export const HOMEPAGE_CHANGE = "HOMEPAGE_CHANGE"
 
 //sets
 export const REMOVE_A_CURRENT_SET = "REMOVE_A_CURRENT_SET";

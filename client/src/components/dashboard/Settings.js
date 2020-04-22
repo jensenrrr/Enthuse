@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Modal, Tabs, Tab } from "react-materialize";
 import ChangeUsername from "./ChangeUsername";
+import ChangeHomepage from "./ChangeHomepage";
 class Settings extends Component {
   constructor() {
     super();
@@ -86,7 +87,7 @@ class Settings extends Component {
               }}
               title="Change Homepage"
             >
-              Change Homepage
+              <ChangeHomepage/>
             </Tab>
           </Tabs>
         </Modal>

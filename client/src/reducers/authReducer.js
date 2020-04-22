@@ -4,6 +4,7 @@ import {
   DATA_TREE,
   USERNAME_CHANGE,
   UPDATE_USER,
+  HOMEPAGE_CHANGE
 } from "../actions/types";
 //const fs = require("fs");
 
@@ -19,6 +20,7 @@ const initialState = {
   loading: false,
   tree: [],
   meme: false,
+  currentSets: [],
 };
 
 export default function(state = initialState, action) {
@@ -47,6 +49,15 @@ export default function(state = initialState, action) {
         ...state,
         user: cUser,
       };
+      case HOMEPAGE_CHANGE:
+        const hUser = state.user;
+
+        hUser.id = action.payload.id;
+        return{
+          ...state,
+          user: hUser,
+          crruentSets: action.payload
+        };
     case UPDATE_USER:
       const uUser = state.user;
       uUser.username = action.payload.username;
