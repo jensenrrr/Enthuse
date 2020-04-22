@@ -692,6 +692,7 @@ async function findPostsForState(set, catLabel, returnPosts) {
                   JSON.stringify(returnPost.postID) ==
                   JSON.stringify(returnPosts[i].postID)
                 ) {
+
                   returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
                   alreadyExists = true;
                 }
@@ -766,8 +767,10 @@ async function findPostsForCountry(set, catLabel, returnPosts) {
                   JSON.stringify(returnPost.postID) ==
                   JSON.stringify(returnPosts[i].postID)
                 ) {
+
                   returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
                   alreadyExists = true;
+
                 }
               }
 
