@@ -46,7 +46,6 @@ class ChangeUsername extends Component {
 
   render() {
     const { errors } = this.state;
-    console.log(errors);
     return (
       <div>
         <form noValidate onSubmit={this.onSubmit}>
