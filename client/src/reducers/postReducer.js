@@ -96,7 +96,12 @@ export default function(state = initialState, action) {
       action.payload.indices.forEach((element, i) => {
         if (i >= 1) dream = dream.comments[element];
       });
-      dream.comments.push(action.payload.comments);
+      //console.log("existing comment " + dream);
+      //console.log("new comment  " + action.payload.comments);
+      action.payload.comments.forEach((element, i) => {
+        console.log(element);
+        if (element) dream.comments.push(element);
+      });
       return {
         ...state,
         posts: loadMoreComments,
