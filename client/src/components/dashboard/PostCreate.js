@@ -105,7 +105,7 @@ class PostCreate extends Component {
       alert("Post needs content.");
       return;
     }
-    if (!this.state.county && !this.state.state && !this.state.country) {
+    if (this.state.county =="" && this.state.state ==""&& this.state.country =="") {
       alert("Post needs a location.");
       return;
     }
@@ -187,7 +187,7 @@ class PostCreate extends Component {
                 <div className="col s6">
                   <h1>Location</h1>
                   <Location key={this.state.locationKey} />
-                  <h3>Selected Location: {this.state.location.city}</h3>
+                  <h3>Selected Location: {this.state.location.city} {this.state.location.state} {this.state.location.country}</h3>
                 </div>
                 <div className="col s6">
                   <h1>Categories</h1>

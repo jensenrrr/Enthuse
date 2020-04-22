@@ -137,6 +137,7 @@ class Post extends Component {
   };
 
   render() {
+    console.log(this.props);
     return (
       <div className="row">
         <div className="card grey lighten-5 hoverable">
@@ -160,11 +161,20 @@ class Post extends Component {
                 <img style={{}} src={this.state.img} alt="helpful alt text" />
               ) : null}
             </div>
-
-            <h3>
-              {" "}
-              {this.props.category} | {this.props.county} County{" "}
-            </h3>
+          
+          <h3>
+            {this.props.category} | {(this.props.post.posts[this.props.index].location.county !="") ? (this.props.post.posts[this.props.index].location.county) : ((this.props.post.posts[this.props.index].location.state !="") ? this.props.post.posts[this.props.index].location.state : this.props.post.posts[this.props.index].location.country)}
+          </h3>
+          <h4>
+            {" "}
+            <Moment format="h:mm A" tz={this.state.zone}>
+              {this.props.date}
+            </Moment>
+            {" on "}
+            <Moment format="MMM D, YYYY" tz={this.state.zone}>
+              {this.props.date}
+            </Moment>
+          </h4>
             <h4>
               {" "}
               <Moment format="h:mm A" tz={this.state.zone}>

@@ -30,10 +30,10 @@ const PostSchema = new Schema({
     required: true
   },
   location: {
-    country: { type: String, required: true },
-    state: { type: String, required: true },
+    country: { type: String, default: "" },
+    state: { type: String, default: "" },
     city: { type: String, default: "" },
-    county: { type: String, required: true },
+    county: { type: String, default: "" },
     nickname: { type: String, default: "" }
   },
   content: {

@@ -599,7 +599,7 @@ async function findPostsForState(set, catLabel, returnPosts) {
                 await Promise.all(
                   post._commentIDs.map(async (commentID) => {
                     //const retC = await getComments(commentID, returnComments);
-                    return retC;
+                    //return retC;
                   })
                 );
 
@@ -679,7 +679,7 @@ async function findPostsForCountry(set, catLabel, returnPosts) {
                 await Promise.all(
                   post._commentIDs.map(async (commentID) => {
                     //const retC = await getComments(commentID, returnComments);
-                    return retC;
+                  //  return retC;
                   })
                 );
 

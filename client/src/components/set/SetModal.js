@@ -63,9 +63,9 @@ class SetModal extends Component {
           !this.state.sets.some(
             (e) =>
               e.category === set.category &&
-              (e.location.county === set.location.county &&
-                e.location.country === set.location.country &&
-                e.location.state === set.location.state &&
+              (e.location.county === set.location.county ||
+                e.location.country === set.location.country ||
+                e.location.state === set.location.state ||
                 e.location.city === set.location.city)
           )
         ) {
@@ -108,7 +108,7 @@ class SetModal extends Component {
           <div className="row">
             <div className="col s6">
               Location
-              <Location />{" "}
+              <Location />
             </div>
             <div className="col s6">
               Categories
