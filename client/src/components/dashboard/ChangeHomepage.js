@@ -30,6 +30,7 @@ class ChangeHomepage extends Component {
     };
     this.onModalChange = this.onModalChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.addSet = this.addSet.bind(this);
   }
   onModalChange = () => {
     this.setState({
@@ -104,6 +105,7 @@ class ChangeHomepage extends Component {
     const { errors } = this.state;
 
     return (
+      
       <div>
       <div className="card-content">
               <h1>Homepage:</h1>
@@ -138,11 +140,12 @@ class ChangeHomepage extends Component {
                         <h3>Selected Category: {this.state.category}</h3>
                       </div>
                       </div>
+                      {console.log(this.state)}
           <div className="row">
             <Button
               floating
               waves="light"
-              onClick={this.addSet.bind(this)}
+              onClick={this.addSet}
               className={classnames("", {
                 red: !this.state.ready,
                 blue: this.state.ready,
