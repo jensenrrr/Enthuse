@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const mongoose = require("mongoose");
 
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
@@ -25,25 +26,25 @@ router.post("/register", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ username: req.body.username }).then(user => {
+  User.findOne({ username: req.body.username }).then((user) => {
     if (user) {
       return res.status(400).json({ username: "Username already exists" });
     }
-    User.findOne({ email: req.body.email }).then(user => {
+    User.findOne({ email: req.body.email }).then((user) => {
       if (user) {
         return res.status(400).json({ email: "Email already exists" });
       } else {
         const newUser = new User({
           name: {
             first: req.body.firstName,
-            last: req.body.lastName
+            last: req.body.lastName,
           },
           username: req.body.username,
           email: req.body.email,
           password: req.body.password,
           favoriteSets: req.body.sets,
           currentSets: req.body.sets,
-          homePage: req.body.sets
+          homePage: req.body.sets,
         });
 
         // Hash password before saving in database
@@ -53,8 +54,8 @@ router.post("/register", (req, res) => {
             newUser.password = hash;
             newUser
               .save()
-              .then(user => res.json(user))
-              .catch(err => console.log(err));
+              .then((user) => res.json(user))
+              .catch((err) => console.log(err));
           });
         });
       }
@@ -79,14 +80,14 @@ router.post("/login", (req, res) => {
   const password = req.body.password;
 
   // Find user by email
-  User.findOne({ email }).then(user => {
+  User.findOne({ email }).then((user) => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ emailnotfound: "Email not found" });
     }
 
     // Check password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(password, user.password).then((isMatch) => {
       if (isMatch) {
         // User matched
         // Create JWT Payload
@@ -95,19 +96,19 @@ router.post("/login", (req, res) => {
           username: user.username,
           homePage: user.homePage,
           favs: user.favoriteSets,
-          sets: user.currentSets
+          sets: user.currentSets,
         };
         // Sign token
         jwt.sign(
           payload,
           keys.secretOrKey,
           {
-            expiresIn: 31556926 // 1 year in seconds
+            expiresIn: 31556926, // 1 year in seconds
           },
           (err, token) => {
             res.json({
               success: true,
-              token: "Bearer " + token
+              token: "Bearer " + token,
             });
           }
         );
@@ -119,13 +120,29 @@ router.post("/login", (req, res) => {
     });
   });
 });
-
+router.post("/getUser", (req, res) => {
+  //console.log(req.body.id);
+  User.findById(req.body.id).then((user) => {
+    if (!user) {
+      res.json({ success: false });
+      return;
+    }
+    const payload = {
+      id: user.id,
+      username: user.username,
+      homePage: user.homePage,
+      favs: user.favoriteSets,
+      sets: user.currentSets,
+    };
+    res.json(payload);
+  });
+});
 //change user information
 
 router.post("/changeHomepage", (req, res) => {
   User.findById(req.body.id).then(user => {
     user.homePage = req.body.sets;
-    user.save().then(user => {
+    user.save().then((user) => {
       res.json(user.homePage);
     });
   });
@@ -133,9 +150,9 @@ router.post("/changeHomepage", (req, res) => {
 
 router.post("/changeUsername", (req, res) => {
   // Form validation
-
+  //console.log("username change called");
   const { errors, isValid } = validateLoginInput(req.body);
-
+  //console.log(errors);
   // Check validation
   if (!isValid) {
     return res.status(400).json(errors);
@@ -146,18 +163,19 @@ router.post("/changeUsername", (req, res) => {
   const password = req.body.password;
 
   // Find user by email
-  User.findOne({ email }).then(user => {
+  User.findOne({ email }).then((user) => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ emailnotfound: "Email not found" });
     }
 
     // Check password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(password, user.password).then((isMatch) => {
       if (isMatch) {
+        //console.log("changing username");
         user.username = newUsername;
         user.save();
-        return res.status(200).json({ success: true });
+        return res.status(200).json({ success: true, username: newUsername });
       } else {
         return res
           .status(400)

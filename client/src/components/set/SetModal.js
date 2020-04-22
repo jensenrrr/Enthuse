@@ -108,7 +108,7 @@ class SetModal extends Component {
           <div className="row">
             <div className="col s6">
               Location
-              <Location />{" "}
+              <Location />
             </div>
             <div className="col s6">
               Categories

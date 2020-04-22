@@ -12,7 +12,7 @@ import {
   getSinglePost,
   singleCommentOnComment,
   singleLoadMoreComments,
-  getImage,
+  getSingleImage,
 } from "../../actions/postActions";
 import { Button, Icon, Textarea } from "react-materialize";
 import Moment from "react-moment";
@@ -34,6 +34,7 @@ class ViewPost extends Component {
           nickname: "",
         },
         comments: [],
+        imgLoaded: false,
       },
     };
   }
@@ -42,6 +43,7 @@ class ViewPost extends Component {
     this.props.getSinglePost({
       id: this.props.location.pathname.substring(6),
     });
+
     console.log(this.props.post);
   }
 
@@ -55,6 +57,15 @@ class ViewPost extends Component {
         this.setState({
           post: nextProps.post.singlepost,
         });
+        if (!this.state.imgLoaded) {
+          this.props.getSingleImage({
+            postid: this.props.location.pathname.substring(6),
+            index: [],
+          });
+          this.setState({
+            imgLoaded: true,
+          });
+        }
         //console.log(nextProps.post.posts);
       }
       if (this.props.post.singlepost) {
@@ -70,7 +81,7 @@ class ViewPost extends Component {
         //console.log("checking " + this.state.img);
 
         if (nextProps.post.singlepost.img != undefined) {
-          //console.log("img change");
+          console.log("img change");
           this.setState({
             img: nextProps.post.singlepost.img,
           });
@@ -171,7 +182,15 @@ class ViewPost extends Component {
         <div className="card-content black-text" style={{ clear: "left" }}>
           <p style={{ marginLeft: "30px" }}>{this.state.post.content}</p>
         </div>
-        {/*image stuff here*/}
+        {this.props.post.singlepost ? (
+          <div className="card-image">
+            {this.props.post.singlepost.hasImage & (this.state.img != "") ? (
+              <img style={{}} src={this.state.img} alt="helpful alt text" />
+            ) : null}
+          </div>
+        ) : (
+          ""
+        )}{" "}
         <h3>
           {this.state.post.category} | {this.state.post.location.county} County{" "}
         </h3>
@@ -245,7 +264,6 @@ class ViewPost extends Component {
             </div>
           ) : null}
         </div>
-
         <div>
           <div style={{ marginLeft: "30px" }}>
             {this.state.post.comments.map((comment, i) => (
@@ -288,6 +306,7 @@ ViewPost.propTypes = {
   getSinglePost: PropTypes.func.isRequired,
   singleCommentOnComment: PropTypes.func.isRequired,
   singleLoadMoreComments: PropTypes.func.isRequired,
+  getSingleImage: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -307,5 +326,6 @@ export default connect(
     getSinglePost,
     singleCommentOnComment,
     singleLoadMoreComments,
+    getSingleImage,
   }
 )(ViewPost);

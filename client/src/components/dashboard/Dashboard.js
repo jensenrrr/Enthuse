@@ -28,6 +28,7 @@ class Dashboard extends Component {
         nickname: ""
       },
       list: [],
+      meme:"",
       ready: false,
       currentSets: [],
       posts: []
@@ -54,11 +55,32 @@ class Dashboard extends Component {
       }
     }
     if (nextProps.set) {
-      if (nextProps.set.location) {
-        if (nextProps.set.location.county !== "") {
+      if (nextProps.set.location) 
+      {
+        if (nextProps.set.location.county !== "" || nextProps.set.location.state !== "" || nextProps.set.location.country !== "") 
+        {
           this.setState({
             location: nextProps.set.location
           });
+
+          if (nextProps.set.location.county !== "") 
+          {
+            this.setState({
+              meme: nextProps.set.location.county
+            });
+          }
+          if (nextProps.set.location.state !== "") 
+          {
+            this.setState({
+              meme: nextProps.set.location.state
+            });
+          }
+          if (nextProps.set.location.country !== "") 
+          {
+            this.setState({
+              meme: nextProps.set.location.country
+            });
+          }
         }
       }
       if (nextProps.set.category) {
@@ -96,9 +118,9 @@ class Dashboard extends Component {
           !this.props.set.currentSets.some(
             e =>
               e.category === set.category &&
-              (e.location.county === set.location.county &&
-                e.location.country === set.location.country &&
-                e.location.state === set.location.state &&
+              (e.location.county === set.location.county  &&
+                e.location.country === set.location.country  &&
+                e.location.state === set.location.state  &&
                 e.location.city === set.location.city)
           )
         ) {
@@ -190,12 +212,12 @@ class Dashboard extends Component {
               <div style={{ clear: "left", textAlign: "left", paddingLeft: "20px" }}>
                 {this.props.set.currentSets.map((set, index) => (
                   <span
-                    key={set.category + set.location.county + set.location.state}
+                    key={set.category + set.location.county + set.location.state + set.location.country}
                   >
 
                     <div className="left-align">
-                      <Button className="cyan lighten-1 waves-light" onClick={() => this.remove(index)}>
-                        {set.category} | {set.location.county}
+                      <Button className="cyan lighten-1 waves-light" style={{fontSize:18}} onClick={() => this.remove(index)}>
+                        {set.category} |  {(set.location.county !="") ? (set.location.county) : ((set.location.state !="") ? set.location.state : set.location.country)}
                         <i className="material-icons right">remove</i>
                       </Button>
                     </div>
@@ -222,7 +244,7 @@ class Dashboard extends Component {
                       <div className="row">
                         <h1>Location</h1>
                         <Location />
-                        <h3>Selected Location: {this.state.location.city}</h3>
+                        <h3>Selected Location:{(this.state.location.county !="") ? (this.state.location.county) : ((this.state.location.state !="") ? this.state.location.state : this.state.location.country)}</h3>
                       </div>
                       <div className="row">
                         <h1>Categories</h1>

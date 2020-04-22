@@ -15,8 +15,8 @@ class Location extends Component {
     this.state = {
       country: "",
       state: "",
-      county: "",
       city: "",
+      county: "",
       nickname: ""
     };
   }
@@ -29,23 +29,23 @@ class Location extends Component {
     this.setState({
       country: i,
       state: j,
-      city: l,
-      county: k
+      city: k,
+      county: l
 
     });
 
     this.props.setLocation({
       country: i,
       state: j,
-      city: l,
-      county: k,
+      city: k,
+      county: l,
       nickname: ""
     });
 
   }
   render() {
     return (
-      <Tabs className="tab-demo z-depth-1 tabs-fixed-width">
+      <Tabs className="tab-demo tabs-fixed-width">
         <Tab
           active
           options={{
@@ -54,18 +54,17 @@ class Location extends Component {
             responsiveThreshold: Infinity,
             swipeable: false
           }}
-          title="City"
+          title="County"
         >
           <FuzzyPicker
-
             isOpen={true}
             onClose={() => console.log('You closed the fuzzy-picker')}
-            onChange={choice => { this.clickHandler("", "", choice.city, "") }}
+            onChange={choice => { this.clickHandler(choice.country, choice.state,"" , choice.county) }}
             autoCloseOnEnter={true}
             items={PlacesData}
             displayCount={5}
-            itemValue={item => item.city}
-            renderItem={item => <span>{item.city}</span>}
+            itemValue={item => item.county+item.city}
+            renderItem={item => <span>{item.county}, {item.state}</span>}
           />
         </Tab>
         <Tab
@@ -82,11 +81,11 @@ class Location extends Component {
 
             isOpen={true}
             onClose={() => console.log('You closed the fuzzy-picker')}
-            onChange={choice => { this.clickHandler("", choice.state, "", "") }}
+            onChange={choice => { this.clickHandler(choice.country, choice.state, "", "") }}
             autoCloseOnEnter={true}
             items={PlacesData}
-            displayCount={1}
-            itemValue={item => item.state}
+            displayCount={5}
+            itemValue={item => item.state+item.city}
             renderItem={item => <span>{item.state}</span>}
           />
         </Tab>
@@ -105,8 +104,8 @@ class Location extends Component {
             onChange={choice => { this.clickHandler(choice.country, "", "", "") }}
             autoCloseOnEnter={true}
             items={PlacesData}
-            displayCount={1}
-            itemValue={item => item.country}
+            displayCount={5}
+            itemValue={item => item.country+item.city}
             renderItem={item => <span>{item.country}</span>}
           />
         </Tab>
