@@ -184,7 +184,7 @@ export const commentOnComment = (upIDs) => (dispatch) => {
 };
 
 export const singleCommentOnComment = (upIDs) => (dispatch) => {
-  console.log(upIDs);
+  //console.log(upIDs);
   axios
     .post("/api/post/commentOnComment", upIDs)
     .then((res) => {
@@ -221,9 +221,9 @@ export const likeComment = (data) => (dispatch) => {
 };
 export const singleLoadMoreComments = (data) => (dispatch) => {
   axios
-    .post("/api/set/loadMoreComments", data)
+    .post("/api/post/loadMoreComments", data)
     .then((res) => {
-      console.log(res.data);
+      //console.log(res.data);
       dispatch({
         type: SINGLEPOST_LOAD_COMMENT,
         payload: res.data,

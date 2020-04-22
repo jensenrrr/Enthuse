@@ -15,6 +15,7 @@ import update from "react-addons-update";
 
 const initialState = {
   posts: [],
+  singlepost: "",
   ready: false,
 };
 
@@ -107,7 +108,21 @@ export default function(state = initialState, action) {
         posts: loadMoreComments,
       };
     case SINGLEPOST_LOAD_COMMENT:
-      return state;
+      const upsPost = state.singlepost;
+      var dream = upsPost;
+      if (upsPost) {
+        action.payload.indices.forEach((element, i) => {
+          if (i >= 1) dream = dream.comments[element];
+        });
+        action.payload.comments.forEach((element, i) => {
+          console.log(element);
+          if (element) dream.comments.push(element);
+        });
+      }
+      return {
+        ...state,
+        singlepost: upsPost,
+      };
     case POST_UPVOTE:
       return update(state, {
         posts: {

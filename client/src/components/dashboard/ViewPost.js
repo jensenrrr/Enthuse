@@ -50,7 +50,7 @@ class ViewPost extends Component {
     //console.log(this.props.post.posts[this.props.index].liked);
 
     if (nextProps.post) {
-      console.log(nextProps.post);
+      //console.log(nextProps.post);
       if (nextProps.post.singlepost) {
         this.setState({
           post: nextProps.post.singlepost,
@@ -150,7 +150,7 @@ class ViewPost extends Component {
 
   loadMoreComments = (e) => {
     console.log(e);
-    //this.props.singleLoadMoreComments(e);
+    this.props.singleLoadMoreComments(e);
   };
   /*singleLoadMoreComments = e => {
     this.props.singleLoadMoreComments(e);

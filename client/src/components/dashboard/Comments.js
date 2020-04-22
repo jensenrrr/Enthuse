@@ -180,10 +180,10 @@ class Comments extends Component {
           </Comment.Group>
           <div
             onClick={() => {
-              const alreadyLoaded = [];
+              var alreadyLoaded = [];
               if (this.props.com.comments) {
                 this.props.com.comments.forEach((comment) => {
-                  alreadyLoaded.push(comment.commnetID);
+                  alreadyLoaded.push(comment.commentID);
                 });
               }
               this.load({
