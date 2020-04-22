@@ -1015,9 +1015,11 @@ router.post("/getSinglePost", (req, res) => {
       }
 
       if (
-        user._likedComments.some(function (arrVal) {
+        user._likedPosts.some(function (arrVal) {
+          //console.log("in user list " + arrVal);
+          //console.log("postID" + post._id);
           return (
-            JSON.parse(JSON.stringify(comment._id)) ===
+            JSON.parse(JSON.stringify(post._id)) ===
             JSON.parse(JSON.stringify(arrVal))
           );
         })
