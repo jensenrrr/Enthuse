@@ -12,6 +12,7 @@ import {
   SINGLEPOST_COMMENT_ON_COMMENT,
   SINGLEPOST_LOAD_COMMENT,
   LOAD_IMAGE,
+  LOAD_SINGLE_IMAGE,
 } from "./types";
 function arrayBufferToBase64(buffer) {
   var binary = "";
@@ -19,6 +20,33 @@ function arrayBufferToBase64(buffer) {
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
   return window.btoa(binary);
 }
+export const getSingleImage = (up) => (dispatch) => {
+  //console.log("calling get image");
+  axios
+    .post("/api/post/getimage", up)
+    .then((data) => {
+      //console.log(data);
+      var meme = "";
+      if (data.data.img) {
+        var base64Flag = "data:image/jpeg;base64,";
+        //console.log(data.data.img.data.data);
+        var imageStr = arrayBufferToBase64(data.data.img.data.data);
+        meme = base64Flag + imageStr;
+      }
+
+      dispatch({
+        type: LOAD_SINGLE_IMAGE,
+        payload: { img: meme, index: up.index },
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({
+        type: POST_ERRORS,
+        payload: err,
+      });
+    });
+};
 export const getImage = (up) => (dispatch) => {
   //console.log("calling get image");
   axios

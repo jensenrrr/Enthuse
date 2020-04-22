@@ -349,6 +349,7 @@ router.post("/getimage", (req, res) => {
     if (post == null) {
       console.log("not found");
       res.status(400).json("Post not found.");
+      return;
     }
     //console.log("get image for: " + post);
     var imgId = mongoose.Types.ObjectId(post._imageIDs[0]);

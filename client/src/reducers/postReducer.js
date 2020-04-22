@@ -10,6 +10,7 @@ import {
   SINGLEPOST_COMMENT_ON_COMMENT,
   SINGLEPOST_LOAD_COMMENT,
   LOAD_IMAGE,
+  LOAD_SINGLE_IMAGE,
 } from "../actions/types";
 import update from "react-addons-update";
 
@@ -21,6 +22,13 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case LOAD_SINGLE_IMAGE:
+      const sgpi = state.singlepost;
+      sgpi.img = action.payload.img;
+      return {
+        ...state,
+        singlepost: sgpi,
+      };
     case LOAD_IMAGE:
       const upPosts = state.posts;
       if (upPosts[action.payload.index]) {
