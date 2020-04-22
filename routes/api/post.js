@@ -569,8 +569,6 @@ async function findPostsForState(set, catLabel, returnPosts) {
   //console.log(set.location.county);
   await Post.find({
     category: catLabel,
-    "location.county": set.location.county,
-    "location.country": set.location.country,
     "location.state": set.location.state,
   }).then((posts) => {
     return Promise.all(
@@ -762,7 +760,7 @@ async function findPosts(set, catLabel, returnPosts) {
                 const returnComments = [];
                 await Promise.all(
                   post._commentIDs.map(async (commentID) => {
-                    //const retC = await getComments(commentID, returnComments);
+                    const retC = await getComments(commentID, returnComments);
                     return retC;
                   })
                 );
