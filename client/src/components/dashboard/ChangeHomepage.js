@@ -130,7 +130,7 @@ class ChangeHomepage extends Component {
           
                         <h1>Location</h1>
                         <Location />
-                        <h3>Selected Location: {this.state.location.city}</h3>
+                        <h3>Selected Location: {this.state.location.county!=""}</h3>
                       </div>
                       <div className="row">
                         <h1>Categories</h1>
@@ -148,7 +148,7 @@ class ChangeHomepage extends Component {
                 blue: this.state.ready,
               })}
             >
-              Add Homepage Set
+              Homepage Set
             </Button>
           </div>
           </div>
