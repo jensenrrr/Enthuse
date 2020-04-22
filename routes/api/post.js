@@ -374,20 +374,15 @@ router.post(
   }),
   (req, res) => {
     console.log("-------- Create called ----------");
-    ///console.log(req.body);
-    //console.log(req.body.hasImage);
-    if (req.body.hasImage == true) {
+    console.log(req.file);
+    console.log("does the post have an image? " + req.body.hasImage);
+    if (req.body.hasImage) {
       console.log("Has image");
-      if (req.file) {
-        var new_img = new Img();
-        new_img.img.data = fs.readFileSync(req.file.path);
-        new_img.img.contentType = "image/jpeg"; // or 'image/png'
-        new_img.save();
-        console.log(new_img);
-        console.log(req.body);
-        console.log(req.file);
-        console.log();
-      }
+      var new_img = new Img();
+      new_img.img.data = fs.readFileSync(req.file.path);
+      new_img.img.contentType = "image/jpeg"; // or 'image/png'
+      new_img.save();
+      console.log("new image made: " + new_img);
     }
     const newPost = new Post({
       _userID: mongoose.Types.ObjectId(req.user._id),
@@ -408,11 +403,9 @@ router.post(
       if (!user) {
         res.status(400).json("user does not exist");
       } else {
-        if (req.body.hasImage == true) {
-          if (req.file) {
-            console.log(new_img._id);
-            newPost._imageIDs.push(new_img._id);
-          }
+        if (req.body.hasImage) {
+          console.log(new_img._id);
+          newPost._imageIDs.push(new_img._id);
         }
         newPost
           .save()
@@ -692,7 +685,6 @@ async function findPostsForState(set, catLabel, returnPosts) {
                   JSON.stringify(returnPost.postID) ==
                   JSON.stringify(returnPosts[i].postID)
                 ) {
-
                   returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
                   alreadyExists = true;
                 }
@@ -767,10 +759,8 @@ async function findPostsForCountry(set, catLabel, returnPosts) {
                   JSON.stringify(returnPost.postID) ==
                   JSON.stringify(returnPosts[i].postID)
                 ) {
-
                   returnPosts[i].hRank = returnPosts[i].hRank * 1.3;
                   alreadyExists = true;
-
                 }
               }
 
