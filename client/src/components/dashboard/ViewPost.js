@@ -14,7 +14,7 @@ import {
   singleLoadMoreComments,
   getSingleImage,
 } from "../../actions/postActions";
-import { Button, Icon, Textarea } from "react-materialize";
+import { Button, Icon, MediaBox } from "react-materialize";
 import Moment from "react-moment";
 import "moment-timezone";
 
@@ -185,9 +185,9 @@ class ViewPost extends Component {
           <p style={{ marginLeft: "30px" }}>{this.state.post.content}</p>
         </div>
         {this.props.post.singlepost ? (
-          <div className="card-image">
+          <div className="card-image" align="center">
             {this.props.post.singlepost.hasImage & (this.state.img != "") ? (
-              <img style={{}} src={this.state.img} alt="helpful alt text" />
+              <img width="700px" src={this.state.img} alt="helpful alt text" />
             ) : null}
           </div>
         ) : (
