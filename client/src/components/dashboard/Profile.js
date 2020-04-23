@@ -31,8 +31,11 @@ class Profile extends Component {
   render() {
     return (
       <div className="landing-copy col s6">
-      <div style={{padding:"30px"}}>
-        <p>Your Posts:</p>
+          <div>
+      <h1>Your Posts:</h1>
+      </div>
+      <div style={{padding:"40px", marginLeft:"80px",  marginRight:"80px"}}>
+      
         {this.props.post.posts.map((post, index) => (
           <Post
             key={post.postID}
