@@ -55,10 +55,10 @@ class ChangeHomepage extends Component {
   };
   addSet() {
     if (this.state) {
-      if (this.state.category && this.state.location) {
+      if (this.props.set.category && this.props.set.location) {
         const set = {
-          category: this.state.category,
-          location: this.state.location,
+          category: this.props.set.category,
+          location: this.props.set.location,
           list: this.state.list
         };
         if (
@@ -84,9 +84,9 @@ class ChangeHomepage extends Component {
         } else {
           console.log("duplicate set");
         }
-      } else if (this.state.category) {
+      } else if (this.props.set.category) {
         console.log("no location");
-      } else if (this.state.location) {
+      } else if (this.props.set.location) {
         console.log("no category");
       } else {
         console.log("neither location nor category");
@@ -132,15 +132,15 @@ class ChangeHomepage extends Component {
           
                         <h1>Location</h1>
                         <Location />
-                        <h3>Selected Location: {this.state.location.county!=""}</h3>
+                        <h3>Selected Location: {this.props.set.location.county}</h3>
                       </div>
                       <div className="row">
                         <h1>Categories</h1>
                         <HobbyTree />
-                        <h3>Selected Category: {this.state.category}</h3>
+                        <h3>Selected Category: {this.props.set.category}</h3>
                       </div>
                       </div>
-                      {console.log(this.state)}
+                      
           <div className="row">
             <Button
               floating
